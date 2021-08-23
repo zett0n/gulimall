@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: gulimall-order
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://172.28.76.158:3306/gulimall_oms
+    username: root
+    password: root
+
+mybatis-plus:
+  mapper-locations: classpath:/mapper/**/*.xml
+  # \u4E3B\u952E\u9012\u589E
+  global-config:
+    db-config:
+      id-type: auto
+
+server:
+  port: 9000
+logging:
+  level:
+    cn.edu.zjut: debug

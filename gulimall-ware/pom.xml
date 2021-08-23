@@ -12,6 +12,13 @@
     <name>gulimall-ware</name>
     <description>仓储服务</description>
 
+    <dependencies>
+        <dependency>
+            <groupId>cn.edu.zjut</groupId>
+            <artifactId>gulimall-common</artifactId>
+        </dependency>
+    </dependencies>
+
     <build>
         <plugins>
             <plugin>

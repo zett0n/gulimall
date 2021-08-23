@@ -12,6 +12,13 @@
     <name>gulimall-order</name>
     <description>订单服务</description>
 
+    <dependencies>
+        <dependency>
+            <groupId>cn.edu.zjut</groupId>
+            <artifactId>gulimall-common</artifactId>
+        </dependency>
+    </dependencies>
+
     <build>
         <plugins>
             <plugin>
