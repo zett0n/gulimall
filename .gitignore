@@ -66,6 +66,9 @@ build/
 .gradle
 
 # maven
-**/mvnw
-**/mvnw.cmd
-**/.mvn
+mvnw
+mvnw.cmd
+.mvn
+
+# git
+.gitignore
