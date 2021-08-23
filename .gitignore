@@ -64,3 +64,6 @@ Thumbs.db
 # Gradle
 build/
 .gradle
+
+# maven
+.mvn/
