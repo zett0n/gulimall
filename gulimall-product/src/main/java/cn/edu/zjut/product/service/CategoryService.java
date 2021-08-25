@@ -1,10 +1,12 @@
 package cn.edu.zjut.product.service;
 
-import cn.edu.zjut.common.utils.PageUtils;
-import com.baomidou.mybatisplus.extension.service.IService;
-import cn.edu.zjut.product.entity.CategoryEntity;
-
+import java.util.List;
 import java.util.Map;
+
+import com.baomidou.mybatisplus.extension.service.IService;
+
+import cn.edu.zjut.common.utils.PageUtils;
+import cn.edu.zjut.product.entity.CategoryEntity;
 
 /**
  * 商品三级分类
@@ -16,5 +18,7 @@ import java.util.Map;
 public interface CategoryService extends IService<CategoryEntity> {
 
     PageUtils queryPage(Map<String, Object> params);
+
+    List<CategoryEntity> listWithTree();
 }
 
