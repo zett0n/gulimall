@@ -3,13 +3,13 @@ spring:
     name: gulimall-product
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://172.28.76.158:3306/gulimall_pms
+    url: jdbc:mysql://localhost:3306/gulimall_pms
     username: root
     password: root
 
 mybatis-plus:
   mapper-locations: classpath:/mapper/**/*.xml
-  # \u4E3B\u952E\u9012\u589E
+  # 主键自增
   global-config:
     db-config:
       id-type: auto

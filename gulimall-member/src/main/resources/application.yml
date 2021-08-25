@@ -3,7 +3,7 @@ spring:
     name: gulimall-member
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://172.28.76.158:3306/gulimall_ums
+    url: jdbc:mysql://localhost:3306/gulimall_ums
     username: root
     password: root
 
