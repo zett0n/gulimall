@@ -4,18 +4,13 @@ import java.util.Arrays;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import cn.edu.zjut.member.entity.MemberEntity;
-import cn.edu.zjut.member.service.MemberService;
 import cn.edu.zjut.common.utils.PageUtils;
 import cn.edu.zjut.common.utils.R;
-
-
+import cn.edu.zjut.member.entity.MemberEntity;
+import cn.edu.zjut.member.feign.CouponFeignService;
+import cn.edu.zjut.member.service.MemberService;
 
 /**
  * 会员
@@ -30,23 +25,33 @@ public class MemberController {
     @Autowired
     private MemberService memberService;
 
+    @Autowired
+    private CouponFeignService couponFeignService;
+
+    @RequestMapping("/coupons")
+    public R test() {
+        MemberEntity memberEntity = new MemberEntity();
+        memberEntity.setNickname("choushao");
+        R memberList = this.couponFeignService.memberList();
+        return R.ok().put("member", memberEntity).put("coupons", memberList.get("coupons"));
+    }
+
     /**
      * 列表
      */
     @RequestMapping("/list")
-        public R list(@RequestParam Map<String, Object> params){
-        PageUtils page = memberService.queryPage(params);
+    public R list(@RequestParam Map<String, Object> params) {
+        PageUtils page = this.memberService.queryPage(params);
 
         return R.ok().put("page", page);
     }
-
 
     /**
      * 信息
      */
     @RequestMapping("/info/{id}")
-        public R info(@PathVariable("id") Long id){
-		MemberEntity member = memberService.getById(id);
+    public R info(@PathVariable("id") Long id) {
+        MemberEntity member = this.memberService.getById(id);
 
         return R.ok().put("member", member);
     }
@@ -55,8 +60,8 @@ public class MemberController {
      * 保存
      */
     @RequestMapping("/save")
-        public R save(@RequestBody MemberEntity member){
-		memberService.save(member);
+    public R save(@RequestBody MemberEntity member) {
+        this.memberService.save(member);
 
         return R.ok();
     }
@@ -65,8 +70,8 @@ public class MemberController {
      * 修改
      */
     @RequestMapping("/update")
-        public R update(@RequestBody MemberEntity member){
-		memberService.updateById(member);
+    public R update(@RequestBody MemberEntity member) {
+        this.memberService.updateById(member);
 
         return R.ok();
     }
@@ -75,8 +80,8 @@ public class MemberController {
      * 删除
      */
     @RequestMapping("/delete")
-        public R delete(@RequestBody Long[] ids){
-		memberService.removeByIds(Arrays.asList(ids));
+    public R delete(@RequestBody Long[] ids) {
+        this.memberService.removeByIds(Arrays.asList(ids));
 
         return R.ok();
     }

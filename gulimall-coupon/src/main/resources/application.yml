@@ -6,6 +6,11 @@ spring:
     url: jdbc:mysql://localhost:3306/gulimall_sms
     username: root
     password: root
+  cloud:
+    # 到服务中心注册
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
 
 mybatis-plus:
   mapper-locations: classpath:/mapper/**/*.xml
@@ -19,3 +24,8 @@ server:
 logging:
   level:
     cn.edu.zjut: debug
+
+coupon:
+  user:
+    name: choushao
+    age: 18

@@ -6,10 +6,14 @@ spring:
     url: jdbc:mysql://localhost:3306/gulimall_ums
     username: root
     password: root
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
 
 mybatis-plus:
   mapper-locations: classpath:/mapper/**/*.xml
-  # \u4E3B\u952E\u9012\u589E
+  # 主键自增
   global-config:
     db-config:
       id-type: auto
