@@ -16,7 +16,7 @@
         <module>gulimall-product</module>
         <module>gulimall-ware</module>
         <module>gulimall-common</module>
-        <!--<module>renren-fast</module>-->
+        <module>renren-fast</module>
         <module>gulimall-gateway</module>
     </modules>
 
@@ -39,7 +39,7 @@
         <validation.api.version>2.0.1.Final</validation.api.version>
 
         <!--renren-fast项目需要hibernate.validator 非必须引入-->
-        <!--<hibernate.validator.version>5.0.2.Final</hibernate.validator.version>-->
+        <hibernate.validator.version>5.0.2.Final</hibernate.validator.version>
     </properties>
 
     <!--  子模块按需继承父模块（作用：锁定版本，子模块不用再写 version）  -->
@@ -109,11 +109,11 @@
                 <version>${validation.api.version}</version>
             </dependency>
 
-            <!--<dependency>-->
-            <!--    <groupId>org.hibernate</groupId>-->
-            <!--    <artifactId>hibernate-validator</artifactId>-->
-            <!--    <version>${hibernate.validator.version}</version>-->
-            <!--</dependency>-->
+            <dependency>
+                <groupId>org.hibernate</groupId>
+                <artifactId>hibernate-validator</artifactId>
+                <version>${hibernate.validator.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 

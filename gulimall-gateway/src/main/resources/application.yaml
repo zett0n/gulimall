@@ -17,6 +17,16 @@ spring:
           predicates:
             - Query=url,qq
 
+        - id: admin_route
+          uri: lb://renren-fast
+          predicates:
+            - Path=/api/**
+          # 过滤前验证码请求路径 http://localhost:88/api/captcha.jpg?uuid=69c79f02-d15b-478a-8465-a07fd09001e6
+          # 由于 renren-fast 已在注册中心注册，网关可以通过注册中心知道 renren-fast 的 ip 和端口
+          # 过滤后验证码请求路径 http://localhost:8080/renren-fast/captcha.jpg?uuid=69c79f02-d15b-478a-8465-a07fd09001e6
+          filters:
+            - RewritePath=/api/(?<segment>.*), /renren-fast/$\{segment}
+
 
 server:
   port: 88

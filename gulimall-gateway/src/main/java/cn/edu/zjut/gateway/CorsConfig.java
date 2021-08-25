@@ -7,7 +7,7 @@ import org.springframework.web.cors.reactive.CorsWebFilter;
 import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
 
 @Configuration
-public class GulimallCorsConfiguration {
+public class CorsConfig {
 
     // 设置跨域过滤器
     // 产生这个Bean对象交给容器管理

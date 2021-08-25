@@ -8,18 +8,18 @@
     <packaging>jar</packaging>
     <description>renren-fast</description>
 
-    <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.2.4.RELEASE</version>
-        <relativePath/>
-    </parent>
-
     <!--<parent>-->
-    <!--    <groupId>cn.edu.zjut</groupId>-->
-    <!--    <artifactId>gulimall</artifactId>-->
-    <!--    <version>0.0.1-SNAPSHOT</version>-->
+    <!--    <groupId>org.springframework.boot</groupId>-->
+    <!--    <artifactId>spring-boot-starter-parent</artifactId>-->
+    <!--    <version>2.2.4.RELEASE</version>-->
+    <!--    <relativePath/>-->
     <!--</parent>-->
+
+    <parent>
+        <groupId>cn.edu.zjut</groupId>
+        <artifactId>gulimall</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+    </parent>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -48,7 +48,7 @@
         <fastjson.version>1.2.72</fastjson.version>
         <hutool.version>4.1.1</hutool.version>
 
-        <lombok.version>1.18.4</lombok.version>
+        <!--<lombok.version>1.18.4</lombok.version>-->
 
         <!--wagon plugin 配置-->
         <service-path>/work/renren</service-path>
@@ -59,10 +59,10 @@
     </properties>
 
     <dependencies>
-        <!--<dependency>-->
-        <!--    <groupId>cn.edu.zjut</groupId>-->
-        <!--    <artifactId>gulimall-common</artifactId>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>cn.edu.zjut</groupId>
+            <artifactId>gulimall-common</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -241,11 +241,11 @@
             <version>${hutool.version}</version>
         </dependency>
 
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>${lombok.version}</version>
-        </dependency>
+        <!--<dependency>-->
+        <!--    <groupId>org.projectlombok</groupId>-->
+        <!--    <artifactId>lombok</artifactId>-->
+        <!--    <version>${lombok.version}</version>-->
+        <!--</dependency>-->
     </dependencies>
 
     <build>
