@@ -23,7 +23,7 @@ export default {
     return {
       menus: [],
       defaultProps: {
-        children: "childrens",
+        children: "children",
         label: "name",
       },
     };
@@ -40,8 +40,8 @@ export default {
         url: this.$http.adornUrl("/product/category/list/tree"),
         method: "get",
       }).then(({ data }) => {
-        console.log("获取到数据", data);
-        this.menus = data;
+        console.log("获取到数据", data.data);
+        this.menus = data.data;
       });
     },
   },

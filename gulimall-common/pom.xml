@@ -14,6 +14,7 @@
     <description>通用服务</description>
 
     <dependencies>
+        <!--springboot web-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
@@ -53,7 +54,6 @@
             <artifactId>mybatis-plus-boot-starter</artifactId>
         </dependency>
 
-
         <!--常用组件-->
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -81,7 +81,5 @@
         <!--    <groupId>org.apache.httpcomponents</groupId>-->
         <!--    <artifactId>httpclient</artifactId>-->
         <!--</dependency>-->
-
-
     </dependencies>
 </project>

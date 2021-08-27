@@ -19,7 +19,6 @@ import cn.edu.zjut.product.service.CategoryService;
 
 @Service("categoryService")
 public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity> implements CategoryService {
-
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
         IPage<CategoryEntity> page =
@@ -55,5 +54,11 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
                 categoryEntity.setChildren(getChildless(categoryEntity, all));
             }).sorted(Comparator.comparingInt(menu -> (menu.getSort() == null ? 0 : menu.getSort())))
             .collect(Collectors.toList());
+    }
+
+    @Override
+    public void removeMenuByIds(List<Long> asList) {
+        // TODO 检查要删除的菜单是否被别的地方引用
+        this.baseMapper.deleteBatchIds(asList);
     }
 }

@@ -1,4 +1,4 @@
-package cn.edu.zjut.product;
+package cn.edu.zjut.thirdparty;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -6,10 +6,10 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 
 @SpringBootApplication
 @EnableDiscoveryClient
-public class GulimallProductApplication {
+public class GulimallThirdPartyApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(GulimallProductApplication.class, args);
+        SpringApplication.run(GulimallThirdPartyApplication.class, args);
     }
 
 }
