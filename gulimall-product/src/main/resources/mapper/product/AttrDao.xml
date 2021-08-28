@@ -3,7 +3,7 @@
 
 <mapper namespace="cn.edu.zjut.product.dao.AttrDao">
 
-	<!-- 可根据自己的需求，是否要使用 -->
+    <!-- 可根据自己的需求，是否要使用 -->
     <resultMap type="cn.edu.zjut.product.entity.AttrEntity" id="attrMap">
         <result property="attrId" column="attr_id"/>
         <result property="attrName" column="attr_name"/>
@@ -14,7 +14,7 @@
         <result property="enable" column="enable"/>
         <result property="catelogId" column="catelog_id"/>
         <result property="showDesc" column="show_desc"/>
+        <result property="valueType" column="value_type"/>
     </resultMap>
-
 
 </mapper>

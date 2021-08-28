@@ -2,7 +2,6 @@ package cn.edu.zjut.product.controller;
 
 import cn.edu.zjut.common.utils.PageUtils;
 import cn.edu.zjut.common.utils.R;
-import cn.edu.zjut.product.entity.AttrEntity;
 import cn.edu.zjut.product.service.AttrService;
 import cn.edu.zjut.product.vo.AttrRespVO;
 import cn.edu.zjut.product.vo.AttrVO;
@@ -35,9 +34,10 @@ public class AttrController {
         return R.ok().put("page", page);
     }
 
-    @GetMapping("/base/list/{catelogId}")
-    public R baseAttrList(@RequestParam Map<String, Object> params, @PathVariable("catelogId") Long catelogId) {
-        PageUtils page = this.attrService.queryBaseAttrPage(params, catelogId);
+    @GetMapping("/{attrType}/list/{catelogId}")
+    public R baseAttrList(@PathVariable("attrType") String attrType, @PathVariable("catelogId") Long catelogId,
+                          @RequestParam Map<String, Object> params) {
+        PageUtils page = this.attrService.queryBaseAttrPage(params, catelogId, attrType);
 
         return R.ok().put("page", page);
     }
@@ -66,9 +66,9 @@ public class AttrController {
     /**
      * 修改
      */
-    @RequestMapping("/update")
-    public R update(@RequestBody AttrEntity attr) {
-        this.attrService.updateById(attr);
+    @PostMapping("/update")
+    public R update(@RequestBody AttrVO attrVo) {
+        this.attrService.updateAttr(attrVo);
 
         return R.ok();
     }

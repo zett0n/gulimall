@@ -1,13 +1,14 @@
 package cn.edu.zjut.product.service;
 
-import java.util.Map;
-
-import com.baomidou.mybatisplus.extension.service.IService;
-
 import cn.edu.zjut.common.utils.PageUtils;
 import cn.edu.zjut.product.entity.AttrEntity;
+import cn.edu.zjut.product.vo.AttrGroupRelationVO;
 import cn.edu.zjut.product.vo.AttrRespVO;
 import cn.edu.zjut.product.vo.AttrVO;
+import com.baomidou.mybatisplus.extension.service.IService;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * 商品属性
@@ -22,7 +23,15 @@ public interface AttrService extends IService<AttrEntity> {
 
     void saveAttr(AttrVO attrVo);
 
-    PageUtils queryBaseAttrPage(Map<String, Object> params, Long catelogId);
+    PageUtils queryBaseAttrPage(Map<String, Object> params, Long catelogId, String attrType);
 
     AttrRespVO getAttrInfo(Long attrId);
+
+    void updateAttr(AttrVO attrVo);
+
+    List<AttrEntity> getRelationAttr(Long attrgroupId);
+
+    void deleteRelation(AttrGroupRelationVO[] attrGroupRelationVOS);
+
+    PageUtils getNoRelationAttr(Long attrgroupId, Map<String, Object> params);
 }

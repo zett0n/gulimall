@@ -1,19 +1,18 @@
 /**
  * Copyright (c) 2016-2019 人人开源 All rights reserved.
- *
+ * <p>
  * https://www.renren.io
- *
+ * <p>
  * 版权所有，侵权必究！
  */
 
 package cn.edu.zjut.common.utils;
 
-import java.util.HashMap;
-import java.util.Map;
-
+import cn.edu.zjut.common.exception.EmBizError;
 import org.apache.http.HttpStatus;
 
-import cn.edu.zjut.common.exception.EmBizError;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 返回数据
@@ -45,7 +44,7 @@ public class R extends HashMap<String, Object> {
 
     // 进一步封装全局异常
     public static R error(EmBizError emBizError) {
-        return error(emBizError.getCode(), emBizError.getMsg());
+        return error(emBizError.getErrCode(), emBizError.getErrMsg());
     }
 
     public static R ok(String msg) {

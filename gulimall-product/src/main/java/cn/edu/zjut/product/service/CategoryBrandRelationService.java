@@ -1,11 +1,12 @@
 package cn.edu.zjut.product.service;
 
-import java.util.Map;
-
+import cn.edu.zjut.common.utils.PageUtils;
+import cn.edu.zjut.product.entity.BrandEntity;
+import cn.edu.zjut.product.entity.CategoryBrandRelationEntity;
 import com.baomidou.mybatisplus.extension.service.IService;
 
-import cn.edu.zjut.common.utils.PageUtils;
-import cn.edu.zjut.product.entity.CategoryBrandRelationEntity;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 品牌分类关联
@@ -23,5 +24,7 @@ public interface CategoryBrandRelationService extends IService<CategoryBrandRela
     void updateBrand(Long brandId, String name);
 
     void updateCategory(Long catId, String name);
+
+    List<BrandEntity> getBrandsByCatId(Long catId);
 }
 

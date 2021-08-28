@@ -7,15 +7,14 @@ spring:
         server-addr: 127.0.0.1:8848
     gateway:
       routes:
-        #        - id: jd_route
-        #          uri: https://www.jd.com
-        #          predicates:
-        #            - Query=url,jd
-        #
-        #        - id: qq_route
-        #          uri: https://www.qq.com
-        #          predicates:
-        #            - Query=url,qq
+        # - id: jd_route
+        #   uri: https://www.jd.com
+        #   predicates:
+        #     - Query=url,jd
+        # - id: qq_route
+        #   uri: https://www.qq.com
+        #   predicates:
+        #     - Query=url,qq
 
         - id: third_party_route
           uri: lb://gulimall-third-party
@@ -28,6 +27,13 @@ spring:
           uri: lb://gulimall-product
           predicates:
             - Path=/api/product/**
+          filters:
+            - RewritePath=/api/(?<segment>.*), /$\{segment}
+
+        - id: member_route
+          uri: lb://gulimall-member
+          predicates:
+            - Path=/api/member/**
           filters:
             - RewritePath=/api/(?<segment>.*), /$\{segment}
 
