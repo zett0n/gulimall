@@ -1,10 +1,11 @@
 package cn.edu.zjut.product.service;
 
-import cn.edu.zjut.common.utils.PageUtils;
-import com.baomidou.mybatisplus.extension.service.IService;
-import cn.edu.zjut.product.entity.BrandEntity;
-
 import java.util.Map;
+
+import com.baomidou.mybatisplus.extension.service.IService;
+
+import cn.edu.zjut.common.utils.PageUtils;
+import cn.edu.zjut.product.entity.BrandEntity;
 
 /**
  * 品牌
@@ -16,5 +17,7 @@ import java.util.Map;
 public interface BrandService extends IService<BrandEntity> {
 
     PageUtils queryPage(Map<String, Object> params);
+
+    void updateDetail(BrandEntity brand);
 }
 

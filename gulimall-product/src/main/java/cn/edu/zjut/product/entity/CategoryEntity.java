@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 import lombok.Data;
 
@@ -64,5 +65,7 @@ public class CategoryEntity implements Serializable {
     private Integer productCount;
 
     @TableField(exist = false)
+    // 当只有该字段不为空和空集合时才会返回该属性
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private List<CategoryEntity> children;
 }

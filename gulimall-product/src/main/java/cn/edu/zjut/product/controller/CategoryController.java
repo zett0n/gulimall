@@ -59,7 +59,7 @@ public class CategoryController {
      */
     @RequestMapping("/update")
     public R update(@RequestBody CategoryEntity category) {
-        this.categoryService.updateById(category);
+        this.categoryService.updateCascade(category);
 
         return R.ok();
     }
