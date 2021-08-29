@@ -1,9 +1,10 @@
 package cn.edu.zjut.product.service;
 
 import cn.edu.zjut.common.utils.PageUtils;
-import com.baomidou.mybatisplus.extension.service.IService;
 import cn.edu.zjut.product.entity.ProductAttrValueEntity;
+import com.baomidou.mybatisplus.extension.service.IService;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -16,5 +17,7 @@ import java.util.Map;
 public interface ProductAttrValueService extends IService<ProductAttrValueEntity> {
 
     PageUtils queryPage(Map<String, Object> params);
+
+    void saveProductAttr(List<ProductAttrValueEntity> collect);
 }
 

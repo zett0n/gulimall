@@ -1,8 +1,8 @@
 package cn.edu.zjut.product.service;
 
 import cn.edu.zjut.common.utils.PageUtils;
-import com.baomidou.mybatisplus.extension.service.IService;
 import cn.edu.zjut.product.entity.SkuInfoEntity;
+import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.Map;
 
@@ -16,5 +16,7 @@ import java.util.Map;
 public interface SkuInfoService extends IService<SkuInfoEntity> {
 
     PageUtils queryPage(Map<String, Object> params);
+
+    void saveSkuInfo(SkuInfoEntity skuInfoEntity);
 }
 

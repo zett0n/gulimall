@@ -5,8 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 
 @SpringBootApplication
-// 服务注册发现
-@EnableDiscoveryClient
+@EnableDiscoveryClient  // 服务注册发现
 public class GulimallCouponApplication {
 
     public static void main(String[] args) {

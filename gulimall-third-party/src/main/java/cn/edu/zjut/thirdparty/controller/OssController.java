@@ -1,22 +1,22 @@
 package cn.edu.zjut.thirdparty.controller;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.Map;
-
+import cn.edu.zjut.common.utils.R;
+import com.aliyun.oss.OSS;
+import com.aliyun.oss.common.utils.BinaryUtil;
+import com.aliyun.oss.model.MatchMode;
+import com.aliyun.oss.model.PolicyConditions;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.aliyun.oss.OSS;
-import com.aliyun.oss.common.utils.BinaryUtil;
-import com.aliyun.oss.model.MatchMode;
-import com.aliyun.oss.model.PolicyConditions;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
-import cn.edu.zjut.common.utils.R;
-
+@Slf4j
 @RestController
 public class OssController {
 
@@ -68,7 +68,7 @@ public class OssController {
 
         } catch (Exception e) {
             // Assert.fail(e.getMessage());
-            System.out.println(e.getMessage());
+            log.error("阿里云oss服务出现异常：{}", e.getMessage());
         } finally {
             this.ossClient.shutdown();
         }

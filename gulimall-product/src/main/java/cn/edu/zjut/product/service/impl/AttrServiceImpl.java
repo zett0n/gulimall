@@ -114,7 +114,7 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
         this.save(attrEntity);
 
         // 保存关联关系（销售属性不需要）
-        if (attrVo.getAttrType() == ProductConstant.AttrEnum.ATTR_TYPE_BASE.getAttrTypeCode() && attrVo.getAttrGroupId() != null) {
+        if (attrVo.getAttrType() == ProductConstant.AttrEnum.ATTR_TYPE_BASE.getVal() && attrVo.getAttrGroupId() != null) {
             AttrAttrgroupRelationEntity attrAttrgroupRelationEntity = new AttrAttrgroupRelationEntity();
             attrAttrgroupRelationEntity.setAttrGroupId(attrVo.getAttrGroupId());
             // 保存基本数据时 attrEntity 的 attrId 更新了
@@ -129,7 +129,7 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
         AttrEntity attrEntity = getById(attrId);
         BeanUtils.copyProperties(attrEntity, attrRespVO);
 
-        if (attrEntity.getAttrType() == ProductConstant.AttrEnum.ATTR_TYPE_BASE.getAttrTypeCode()) {
+        if (attrEntity.getAttrType() == ProductConstant.AttrEnum.ATTR_TYPE_BASE.getVal()) {
             // 设置分组信息
             AttrAttrgroupRelationEntity attrAttrgroupRelationEntity = this.attrAttrgroupRelationDao
                     .selectOne(new QueryWrapper<AttrAttrgroupRelationEntity>().eq("attr_id", attrId));
@@ -163,7 +163,7 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
         BeanUtils.copyProperties(attrVo, attrEntity);
         this.updateById(attrEntity);
 
-        if (attrEntity.getAttrType() == ProductConstant.AttrEnum.ATTR_TYPE_BASE.getAttrTypeCode()) {
+        if (attrEntity.getAttrType() == ProductConstant.AttrEnum.ATTR_TYPE_BASE.getVal()) {
             // 修改或新增分组关联
             AttrAttrgroupRelationEntity attrAttrgroupRelationEntity = new AttrAttrgroupRelationEntity();
             attrAttrgroupRelationEntity.setAttrGroupId(attrVo.getAttrGroupId());
@@ -233,7 +233,7 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
 
         // 从当前分类的所有属性中移除这些属性
         QueryWrapper<AttrEntity> wrapper = new QueryWrapper<AttrEntity>().eq("catelog_id", catelogId).eq("attr_type",
-                ProductConstant.AttrEnum.ATTR_TYPE_BASE.getAttrTypeCode());
+                ProductConstant.AttrEnum.ATTR_TYPE_BASE.getVal());
         if (!attrIds.isEmpty()) {
             wrapper.notIn("attr_id", attrIds);
         }

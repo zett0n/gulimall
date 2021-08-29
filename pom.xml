@@ -38,7 +38,7 @@
         <http.components.version>4.4.13</http.components.version>
         <commons.lang.version>2.6</commons.lang.version>
         <validation.api.version>2.0.1.Final</validation.api.version>
-        <hibernate.validator.version>5.0.2.Final</hibernate.validator.version>
+        <!--<hibernate.validator.version>5.0.2.Final</hibernate.validator.version>-->
         <alicloud.oss.version>2.2.0.RELEASE</alicloud.oss.version>
     </properties>
 
@@ -110,11 +110,11 @@
             </dependency>
 
             <!--renren-fast项目需要-->
-            <dependency>
-                <groupId>org.hibernate</groupId>
-                <artifactId>hibernate-validator</artifactId>
-                <version>${hibernate.validator.version}</version>
-            </dependency>
+            <!--<dependency>-->
+            <!--    <groupId>org.hibernate</groupId>-->
+            <!--    <artifactId>hibernate-validator</artifactId>-->
+            <!--    <version>${hibernate.validator.version}</version>-->
+            <!--</dependency>-->
 
             <!--阿里云对象存储-->
             <dependency>

@@ -1,17 +1,15 @@
 package cn.edu.zjut.coupon.controller;
 
-import java.util.Arrays;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cloud.context.config.annotation.RefreshScope;
-import org.springframework.web.bind.annotation.*;
-
 import cn.edu.zjut.common.utils.PageUtils;
 import cn.edu.zjut.common.utils.R;
 import cn.edu.zjut.coupon.entity.CouponEntity;
 import cn.edu.zjut.coupon.service.CouponService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Arrays;
+import java.util.Map;
 
 /**
  * 优惠券信息
@@ -27,16 +25,17 @@ public class CouponController {
     @Autowired
     private CouponService couponService;
 
-    @Value("${coupon.user.name}")
-    private String name;
-
-    @Value("${coupon.user.age}")
-    private String age;
-
-    @RequestMapping("/test")
-    public R test() {
-        return R.ok().put("name", this.name).put("age", this.age);
-    }
+    // TODO 测试 nacos config
+    // @Value("${coupon.user.name}")
+    // private String name;
+    //
+    // @Value("${coupon.user.age}")
+    // private String age;
+    //
+    // @RequestMapping("/test")
+    // public R test() {
+    //     return R.ok().put("name", this.name).put("age", this.age);
+    // }
 
     @RequestMapping("/member/list")
     public R memberList() {

@@ -1,20 +1,15 @@
 package cn.edu.zjut.coupon.controller;
 
-import java.util.Arrays;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-import cn.edu.zjut.coupon.entity.SkuFullReductionEntity;
-import cn.edu.zjut.coupon.service.SkuFullReductionService;
+import cn.edu.zjut.common.to.SkuReductionTO;
 import cn.edu.zjut.common.utils.PageUtils;
 import cn.edu.zjut.common.utils.R;
+import cn.edu.zjut.coupon.entity.SkuFullReductionEntity;
+import cn.edu.zjut.coupon.service.SkuFullReductionService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
+import java.util.Map;
 
 
 /**
@@ -27,6 +22,7 @@ import cn.edu.zjut.common.utils.R;
 @RestController
 @RequestMapping("coupon/skufullreduction")
 public class SkuFullReductionController {
+
     @Autowired
     private SkuFullReductionService skuFullReductionService;
 
@@ -34,8 +30,8 @@ public class SkuFullReductionController {
      * 列表
      */
     @RequestMapping("/list")
-        public R list(@RequestParam Map<String, Object> params){
-        PageUtils page = skuFullReductionService.queryPage(params);
+    public R list(@RequestParam Map<String, Object> params) {
+        PageUtils page = this.skuFullReductionService.queryPage(params);
 
         return R.ok().put("page", page);
     }
@@ -45,8 +41,8 @@ public class SkuFullReductionController {
      * 信息
      */
     @RequestMapping("/info/{id}")
-        public R info(@PathVariable("id") Long id){
-		SkuFullReductionEntity skuFullReduction = skuFullReductionService.getById(id);
+    public R info(@PathVariable("id") Long id) {
+        SkuFullReductionEntity skuFullReduction = this.skuFullReductionService.getById(id);
 
         return R.ok().put("skuFullReduction", skuFullReduction);
     }
@@ -55,8 +51,8 @@ public class SkuFullReductionController {
      * 保存
      */
     @RequestMapping("/save")
-        public R save(@RequestBody SkuFullReductionEntity skuFullReduction){
-		skuFullReductionService.save(skuFullReduction);
+    public R save(@RequestBody SkuFullReductionEntity skuFullReduction) {
+        this.skuFullReductionService.save(skuFullReduction);
 
         return R.ok();
     }
@@ -65,8 +61,8 @@ public class SkuFullReductionController {
      * 修改
      */
     @RequestMapping("/update")
-        public R update(@RequestBody SkuFullReductionEntity skuFullReduction){
-		skuFullReductionService.updateById(skuFullReduction);
+    public R update(@RequestBody SkuFullReductionEntity skuFullReduction) {
+        this.skuFullReductionService.updateById(skuFullReduction);
 
         return R.ok();
     }
@@ -75,10 +71,15 @@ public class SkuFullReductionController {
      * 删除
      */
     @RequestMapping("/delete")
-        public R delete(@RequestBody Long[] ids){
-		skuFullReductionService.removeByIds(Arrays.asList(ids));
+    public R delete(@RequestBody Long[] ids) {
+        this.skuFullReductionService.removeByIds(Arrays.asList(ids));
 
         return R.ok();
     }
 
+    @PostMapping("/saveinfo")
+    public R saveInfo(@RequestBody SkuReductionTO skuReductionTO) {
+        this.skuFullReductionService.saveSkuReduction(skuReductionTO);
+        return R.ok();
+    }
 }

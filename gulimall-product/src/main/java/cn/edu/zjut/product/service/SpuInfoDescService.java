@@ -1,8 +1,8 @@
 package cn.edu.zjut.product.service;
 
 import cn.edu.zjut.common.utils.PageUtils;
-import com.baomidou.mybatisplus.extension.service.IService;
 import cn.edu.zjut.product.entity.SpuInfoDescEntity;
+import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.Map;
 
@@ -16,5 +16,7 @@ import java.util.Map;
 public interface SpuInfoDescService extends IService<SpuInfoDescEntity> {
 
     PageUtils queryPage(Map<String, Object> params);
+
+    void saveSpuInfoDesc(SpuInfoDescEntity spuInfoDescEntity);
 }
 

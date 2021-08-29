@@ -7,8 +7,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 
 @SpringBootApplication
 @EnableDiscoveryClient
-// 开启远程调用
-@EnableFeignClients(basePackages = "cn.edu.zjut.member.feign")
+@EnableFeignClients(basePackages = "cn.edu.zjut.member.feign")  // 开启远程调用
 public class GulimallMemberApplication {
 
     public static void main(String[] args) {

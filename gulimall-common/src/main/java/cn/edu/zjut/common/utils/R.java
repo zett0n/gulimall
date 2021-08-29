@@ -8,6 +8,7 @@
 
 package cn.edu.zjut.common.utils;
 
+import cn.edu.zjut.common.constant.ProductConstant;
 import cn.edu.zjut.common.exception.EmBizError;
 import org.apache.http.HttpStatus;
 
@@ -23,7 +24,7 @@ public class R extends HashMap<String, Object> {
     private static final long serialVersionUID = 1L;
 
     public R() {
-        put("code", 0);
+        put("code", ProductConstant.REnum.R_SUCCESS_CODE.getVal());
         put("msg", "success");
     }
 
@@ -66,5 +67,9 @@ public class R extends HashMap<String, Object> {
     public R put(String key, Object value) {
         super.put(key, value);
         return this;
+    }
+
+    public Integer getCode() {
+        return (Integer) this.get("code");
     }
 }
