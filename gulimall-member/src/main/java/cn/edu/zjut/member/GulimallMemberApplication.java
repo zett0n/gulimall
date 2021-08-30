@@ -5,9 +5,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 
-@SpringBootApplication
+@EnableFeignClients
 @EnableDiscoveryClient
-@EnableFeignClients(basePackages = "cn.edu.zjut.member.feign")  // 开启远程调用
+@SpringBootApplication
 public class GulimallMemberApplication {
 
     public static void main(String[] args) {

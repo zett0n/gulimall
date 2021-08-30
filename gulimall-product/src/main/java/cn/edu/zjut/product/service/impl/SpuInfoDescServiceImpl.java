@@ -9,6 +9,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Map;
 
@@ -26,6 +27,8 @@ public class SpuInfoDescServiceImpl extends ServiceImpl<SpuInfoDescDao, SpuInfoD
         return new PageUtils(page);
     }
 
+    // TODO @Transactional?
+    @Transactional
     @Override
     public void saveSpuInfoDesc(SpuInfoDescEntity spuInfoDescEntity) {
         this.baseMapper.insert(spuInfoDescEntity);

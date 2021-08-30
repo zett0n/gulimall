@@ -1,8 +1,8 @@
 package cn.edu.zjut.ware.service;
 
-import com.baomidou.mybatisplus.extension.service.IService;
 import cn.edu.zjut.common.utils.PageUtils;
 import cn.edu.zjut.ware.entity.WareSkuEntity;
+import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.Map;
 
@@ -16,5 +16,7 @@ import java.util.Map;
 public interface WareSkuService extends IService<WareSkuEntity> {
 
     PageUtils queryPage(Map<String, Object> params);
+
+    void addStock(Long skuId, Long wareId, Integer skuNum);
 }
 

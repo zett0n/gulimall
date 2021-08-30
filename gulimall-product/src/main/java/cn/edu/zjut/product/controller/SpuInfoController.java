@@ -25,12 +25,10 @@ public class SpuInfoController {
     @Autowired
     private SpuInfoService spuInfoService;
 
-    /**
-     * 列表
-     */
-    @RequestMapping("/list")
+    // 18、spu检索
+    @GetMapping("/list")
     public R list(@RequestParam Map<String, Object> params) {
-        PageUtils page = this.spuInfoService.queryPage(params);
+        PageUtils page = this.spuInfoService.queryPageByCondition(params);
 
         return R.ok().put("page", page);
     }

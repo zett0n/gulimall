@@ -9,6 +9,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
@@ -28,6 +29,8 @@ public class SpuImagesServiceImpl extends ServiceImpl<SpuImagesDao, SpuImagesEnt
         return new PageUtils(page);
     }
 
+    // TODO @Transactional?
+    @Transactional
     @Override
     public void saveImages(Long id, List<String> imgUrls) {
         if (imgUrls == null || imgUrls.isEmpty()) {

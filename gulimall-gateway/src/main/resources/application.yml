@@ -16,6 +16,13 @@ spring:
         #   predicates:
         #     - Query=url,qq
 
+        - id: ware_route
+          uri: lb://gulimall-ware
+          predicates:
+            - Path=/api/ware/**
+          filters:
+            - RewritePath=/api/(?<segment>.*), /$\{segment}
+
         - id: third_party_route
           uri: lb://gulimall-third-party
           predicates:
@@ -46,6 +53,11 @@ spring:
           # 过滤后验证码请求路径 http://localhost:8080/renren-fast/captcha.jpg?uuid=69c79f02-d15b-478a-8465-a07fd09001e6
           filters:
             - RewritePath=/api/(?<segment>.*), /renren-fast/$\{segment}
+
+  # 指定时间格式化规则
+  jackson:
+    date-format: yyyy-MM-dd HH:mmm:ss
+    time-zone: GMT+8
 
 server:
   port: 88

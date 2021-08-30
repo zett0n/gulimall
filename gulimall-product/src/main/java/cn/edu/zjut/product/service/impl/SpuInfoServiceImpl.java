@@ -1,6 +1,6 @@
 package cn.edu.zjut.product.service.impl;
 
-import cn.edu.zjut.common.constant.ProductConstant;
+import cn.edu.zjut.common.constant.DefaultConstant;
 import cn.edu.zjut.common.to.SkuReductionTO;
 import cn.edu.zjut.common.to.SpuBoundTO;
 import cn.edu.zjut.common.utils.PageUtils;
@@ -132,7 +132,7 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
         spuBoundTO.setSpuId(spuId);
 
         R r1 = this.couponFeignService.saveSpuBounds(spuBoundTO);
-        if (r1.getCode() != ProductConstant.REnum.R_SUCCESS_CODE.getVal()) {
+        if (r1.getCode() != DefaultConstant.R_SUCCESS_CODE) {
             this.log.error("远程保存spu积分信息失败");
         }
 
@@ -141,6 +141,7 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
         if (skus == null || skus.isEmpty()) {
             return;
         }
+
         skus.forEach(sku -> {
             // 6.1、sku 基本信息 pms_sku_info
             SkuInfoEntity skuInfoEntity = new SkuInfoEntity();
@@ -156,7 +157,7 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
             // 保存默认图片
             String defaultImg = "";
             for (Images image : sku.getImages()) {
-                if (image.getDefaultImg() == ProductConstant.SkuEnum.SKU_DEFAULT_IMG.getVal()) {
+                if (image.getDefaultImg() == DefaultConstant.SKU_DEFAULT_IMG) {
                     defaultImg = image.getImgUrl();
                 }
             }
@@ -199,9 +200,9 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
             skuReductionTO.setSkuId(skuId);
 
             // 如果没有优惠的信息，无需调用优惠服务
-            if (skuReductionTO.getFullCount() > 0 || skuReductionTO.getFullPrice().compareTo(new BigDecimal("0")) > 0) {
+            if (skuReductionTO.getFullCount() > 0 || skuReductionTO.getFullPrice().compareTo(BigDecimal.ZERO) > 0) {
                 R r2 = this.couponFeignService.saveSkuReduction(skuReductionTO);
-                if (r2.getCode() != ProductConstant.REnum.R_SUCCESS_CODE.getVal()) {
+                if (r2.getCode() != DefaultConstant.R_SUCCESS_CODE) {
                     this.log.error("远程保存sku优惠信息失败");
                 }
             }
@@ -209,9 +210,48 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
 
     }
 
+    // TODO @Transactional?
+    @Transactional
     @Override
     public void saveBaseSpuInfo(SpuInfoEntity spuInfoEntity) {
         this.baseMapper.insert(spuInfoEntity);
+    }
+
+    @Override
+    public PageUtils queryPageByCondition(Map<String, Object> params) {
+        /**
+         * status: 2
+         * key:模糊查询
+         * brandId: 9
+         * catelogId: 225
+         */
+        QueryWrapper<SpuInfoEntity> wrapper = new QueryWrapper<>();
+
+        String key = (String) params.get("key");
+        if (StringUtils.isNotEmpty(key)) {
+            wrapper.and((w) -> {
+                w.eq("id", key).or().like("spu_name", key);
+            });
+        }
+
+        // status=1 and (id=1 or spu_name like xxx)
+        String status = (String) params.get("status");
+        if (StringUtils.isNotEmpty(status)) {
+            wrapper.eq("publish_status", status);
+        }
+
+        String brandId = (String) params.get("brandId");
+        if (StringUtils.isNotEmpty(brandId) && !String.valueOf(DefaultConstant.ID_SELECT_ALL).equalsIgnoreCase(brandId)) {
+            wrapper.eq("brand_id", brandId);
+        }
+
+        String catelogId = (String) params.get("catelogId");
+        if (StringUtils.isNotEmpty(catelogId) && !String.valueOf(DefaultConstant.ID_SELECT_ALL).equalsIgnoreCase(catelogId)) {
+            wrapper.eq("catalog_id", catelogId);
+        }
+
+        IPage<SpuInfoEntity> page = this.page(new Query<SpuInfoEntity>().getPage(params), wrapper);
+        return new PageUtils(page);
     }
 
 }

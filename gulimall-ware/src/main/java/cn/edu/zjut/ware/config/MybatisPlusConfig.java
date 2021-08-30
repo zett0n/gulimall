@@ -1,4 +1,4 @@
-package cn.edu.zjut.product.config;
+package cn.edu.zjut.ware.config;
 
 import com.baomidou.mybatisplus.annotation.DbType;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;

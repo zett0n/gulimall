@@ -16,6 +16,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
@@ -61,6 +62,8 @@ public class CategoryBrandRelationServiceImpl extends ServiceImpl<CategoryBrandR
     }
 
     // UpdateWrapper 方式更新字段值
+    // TODO @Transactional?
+    @Transactional
     @Override
     public void updateBrand(Long brandId, String name) {
         CategoryBrandRelationEntity categoryBrandRelationEntity = new CategoryBrandRelationEntity();
@@ -73,6 +76,8 @@ public class CategoryBrandRelationServiceImpl extends ServiceImpl<CategoryBrandR
     }
 
     // 自定义sql 方式更新字段值
+    // TODO @Transactional?
+    @Transactional
     @Override
     public void updateCategory(Long catId, String name) {
         this.baseMapper.updateCategory(catId, name);

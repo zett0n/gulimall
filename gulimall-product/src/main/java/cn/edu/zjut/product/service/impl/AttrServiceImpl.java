@@ -29,6 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service("attrService")
@@ -49,13 +50,13 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
         IPage<AttrEntity> page = this.page(new Query<AttrEntity>().getPage(params), new QueryWrapper<>());
-
         return new PageUtils(page);
     }
 
     @Override
     public PageUtils queryBaseAttrPage(Map<String, Object> params, Long catelogId, String attrType) {
-        QueryWrapper<AttrEntity> queryWrapper = new QueryWrapper<AttrEntity>().eq("attr_type", "base".equalsIgnoreCase(attrType) ? 1 : 0);
+        QueryWrapper<AttrEntity> queryWrapper = new QueryWrapper<AttrEntity>()
+                .eq("attr_type", "base".equalsIgnoreCase(attrType) ? 1 : 0);
 
         if (catelogId != 0) {
             queryWrapper.eq("catelog_id", catelogId);
@@ -68,7 +69,6 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
             });
         }
 
-        // TODO stream map
         IPage<AttrEntity> page = this.page(new Query<AttrEntity>().getPage(params), queryWrapper);
         List<AttrEntity> records = page.getRecords();
         List<AttrRespVO> respVOList = records.stream().map(attrEntity -> {
@@ -114,7 +114,7 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
         this.save(attrEntity);
 
         // 保存关联关系（销售属性不需要）
-        if (attrVo.getAttrType() == ProductConstant.AttrEnum.ATTR_TYPE_BASE.getVal() && attrVo.getAttrGroupId() != null) {
+        if (Objects.equals(attrVo.getAttrType(), ProductConstant.AttrEnum.ATTR_TYPE_BASE.getVal()) && attrVo.getAttrGroupId() != null) {
             AttrAttrgroupRelationEntity attrAttrgroupRelationEntity = new AttrAttrgroupRelationEntity();
             attrAttrgroupRelationEntity.setAttrGroupId(attrVo.getAttrGroupId());
             // 保存基本数据时 attrEntity 的 attrId 更新了
@@ -129,7 +129,7 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
         AttrEntity attrEntity = getById(attrId);
         BeanUtils.copyProperties(attrEntity, attrRespVO);
 
-        if (attrEntity.getAttrType() == ProductConstant.AttrEnum.ATTR_TYPE_BASE.getVal()) {
+        if (Objects.equals(attrEntity.getAttrType(), ProductConstant.AttrEnum.ATTR_TYPE_BASE.getVal())) {
             // 设置分组信息
             AttrAttrgroupRelationEntity attrAttrgroupRelationEntity = this.attrAttrgroupRelationDao
                     .selectOne(new QueryWrapper<AttrAttrgroupRelationEntity>().eq("attr_id", attrId));
@@ -163,17 +163,17 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
         BeanUtils.copyProperties(attrVo, attrEntity);
         this.updateById(attrEntity);
 
-        if (attrEntity.getAttrType() == ProductConstant.AttrEnum.ATTR_TYPE_BASE.getVal()) {
+        if (Objects.equals(attrEntity.getAttrType(), ProductConstant.AttrEnum.ATTR_TYPE_BASE.getVal())) {
             // 修改或新增分组关联
             AttrAttrgroupRelationEntity attrAttrgroupRelationEntity = new AttrAttrgroupRelationEntity();
             attrAttrgroupRelationEntity.setAttrGroupId(attrVo.getAttrGroupId());
             attrAttrgroupRelationEntity.setAttrId(attrVo.getAttrId());
 
-            Integer count = this.attrAttrgroupRelationDao.selectCount(new UpdateWrapper<AttrAttrgroupRelationEntity>().eq("attr_id",
-                    attrVo.getAttrId()));
+            Integer count = this.attrAttrgroupRelationDao.selectCount(new UpdateWrapper<AttrAttrgroupRelationEntity>()
+                    .eq("attr_id", attrVo.getAttrId()));
             if (count > 0) {
-                this.attrAttrgroupRelationDao.update(attrAttrgroupRelationEntity, new UpdateWrapper<AttrAttrgroupRelationEntity>().eq("attr_id",
-                        attrVo.getAttrId()));
+                this.attrAttrgroupRelationDao.update(attrAttrgroupRelationEntity,
+                        new UpdateWrapper<AttrAttrgroupRelationEntity>().eq("attr_id", attrVo.getAttrId()));
             } else {
                 this.attrAttrgroupRelationDao.insert(attrAttrgroupRelationEntity);
             }
@@ -188,9 +188,7 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
         if (attrAttrgroupRelationEntities.isEmpty()) {
             return null;
         }
-        List<Long> attrIds = attrAttrgroupRelationEntities.stream().map(attrAttrgroupRelationEntity -> {
-            return attrAttrgroupRelationEntity.getAttrId();
-        }).collect(Collectors.toList());
+        List<Long> attrIds = attrAttrgroupRelationEntities.stream().map(AttrAttrgroupRelationEntity::getAttrId).collect(Collectors.toList());
 
         List<AttrEntity> attrEntities = this.listByIds(attrIds);
 

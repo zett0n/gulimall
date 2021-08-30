@@ -1,9 +1,12 @@
 package cn.edu.zjut.ware.service;
 
-import com.baomidou.mybatisplus.extension.service.IService;
 import cn.edu.zjut.common.utils.PageUtils;
 import cn.edu.zjut.ware.entity.PurchaseEntity;
+import cn.edu.zjut.ware.vo.MergeVO;
+import cn.edu.zjut.ware.vo.PurchaseDoneVO;
+import com.baomidou.mybatisplus.extension.service.IService;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -16,5 +19,13 @@ import java.util.Map;
 public interface PurchaseService extends IService<PurchaseEntity> {
 
     PageUtils queryPage(Map<String, Object> params);
+
+    PageUtils queryPageUnreceive(Map<String, Object> params);
+
+    void mergePurchase(MergeVO mergeVO);
+
+    void received(List<Long> purchaseIds);
+
+    void done(PurchaseDoneVO purchaseDoneVO);
 }
 

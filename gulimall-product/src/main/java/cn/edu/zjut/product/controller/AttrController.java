@@ -2,13 +2,16 @@ package cn.edu.zjut.product.controller;
 
 import cn.edu.zjut.common.utils.PageUtils;
 import cn.edu.zjut.common.utils.R;
+import cn.edu.zjut.product.entity.ProductAttrValueEntity;
 import cn.edu.zjut.product.service.AttrService;
+import cn.edu.zjut.product.service.ProductAttrValueService;
 import cn.edu.zjut.product.vo.AttrRespVO;
 import cn.edu.zjut.product.vo.AttrVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -21,8 +24,12 @@ import java.util.Map;
 @RestController
 @RequestMapping("product/attr")
 public class AttrController {
+
     @Autowired
     private AttrService attrService;
+
+    @Autowired
+    private ProductAttrValueService productAttrValueService;
 
     /**
      * 列表
@@ -34,8 +41,17 @@ public class AttrController {
         return R.ok().put("page", page);
     }
 
+    // 22、获取spu规格
+    @GetMapping("/base/listforspu/{spuId}")
+    public R baseAttrlistforspu(@PathVariable("spuId") Long spuId) {
+
+        List<ProductAttrValueEntity> productAttrValueEntities = this.productAttrValueService.baseAttrListforspu(spuId);
+        return R.ok().put("data", productAttrValueEntities);
+    }
+
     @GetMapping("/{attrType}/list/{catelogId}")
-    public R baseAttrList(@PathVariable("attrType") String attrType, @PathVariable("catelogId") Long catelogId,
+    public R baseAttrList(@PathVariable("attrType") String attrType,
+                          @PathVariable("catelogId") Long catelogId,
                           @RequestParam Map<String, Object> params) {
         PageUtils page = this.attrService.queryBaseAttrPage(params, catelogId, attrType);
 
@@ -69,6 +85,14 @@ public class AttrController {
     @PostMapping("/update")
     public R update(@RequestBody AttrVO attrVo) {
         this.attrService.updateAttr(attrVo);
+
+        return R.ok();
+    }
+
+    // 23、修改商品规格
+    @PostMapping("/update/{spuId}")
+    public R updateSpuAttr(@PathVariable("spuId") Long spuId, @RequestBody List<ProductAttrValueEntity> productAttrValueEntities) {
+        this.productAttrValueService.updateSpuAttr(spuId, productAttrValueEntities);
 
         return R.ok();
     }
