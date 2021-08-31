@@ -35,7 +35,7 @@ create table pms_attr
 (
     attr_id      bigint not null auto_increment comment '属性id',
     attr_name    char(30) comment '属性名',
-    attr_type    tinyint comment '属性类型[0-销售属性，1-基本属性]',
+    attr_type    tinyint comment '属性类型[0-销售属性，1-基本属性，2-既是销售属性又是基本属性]',
     value_type   tinyint comment '值类型[0-单个值，1-允许多个值]',
     value_select char(255) comment '可选值列表[用逗号分隔]',
     icon         varchar(255) comment '属性图标',
