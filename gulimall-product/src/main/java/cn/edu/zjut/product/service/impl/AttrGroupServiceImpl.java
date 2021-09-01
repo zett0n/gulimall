@@ -29,7 +29,7 @@ public class AttrGroupServiceImpl extends ServiceImpl<AttrGroupDao, AttrGroupEnt
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
         IPage<AttrGroupEntity> page =
-                this.page(new Query<AttrGroupEntity>().getPage(params), new QueryWrapper<AttrGroupEntity>());
+                this.page(new Query<AttrGroupEntity>().getPage(params), new QueryWrapper<>());
 
         return new PageUtils(page);
     }

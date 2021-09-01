@@ -1,21 +1,22 @@
 package cn.edu.zjut.product.entity;
 
-import java.io.Serializable;
-
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-
 import lombok.Data;
+import lombok.experimental.Accessors;
+
+import java.io.Serializable;
 
 /**
  * 属性分组
- * 
+ *
  * @author zett0n
  * @email d673326004@163.com
  * @date 2021-08-23 23:20:45
  */
 @Data
+@Accessors(chain = true)
 @TableName("pms_attr_group")
 public class AttrGroupEntity implements Serializable {
     private static final long serialVersionUID = 1L;

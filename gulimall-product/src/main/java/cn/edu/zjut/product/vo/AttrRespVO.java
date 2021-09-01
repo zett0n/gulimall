@@ -1,8 +1,10 @@
 package cn.edu.zjut.product.vo;
 
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 @Data
+@Accessors(chain = true)
 public class AttrRespVO extends AttrVO {
     // 所属分类名字（手机/数码/手机）
     private String catelogName;

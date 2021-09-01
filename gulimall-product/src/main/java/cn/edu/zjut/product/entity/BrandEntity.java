@@ -1,28 +1,27 @@
 package cn.edu.zjut.product.entity;
 
-import java.io.Serializable;
-
-import javax.validation.constraints.*;
-
-import org.hibernate.validator.constraints.URL;
-
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
-
 import cn.edu.zjut.common.validation.ListValue;
 import cn.edu.zjut.common.validation.group.AddGroup;
 import cn.edu.zjut.common.validation.group.UpdateGroup;
 import cn.edu.zjut.common.validation.group.UpdateStatusGroup;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
+import lombok.experimental.Accessors;
+import org.hibernate.validator.constraints.URL;
+
+import javax.validation.constraints.*;
+import java.io.Serializable;
 
 /**
  * 品牌
- * 
+ *
  * @author zett0n
  * @email d673326004@163.com
  * @date 2021-08-23 23:20:45
  */
 @Data
+@Accessors(chain = true)
 @TableName("pms_brand")
 public class BrandEntity implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -55,7 +54,7 @@ public class BrandEntity implements Serializable {
     @NotNull(groups = {AddGroup.class, UpdateStatusGroup.class})
     // 自定义注解
     @ListValue(vals = {0, 1}, message = "显示状态只能为0或1",
-        groups = {AddGroup.class, UpdateGroup.class, UpdateStatusGroup.class})
+            groups = {AddGroup.class, UpdateGroup.class, UpdateStatusGroup.class})
     private Integer showStatus;
     /**
      * 检索首字母

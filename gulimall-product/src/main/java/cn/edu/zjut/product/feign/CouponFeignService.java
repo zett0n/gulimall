@@ -1,7 +1,7 @@
 package cn.edu.zjut.product.feign;
 
-import cn.edu.zjut.common.to.SkuReductionTO;
-import cn.edu.zjut.common.to.SpuBoundTO;
+import cn.edu.zjut.common.dto.SkuReductionDTO;
+import cn.edu.zjut.common.dto.SpuBoundDTO;
 import cn.edu.zjut.common.utils.R;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,8 +19,8 @@ public interface CouponFeignService {
      * 只要json数据模型是兼容的。双方服务无需使用同一个to
      */
     @PostMapping("coupon/spubounds/save")
-    R saveSpuBounds(@RequestBody SpuBoundTO spuBoundTO);
+    R saveSpuBounds(@RequestBody SpuBoundDTO spuBoundDTO);
 
     @PostMapping("coupon/skufullreduction/saveinfo")
-    R saveSkuReduction(@RequestBody SkuReductionTO skuReductionTO);
+    R saveSkuReduction(@RequestBody SkuReductionDTO skuReductionDTO);
 }

@@ -1,10 +1,12 @@
 package cn.edu.zjut.ware.vo;
 
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 import java.util.List;
 
 @Data
+@Accessors(chain = true)
 public class MergeVO {
     // 整单id
     private Long purchaseId;

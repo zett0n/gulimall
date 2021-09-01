@@ -1,6 +1,6 @@
 package cn.edu.zjut.coupon.controller;
 
-import cn.edu.zjut.common.to.SkuReductionTO;
+import cn.edu.zjut.common.dto.SkuReductionDTO;
 import cn.edu.zjut.common.utils.PageUtils;
 import cn.edu.zjut.common.utils.R;
 import cn.edu.zjut.coupon.entity.SkuFullReductionEntity;
@@ -78,8 +78,8 @@ public class SkuFullReductionController {
     }
 
     @PostMapping("/saveinfo")
-    public R saveInfo(@RequestBody SkuReductionTO skuReductionTO) {
-        this.skuFullReductionService.saveSkuReduction(skuReductionTO);
+    public R saveInfo(@RequestBody SkuReductionDTO skuReductionDTO) {
+        this.skuFullReductionService.saveSkuReduction(skuReductionDTO);
         return R.ok();
     }
 }

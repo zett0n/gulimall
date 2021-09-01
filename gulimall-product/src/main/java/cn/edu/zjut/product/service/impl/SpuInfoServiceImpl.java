@@ -1,8 +1,8 @@
 package cn.edu.zjut.product.service.impl;
 
 import cn.edu.zjut.common.constant.DefaultConstant;
-import cn.edu.zjut.common.to.SkuReductionTO;
-import cn.edu.zjut.common.to.SpuBoundTO;
+import cn.edu.zjut.common.dto.SkuReductionDTO;
+import cn.edu.zjut.common.dto.SpuBoundDTO;
 import cn.edu.zjut.common.utils.PageUtils;
 import cn.edu.zjut.common.utils.Query;
 import cn.edu.zjut.common.utils.R;
@@ -54,29 +54,11 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
     @Autowired
     private CouponFeignService couponFeignService;
 
-    // @Resource
-    // private SkuImagesService skuImagesService;
-
-    // @Resource
-    // private SpuInfoDescService spuInfoDescService;
-
-    // @Resource
-    // private AttrGroupService attrGroupService;
-
-    // @Resource
-    // private SkuSaleAttrValueService skuSaleAttrValueService;
-
-    // @Resource
-    // private SeckillFeignService seckillFeignService;
-
-    // @Autowired
-    // private ThreadPoolExecutor executor;
-
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
         IPage<SpuInfoEntity> page = this.page(
                 new Query<SpuInfoEntity>().getPage(params),
-                new QueryWrapper<SpuInfoEntity>()
+                new QueryWrapper<>()
         );
 
         return new PageUtils(page);
@@ -89,8 +71,7 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
         // 1、保存 spu 基本信息 pms_spu_info
         SpuInfoEntity spuInfoEntity = new SpuInfoEntity();
         BeanUtils.copyProperties(spuSaveVO, spuInfoEntity);
-        spuInfoEntity.setCreateTime(new Date());
-        spuInfoEntity.setUpdateTime(new Date());
+        spuInfoEntity.setCreateTime(new Date()).setUpdateTime(new Date());
         this.saveBaseSpuInfo(spuInfoEntity);     //TODO 这里没有考虑分布式下主键自增
         // 这里 save 后拿到了 spu 的 id
         Long spuId = spuInfoEntity.getId();
@@ -98,8 +79,7 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
         // 2、保存 Spu 的描述图片 pms_spu_info_desc
         List<String> decripts = spuSaveVO.getDecript();
         SpuInfoDescEntity spuInfoDescEntity = new SpuInfoDescEntity();
-        spuInfoDescEntity.setSpuId(spuId);
-        spuInfoDescEntity.setDecript(String.join(",", decripts));
+        spuInfoDescEntity.setSpuId(spuId).setDecript(String.join(",", decripts));
         this.spuInfoDescService.saveSpuInfoDesc(spuInfoDescEntity);
 
         // 3、保存 Spu 的图片集 pms_spu_images
@@ -115,10 +95,10 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
             productAttrValueEntity.setAttrId(baseAttr.getAttrId());
             AttrEntity attrEntity = this.attrService.getById(baseAttr.getAttrId());
 
-            productAttrValueEntity.setAttrName(attrEntity.getAttrName());
-            productAttrValueEntity.setAttrValue(baseAttr.getAttrValues());
-            productAttrValueEntity.setQuickShow(baseAttr.getShowDesc());
-            productAttrValueEntity.setSpuId(spuId);
+            productAttrValueEntity.setAttrName(attrEntity.getAttrName())
+                    .setAttrValue(baseAttr.getAttrValues())
+                    .setQuickShow(baseAttr.getShowDesc())
+                    .setSpuId(spuId);
 
             return productAttrValueEntity;
         }).collect(Collectors.toList());
@@ -126,12 +106,12 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
         this.productAttrValueService.saveProductAttr(collect);
 
         //5、[跨服务]保存 spu 的积分信息 [gulimall-sms] sms_spu_bounds
-        SpuBoundTO spuBoundTO = new SpuBoundTO();
+        SpuBoundDTO spuBoundDTO = new SpuBoundDTO();
         Bounds bounds = spuSaveVO.getBounds();
-        BeanUtils.copyProperties(bounds, spuBoundTO);
-        spuBoundTO.setSpuId(spuId);
+        BeanUtils.copyProperties(bounds, spuBoundDTO);
+        spuBoundDTO.setSpuId(spuId);
 
-        R r1 = this.couponFeignService.saveSpuBounds(spuBoundTO);
+        R r1 = this.couponFeignService.saveSpuBounds(spuBoundDTO);
         if (r1.getCode() != DefaultConstant.R_SUCCESS_CODE) {
             this.log.error("远程保存spu积分信息失败");
         }
@@ -148,11 +128,10 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
             BeanUtils.copyProperties(sku, skuInfoEntity);
 
             // 冗余存储
-            skuInfoEntity.setBrandId(spuInfoEntity.getBrandId());
-            skuInfoEntity.setCatalogId(spuInfoEntity.getCatalogId());
-
-            skuInfoEntity.setSaleCount(0L);
-            skuInfoEntity.setSpuId(spuId);
+            skuInfoEntity.setBrandId(spuInfoEntity.getBrandId())
+                    .setCatalogId(spuInfoEntity.getCatalogId())
+                    .setSaleCount(0L)
+                    .setSpuId(spuId);
 
             // 保存默认图片
             String defaultImg = "";
@@ -170,9 +149,9 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
             // 6.2、sku 图片信息 pms_sku_images
             List<SkuImagesEntity> skuImagesEntities = sku.getImages().stream().map(img -> {
                 SkuImagesEntity skuImagesEntity = new SkuImagesEntity();
-                skuImagesEntity.setSkuId(skuId);
-                skuImagesEntity.setImgUrl(img.getImgUrl());
-                skuImagesEntity.setDefaultImg(img.getDefaultImg());
+                skuImagesEntity.setSkuId(skuId)
+                        .setImgUrl(img.getImgUrl())
+                        .setDefaultImg(img.getDefaultImg());
 
                 return skuImagesEntity;
                 // 没有图片路径的无需保存
@@ -195,13 +174,13 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
             this.skuSaleAttrValueService.saveBatch(skuSaleAttrValueEntities);
 
             // 7、sku 优惠、满减信息 [gulimall-sms] sms_sku_ladder, sms_sku_full_reduction, sms_member_price
-            SkuReductionTO skuReductionTO = new SkuReductionTO();
-            BeanUtils.copyProperties(sku, skuReductionTO);
-            skuReductionTO.setSkuId(skuId);
+            SkuReductionDTO skuReductionDTO = new SkuReductionDTO();
+            BeanUtils.copyProperties(sku, skuReductionDTO);
+            skuReductionDTO.setSkuId(skuId);
 
             // 如果没有优惠的信息，无需调用优惠服务
-            if (skuReductionTO.getFullCount() > 0 || skuReductionTO.getFullPrice().compareTo(BigDecimal.ZERO) > 0) {
-                R r2 = this.couponFeignService.saveSkuReduction(skuReductionTO);
+            if (skuReductionDTO.getFullCount() > 0 || skuReductionDTO.getFullPrice().compareTo(BigDecimal.ZERO) > 0) {
+                R r2 = this.couponFeignService.saveSkuReduction(skuReductionDTO);
                 if (r2.getCode() != DefaultConstant.R_SUCCESS_CODE) {
                     this.log.error("远程保存sku优惠信息失败");
                 }

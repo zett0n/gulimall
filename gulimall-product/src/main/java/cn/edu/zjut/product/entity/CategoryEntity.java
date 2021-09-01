@@ -1,24 +1,25 @@
 package cn.edu.zjut.product.entity;
 
-import java.io.Serializable;
-import java.util.List;
-
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonInclude;
-
 import lombok.Data;
+import lombok.experimental.Accessors;
+
+import java.io.Serializable;
+import java.util.List;
 
 /**
  * 商品三级分类
- * 
+ *
  * @author zett0n
  * @email d673326004@163.com
  * @date 2021-08-23 23:20:45
  */
 @Data
+@Accessors(chain = true)
 @TableName("pms_category")
 public class CategoryEntity implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -42,7 +43,7 @@ public class CategoryEntity implements Serializable {
     private Integer catLevel;
     /**
      * 是否显示[0-不显示，1显示]
-     * 
+     *
      * @TableLogic为mybatis-plus逻辑删除
      */
     @TableLogic(value = "1", delval = "0")

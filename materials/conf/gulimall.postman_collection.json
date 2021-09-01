@@ -1,0 +1,203 @@
+{
+	"info": {
+		"_postman_id": "38a714ea-c186-4c5a-9c56-70e0348ef7e8",
+		"name": "gulimall",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "库存系统",
+			"item": [
+				{
+					"name": "06 购人员领取采购单",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[3]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:88/api/ware/purchase/received",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "88",
+							"path": [
+								"api",
+								"ware",
+								"purchase",
+								"received"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "04 合并采购需求",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"purchaseId\": 3,\r\n  \"items\":[3] \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:88/api/ware/purchase/merge",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "88",
+							"path": [
+								"api",
+								"ware",
+								"purchase",
+								"merge"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "05 查询未领取的采购单",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:88/api/ware/purchase/unreceive/list?t=1630340881841",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "88",
+							"path": [
+								"api",
+								"ware",
+								"purchase",
+								"unreceive",
+								"list"
+							],
+							"query": [
+								{
+									"key": "t",
+									"value": "1630340881841"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "07、完成采购",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": 3,\r\n    \"items\": [\r\n        {\r\n            \"itemId\": 1,\r\n            \"status\": 3,\r\n            \"reason\": \"\"\r\n        },\r\n        {\r\n            \"itemId\": 2,\r\n            \"status\": 4,\r\n            \"reason\": \"无货\"\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:88/api/ware/purchase/done",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "88",
+							"path": [
+								"api",
+								"ware",
+								"purchase",
+								"done"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "商品系统",
+			"item": [
+				{
+					"name": "19、新增商品-苹果手机",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"spuName\": \"Apple iphone 12\",\r\n    \"spuDescription\": \"苹果秋季新品手机\",\r\n    \"catalogId\": 225,\r\n    \"brandId\": 6,\r\n    \"weight\": 0.18,\r\n    \"publishStatus\": 0,\r\n    \"decript\": [\r\n        \"https://zett0n-gulimall.oss-cn-hangzhou.aliyuncs.com/2021-08-30/ad5f2fb6-d2a4-4494-8979-41d98c4a9730_ccd1077b985c7150.jpg\",\r\n        \"https://zett0n-gulimall.oss-cn-hangzhou.aliyuncs.com/2021-08-30/9da13bf6-c113-41ca-84ab-2898f2c53229_5b5e74d0978360a1.jpg\",\r\n        \"https://zett0n-gulimall.oss-cn-hangzhou.aliyuncs.com/2021-08-30/1c940ff9-c67a-445b-8dc8-5bb7c8564b1f_63e862164165f483.jpg\"\r\n    ],\r\n    \"images\": [\r\n        \"https://zett0n-gulimall.oss-cn-hangzhou.aliyuncs.com/2021-08-30/9ffa1217-9829-4998-8bfa-4a35494ba144_f205d9c99a2b4b01.jpg\",\r\n        \"https://zett0n-gulimall.oss-cn-hangzhou.aliyuncs.com/2021-08-30/f99b4e02-ab5f-4f0a-836c-9f55716269bb_f6982a3217eb2fa3.jpg\",\r\n        \"https://zett0n-gulimall.oss-cn-hangzhou.aliyuncs.com/2021-08-30/6d4ce260-82a4-4612-86ca-425523c9c7ef_7ae0120ec27dc3a7.jpg\",\r\n        \"https://zett0n-gulimall.oss-cn-hangzhou.aliyuncs.com/2021-08-30/eea6fe39-1bb1-4984-8806-8d03e30b09f8_6a1b2703a9ed8737.jpg\"\r\n    ],\r\n    \"bounds\": {\r\n        \"buyBounds\": 0,\r\n        \"growBounds\": 0\r\n    },\r\n    \"baseAttrs\": [\r\n        {\r\n            \"attrId\": 4,\r\n            \"attrValues\": \"2021\",\r\n            \"showDesc\": 1\r\n        },\r\n        {\r\n            \"attrId\": 5,\r\n            \"attrValues\": \"5G全网通;5G电信;5G联通;5G移动\",\r\n            \"showDesc\": 1\r\n        },\r\n        {\r\n            \"attrId\": 8,\r\n            \"attrValues\": \"上海\",\r\n            \"showDesc\": 1\r\n        },\r\n        {\r\n            \"attrId\": 9,\r\n            \"attrValues\": \"玻璃;陶瓷\",\r\n            \"showDesc\": 0\r\n        }\r\n    ],\r\n    \"skus\": [\r\n        {\r\n            \"attr\": [\r\n                {\r\n                    \"attrId\": 6,\r\n                    \"attrName\": \"颜色\",\r\n                    \"attrValue\": \"黑色\"\r\n                },\r\n                {\r\n                    \"attrId\": 7,\r\n                    \"attrName\": \"内存\",\r\n                    \"attrValue\": \"6GB\"\r\n                }\r\n            ],\r\n            \"skuName\": \"Apple iphone 12 黑色 6GB\",\r\n            \"price\": \"5999\",\r\n            \"skuTitle\": \"Apple iphone 12 黑色 6GB\",\r\n            \"skuSubtitle\": \"你的下一部手机，何必是手机\",\r\n            \"images\": [\r\n                {\r\n                    \"imgUrl\": \"\",\r\n                    \"defaultImg\": 0\r\n                },\r\n                {\r\n                    \"imgUrl\": \"\",\r\n                    \"defaultImg\": 0\r\n                },\r\n                {\r\n                    \"imgUrl\": \"\",\r\n                    \"defaultImg\": 0\r\n                },\r\n                {\r\n                    \"imgUrl\": \"\",\r\n                    \"defaultImg\": 0\r\n                }\r\n            ],\r\n            \"descar\": [\r\n                \"黑色\",\r\n                \"6GB\"\r\n            ],\r\n            \"fullCount\": 0,\r\n            \"discount\": 0,\r\n            \"countStatus\": 0,\r\n            \"fullPrice\": 0,\r\n            \"reducePrice\": 0,\r\n            \"priceStatus\": 0,\r\n            \"memberPrice\": [\r\n                {\r\n                    \"id\": 2,\r\n                    \"name\": \"铜牌会员\",\r\n                    \"price\": 0\r\n                },\r\n                {\r\n                    \"id\": 3,\r\n                    \"name\": \"银牌会员\",\r\n                    \"price\": 0\r\n                }\r\n            ]\r\n        },\r\n        {\r\n            \"attr\": [\r\n                {\r\n                    \"attrId\": 6,\r\n                    \"attrName\": \"颜色\",\r\n                    \"attrValue\": \"黑色\"\r\n                },\r\n                {\r\n                    \"attrId\": 7,\r\n                    \"attrName\": \"内存\",\r\n                    \"attrValue\": \"8GB\"\r\n                }\r\n            ],\r\n            \"skuName\": \"Apple iphone 12 黑色 8GB\",\r\n            \"price\": \"6999\",\r\n            \"skuTitle\": \"Apple iphone 12 黑色 8GB\",\r\n            \"skuSubtitle\": \"你的下一部手机，何必是手机\",\r\n            \"images\": [\r\n                {\r\n                    \"imgUrl\": \"\",\r\n                    \"defaultImg\": 0\r\n                },\r\n                {\r\n                    \"imgUrl\": \"\",\r\n                    \"defaultImg\": 0\r\n                },\r\n                {\r\n                    \"imgUrl\": \"\",\r\n                    \"defaultImg\": 0\r\n                },\r\n                {\r\n                    \"imgUrl\": \"\",\r\n                    \"defaultImg\": 0\r\n                }\r\n            ],\r\n            \"descar\": [\r\n                \"黑色\",\r\n                \"8GB\"\r\n            ],\r\n            \"fullCount\": 0,\r\n            \"discount\": 0,\r\n            \"countStatus\": 0,\r\n            \"fullPrice\": 0,\r\n            \"reducePrice\": 0,\r\n            \"priceStatus\": 0,\r\n            \"memberPrice\": [\r\n                {\r\n                    \"id\": 2,\r\n                    \"name\": \"铜牌会员\",\r\n                    \"price\": 0\r\n                },\r\n                {\r\n                    \"id\": 3,\r\n                    \"name\": \"银牌会员\",\r\n                    \"price\": 0\r\n                }\r\n            ]\r\n        },\r\n        {\r\n            \"attr\": [\r\n                {\r\n                    \"attrId\": 6,\r\n                    \"attrName\": \"颜色\",\r\n                    \"attrValue\": \"黑色\"\r\n                },\r\n                {\r\n                    \"attrId\": 7,\r\n                    \"attrName\": \"内存\",\r\n                    \"attrValue\": \"12GB\"\r\n                }\r\n            ],\r\n            \"skuName\": \"Apple iphone 12 黑色 12GB\",\r\n            \"price\": \"7999\",\r\n            \"skuTitle\": \"Apple iphone 12 黑色 12GB\",\r\n            \"skuSubtitle\": \"你的下一部手机，何必是手机\",\r\n            \"images\": [\r\n                {\r\n                    \"imgUrl\": \"\",\r\n                    \"defaultImg\": 0\r\n                },\r\n                {\r\n                    \"imgUrl\": \"\",\r\n                    \"defaultImg\": 0\r\n                },\r\n                {\r\n                    \"imgUrl\": \"\",\r\n                    \"defaultImg\": 0\r\n                },\r\n                {\r\n                    \"imgUrl\": \"\",\r\n                    \"defaultImg\": 0\r\n                }\r\n            ],\r\n            \"descar\": [\r\n                \"黑色\",\r\n                \"12GB\"\r\n            ],\r\n            \"fullCount\": 0,\r\n            \"discount\": 0,\r\n            \"countStatus\": 0,\r\n            \"fullPrice\": 0,\r\n            \"reducePrice\": 0,\r\n            \"priceStatus\": 0,\r\n            \"memberPrice\": [\r\n                {\r\n                    \"id\": 2,\r\n                    \"name\": \"铜牌会员\",\r\n                    \"price\": 0\r\n                },\r\n                {\r\n                    \"id\": 3,\r\n                    \"name\": \"银牌会员\",\r\n                    \"price\": 0\r\n                }\r\n            ]\r\n        },\r\n        {\r\n            \"attr\": [\r\n                {\r\n                    \"attrId\": 6,\r\n                    \"attrName\": \"颜色\",\r\n                    \"attrValue\": \"白色\"\r\n                },\r\n                {\r\n                    \"attrId\": 7,\r\n                    \"attrName\": \"内存\",\r\n                    \"attrValue\": \"6GB\"\r\n                }\r\n            ],\r\n            \"skuName\": \"Apple iphone 12 白色 6GB\",\r\n            \"price\": \"5999\",\r\n            \"skuTitle\": \"Apple iphone 12 白色 6GB\",\r\n            \"skuSubtitle\": \"你的下一部手机，何必是手机\",\r\n            \"images\": [\r\n                {\r\n                    \"imgUrl\": \"\",\r\n                    \"defaultImg\": 0\r\n                },\r\n                {\r\n                    \"imgUrl\": \"\",\r\n                    \"defaultImg\": 0\r\n                },\r\n                {\r\n                    \"imgUrl\": \"\",\r\n                    \"defaultImg\": 0\r\n                },\r\n                {\r\n                    \"imgUrl\": \"\",\r\n                    \"defaultImg\": 0\r\n                }\r\n            ],\r\n            \"descar\": [\r\n                \"白色\",\r\n                \"6GB\"\r\n            ],\r\n            \"fullCount\": 0,\r\n            \"discount\": 0,\r\n            \"countStatus\": 0,\r\n            \"fullPrice\": 0,\r\n            \"reducePrice\": 0,\r\n            \"priceStatus\": 0,\r\n            \"memberPrice\": [\r\n                {\r\n                    \"id\": 2,\r\n                    \"name\": \"铜牌会员\",\r\n                    \"price\": 0\r\n                },\r\n                {\r\n                    \"id\": 3,\r\n                    \"name\": \"银牌会员\",\r\n                    \"price\": 0\r\n                }\r\n            ]\r\n        },\r\n        {\r\n            \"attr\": [\r\n                {\r\n                    \"attrId\": 6,\r\n                    \"attrName\": \"颜色\",\r\n                    \"attrValue\": \"白色\"\r\n                },\r\n                {\r\n                    \"attrId\": 7,\r\n                    \"attrName\": \"内存\",\r\n                    \"attrValue\": \"8GB\"\r\n                }\r\n            ],\r\n            \"skuName\": \"Apple iphone 12 白色 8GB\",\r\n            \"price\": \"6999\",\r\n            \"skuTitle\": \"Apple iphone 12 白色 8GB\",\r\n            \"skuSubtitle\": \"你的下一部手机，何必是手机\",\r\n            \"images\": [\r\n                {\r\n                    \"imgUrl\": \"\",\r\n                    \"defaultImg\": 0\r\n                },\r\n                {\r\n                    \"imgUrl\": \"\",\r\n                    \"defaultImg\": 0\r\n                },\r\n                {\r\n                    \"imgUrl\": \"\",\r\n                    \"defaultImg\": 0\r\n                },\r\n                {\r\n                    \"imgUrl\": \"\",\r\n                    \"defaultImg\": 0\r\n                }\r\n            ],\r\n            \"descar\": [\r\n                \"白色\",\r\n                \"8GB\"\r\n            ],\r\n            \"fullCount\": 0,\r\n            \"discount\": 0,\r\n            \"countStatus\": 0,\r\n            \"fullPrice\": 0,\r\n            \"reducePrice\": 0,\r\n            \"priceStatus\": 0,\r\n            \"memberPrice\": [\r\n                {\r\n                    \"id\": 2,\r\n                    \"name\": \"铜牌会员\",\r\n                    \"price\": 0\r\n                },\r\n                {\r\n                    \"id\": 3,\r\n                    \"name\": \"银牌会员\",\r\n                    \"price\": 0\r\n                }\r\n            ]\r\n        },\r\n        {\r\n            \"attr\": [\r\n                {\r\n                    \"attrId\": 6,\r\n                    \"attrName\": \"颜色\",\r\n                    \"attrValue\": \"白色\"\r\n                },\r\n                {\r\n                    \"attrId\": 7,\r\n                    \"attrName\": \"内存\",\r\n                    \"attrValue\": \"12GB\"\r\n                }\r\n            ],\r\n            \"skuName\": \"Apple iphone 12 白色 12GB\",\r\n            \"price\": \"7999\",\r\n            \"skuTitle\": \"Apple iphone 12 白色 12GB\",\r\n            \"skuSubtitle\": \"你的下一部手机，何必是手机\",\r\n            \"images\": [\r\n                {\r\n                    \"imgUrl\": \"\",\r\n                    \"defaultImg\": 0\r\n                },\r\n                {\r\n                    \"imgUrl\": \"\",\r\n                    \"defaultImg\": 0\r\n                },\r\n                {\r\n                    \"imgUrl\": \"\",\r\n                    \"defaultImg\": 0\r\n                },\r\n                {\r\n                    \"imgUrl\": \"\",\r\n                    \"defaultImg\": 0\r\n                }\r\n            ],\r\n            \"descar\": [\r\n                \"白色\",\r\n                \"12GB\"\r\n            ],\r\n            \"fullCount\": 0,\r\n            \"discount\": 0,\r\n            \"countStatus\": 0,\r\n            \"fullPrice\": 0,\r\n            \"reducePrice\": 0,\r\n            \"priceStatus\": 0,\r\n            \"memberPrice\": [\r\n                {\r\n                    \"id\": 2,\r\n                    \"name\": \"铜牌会员\",\r\n                    \"price\": 0\r\n                },\r\n                {\r\n                    \"id\": 3,\r\n                    \"name\": \"银牌会员\",\r\n                    \"price\": 0\r\n                }\r\n            ]\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:88/api/product/spuinfo/save",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "88",
+							"path": [
+								"api",
+								"product",
+								"spuinfo",
+								"save"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "19、新增商品-华为手机",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"spuName\": \"HUAWEI Mate 30 Pro\",\r\n    \"spuDescription\": \"HUAWEI Mate 30 Pro\",\r\n    \"catalogId\": 225,\r\n    \"brandId\": 4,\r\n    \"weight\": 0.2,\r\n    \"publishStatus\": 0,\r\n    \"decript\": [\r\n        \"https://zett0n-gulimall.oss-cn-hangzhou.aliyuncs.com/2021-08-29/8f4e45e2-3a15-4789-88ef-c7f08468c06b_528211b97272d88a.jpg\",\r\n        \"https://zett0n-gulimall.oss-cn-hangzhou.aliyuncs.com/2021-08-29/025a4027-a5be-48fb-8dcd-ac99c16bbb58_73366cc235d68202.jpg\"\r\n    ],\r\n    \"images\": [\r\n        \"https://zett0n-gulimall.oss-cn-hangzhou.aliyuncs.com/2021-08-29/1a0fca2e-4e67-47e9-82b0-700dbcf03de4_f753fc5c13707e7e.jpg\",\r\n        \"https://zett0n-gulimall.oss-cn-hangzhou.aliyuncs.com/2021-08-29/b269c39e-1be8-4dc1-8d63-944455d12937_23d9fbb256ea5d4a.jpg\",\r\n        \"https://zett0n-gulimall.oss-cn-hangzhou.aliyuncs.com/2021-08-29/d29f5a82-5667-42bc-8c88-2906d06ee113_8bf441260bffa42f.jpg\"\r\n    ],\r\n    \"bounds\": {\r\n        \"buyBounds\": 500,\r\n        \"growBounds\": 500\r\n    },\r\n    \"baseAttrs\": [\r\n        {\r\n            \"attrId\": 4,\r\n            \"attrValues\": \"2020\",\r\n            \"showDesc\": 1\r\n        },\r\n        {\r\n            \"attrId\": 5,\r\n            \"attrValues\": \"LIO-AL00\",\r\n            \"showDesc\": 1\r\n        },\r\n        {\r\n            \"attrId\": 8,\r\n            \"attrValues\": \"杭州\",\r\n            \"showDesc\": 1\r\n        },\r\n        {\r\n            \"attrId\": 9,\r\n            \"attrValues\": \"玻璃\",\r\n            \"showDesc\": 1\r\n        }\r\n    ],\r\n    \"skus\": [\r\n        {\r\n            \"attr\": [\r\n                {\r\n                    \"attrId\": 6,\r\n                    \"attrName\": \"颜色\",\r\n                    \"attrValue\": \"罗兰兹\"\r\n                },\r\n                {\r\n                    \"attrId\": 7,\r\n                    \"attrName\": \"内存\",\r\n                    \"attrValue\": \"6GB\"\r\n                }\r\n            ],\r\n            \"skuName\": \"HUAWEI Mate 30 Pro 罗兰兹 6GB\",\r\n            \"price\": \"6000\",\r\n            \"skuTitle\": \"HUAWEI Mate 30 Pro 罗兰兹 6GB\",\r\n            \"skuSubtitle\": \"现货抢购\",\r\n            \"images\": [\r\n                {\r\n                    \"imgUrl\": \"https://zett0n-gulimall.oss-cn-hangzhou.aliyuncs.com/2021-08-29/1a0fca2e-4e67-47e9-82b0-700dbcf03de4_f753fc5c13707e7e.jpg\",\r\n                    \"defaultImg\": 1\r\n                },\r\n                {\r\n                    \"imgUrl\": \"\",\r\n                    \"defaultImg\": 0\r\n                },\r\n                {\r\n                    \"imgUrl\": \"\",\r\n                    \"defaultImg\": 0\r\n                }\r\n            ],\r\n            \"descar\": [\r\n                \"罗兰兹\",\r\n                \"6GB\"\r\n            ],\r\n            \"fullCount\": 3,\r\n            \"discount\": 0.98,\r\n            \"countStatus\": 1,\r\n            \"fullPrice\": 10000,\r\n            \"reducePrice\": 50,\r\n            \"priceStatus\": 1,\r\n            \"memberPrice\": []\r\n        },\r\n        {\r\n            \"attr\": [\r\n                {\r\n                    \"attrId\": 6,\r\n                    \"attrName\": \"颜色\",\r\n                    \"attrValue\": \"罗兰兹\"\r\n                },\r\n                {\r\n                    \"attrId\": 7,\r\n                    \"attrName\": \"内存\",\r\n                    \"attrValue\": \"4GB\"\r\n                }\r\n            ],\r\n            \"skuName\": \"HUAWEI Mate 30 Pro 罗兰兹 4GB\",\r\n            \"price\": \"4000\",\r\n            \"skuTitle\": \"HUAWEI Mate 30 Pro 罗兰兹 4GB\",\r\n            \"skuSubtitle\": \"现货抢购\",\r\n            \"images\": [\r\n                {\r\n                    \"imgUrl\": \"\",\r\n                    \"defaultImg\": 0\r\n                },\r\n                {\r\n                    \"imgUrl\": \"\",\r\n                    \"defaultImg\": 0\r\n                },\r\n                {\r\n                    \"imgUrl\": \"\",\r\n                    \"defaultImg\": 0\r\n                }\r\n            ],\r\n            \"descar\": [\r\n                \"罗兰兹\",\r\n                \"4GB\"\r\n            ],\r\n            \"fullCount\": 0,\r\n            \"discount\": 0,\r\n            \"countStatus\": 0,\r\n            \"fullPrice\": 0,\r\n            \"reducePrice\": 0,\r\n            \"priceStatus\": 0,\r\n            \"memberPrice\": []\r\n        },\r\n        {\r\n            \"attr\": [\r\n                {\r\n                    \"attrId\": 6,\r\n                    \"attrName\": \"颜色\",\r\n                    \"attrValue\": \"罗兰兹\"\r\n                },\r\n                {\r\n                    \"attrId\": 7,\r\n                    \"attrName\": \"内存\",\r\n                    \"attrValue\": \"8GB\"\r\n                }\r\n            ],\r\n            \"skuName\": \"HUAWEI Mate 30 Pro 罗兰兹 8GB\",\r\n            \"price\": \"8000\",\r\n            \"skuTitle\": \"HUAWEI Mate 30 Pro 罗兰兹 8GB\",\r\n            \"skuSubtitle\": \"现货抢购\",\r\n            \"images\": [\r\n                {\r\n                    \"imgUrl\": \"\",\r\n                    \"defaultImg\": 0\r\n                },\r\n                {\r\n                    \"imgUrl\": \"https://zett0n-gulimall.oss-cn-hangzhou.aliyuncs.com/2021-08-29/b269c39e-1be8-4dc1-8d63-944455d12937_23d9fbb256ea5d4a.jpg\",\r\n                    \"defaultImg\": 1\r\n                },\r\n                {\r\n                    \"imgUrl\": \"\",\r\n                    \"defaultImg\": 0\r\n                }\r\n            ],\r\n            \"descar\": [\r\n                \"罗兰兹\",\r\n                \"8GB\"\r\n            ],\r\n            \"fullCount\": 0,\r\n            \"discount\": 0,\r\n            \"countStatus\": 0,\r\n            \"fullPrice\": 0,\r\n            \"reducePrice\": 0,\r\n            \"priceStatus\": 0,\r\n            \"memberPrice\": []\r\n        },\r\n        {\r\n            \"attr\": [\r\n                {\r\n                    \"attrId\": 6,\r\n                    \"attrName\": \"颜色\",\r\n                    \"attrValue\": \"亮黑色\"\r\n                },\r\n                {\r\n                    \"attrId\": 7,\r\n                    \"attrName\": \"内存\",\r\n                    \"attrValue\": \"6GB\"\r\n                }\r\n            ],\r\n            \"skuName\": \"HUAWEI Mate 30 Pro 亮黑色 6GB\",\r\n            \"price\": \"6000\",\r\n            \"skuTitle\": \"HUAWEI Mate 30 Pro 亮黑色 6GB\",\r\n            \"skuSubtitle\": \"现货抢购\",\r\n            \"images\": [\r\n                {\r\n                    \"imgUrl\": \"\",\r\n                    \"defaultImg\": 0\r\n                },\r\n                {\r\n                    \"imgUrl\": \"\",\r\n                    \"defaultImg\": 0\r\n                },\r\n                {\r\n                    \"imgUrl\": \"https://zett0n-gulimall.oss-cn-hangzhou.aliyuncs.com/2021-08-29/d29f5a82-5667-42bc-8c88-2906d06ee113_8bf441260bffa42f.jpg\",\r\n                    \"defaultImg\": 1\r\n                }\r\n            ],\r\n            \"descar\": [\r\n                \"亮黑色\",\r\n                \"6GB\"\r\n            ],\r\n            \"fullCount\": 0,\r\n            \"discount\": 0,\r\n            \"countStatus\": 0,\r\n            \"fullPrice\": 0,\r\n            \"reducePrice\": 0,\r\n            \"priceStatus\": 0,\r\n            \"memberPrice\": []\r\n        },\r\n        {\r\n            \"attr\": [\r\n                {\r\n                    \"attrId\": 6,\r\n                    \"attrName\": \"颜色\",\r\n                    \"attrValue\": \"亮黑色\"\r\n                },\r\n                {\r\n                    \"attrId\": 7,\r\n                    \"attrName\": \"内存\",\r\n                    \"attrValue\": \"4GB\"\r\n                }\r\n            ],\r\n            \"skuName\": \"HUAWEI Mate 30 Pro 亮黑色 4GB\",\r\n            \"price\": \"4000\",\r\n            \"skuTitle\": \"HUAWEI Mate 30 Pro 亮黑色 4GB\",\r\n            \"skuSubtitle\": \"现货抢购\",\r\n            \"images\": [\r\n                {\r\n                    \"imgUrl\": \"\",\r\n                    \"defaultImg\": 0\r\n                },\r\n                {\r\n                    \"imgUrl\": \"\",\r\n                    \"defaultImg\": 0\r\n                },\r\n                {\r\n                    \"imgUrl\": \"\",\r\n                    \"defaultImg\": 0\r\n                }\r\n            ],\r\n            \"descar\": [\r\n                \"亮黑色\",\r\n                \"4GB\"\r\n            ],\r\n            \"fullCount\": 0,\r\n            \"discount\": 0,\r\n            \"countStatus\": 0,\r\n            \"fullPrice\": 0,\r\n            \"reducePrice\": 0,\r\n            \"priceStatus\": 0,\r\n            \"memberPrice\": []\r\n        },\r\n        {\r\n            \"attr\": [\r\n                {\r\n                    \"attrId\": 6,\r\n                    \"attrName\": \"颜色\",\r\n                    \"attrValue\": \"亮黑色\"\r\n                },\r\n                {\r\n                    \"attrId\": 7,\r\n                    \"attrName\": \"内存\",\r\n                    \"attrValue\": \"8GB\"\r\n                }\r\n            ],\r\n            \"skuName\": \"HUAWEI Mate 30 Pro 亮黑色 8GB\",\r\n            \"price\": \"8000\",\r\n            \"skuTitle\": \"HUAWEI Mate 30 Pro 亮黑色 8GB\",\r\n            \"skuSubtitle\": \"现货抢购\",\r\n            \"images\": [\r\n                {\r\n                    \"imgUrl\": \"\",\r\n                    \"defaultImg\": 0\r\n                },\r\n                {\r\n                    \"imgUrl\": \"\",\r\n                    \"defaultImg\": 0\r\n                },\r\n                {\r\n                    \"imgUrl\": \"\",\r\n                    \"defaultImg\": 0\r\n                }\r\n            ],\r\n            \"descar\": [\r\n                \"亮黑色\",\r\n                \"8GB\"\r\n            ],\r\n            \"fullCount\": 0,\r\n            \"discount\": 0,\r\n            \"countStatus\": 0,\r\n            \"fullPrice\": 0,\r\n            \"reducePrice\": 0,\r\n            \"priceStatus\": 0,\r\n            \"memberPrice\": []\r\n        },\r\n        {\r\n            \"attr\": [\r\n                {\r\n                    \"attrId\": 6,\r\n                    \"attrName\": \"颜色\",\r\n                    \"attrValue\": \"白色\"\r\n                },\r\n                {\r\n                    \"attrId\": 7,\r\n                    \"attrName\": \"内存\",\r\n                    \"attrValue\": \"6GB\"\r\n                }\r\n            ],\r\n            \"skuName\": \"HUAWEI Mate 30 Pro 白色 6GB\",\r\n            \"price\": \"6000\",\r\n            \"skuTitle\": \"HUAWEI Mate 30 Pro 白色 6GB\",\r\n            \"skuSubtitle\": \"现货抢购\",\r\n            \"images\": [\r\n                {\r\n                    \"imgUrl\": \"\",\r\n                    \"defaultImg\": 0\r\n                },\r\n                {\r\n                    \"imgUrl\": \"\",\r\n                    \"defaultImg\": 0\r\n                },\r\n                {\r\n                    \"imgUrl\": \"\",\r\n                    \"defaultImg\": 0\r\n                }\r\n            ],\r\n            \"descar\": [\r\n                \"白色\",\r\n                \"6GB\"\r\n            ],\r\n            \"fullCount\": 0,\r\n            \"discount\": 0,\r\n            \"countStatus\": 0,\r\n            \"fullPrice\": 0,\r\n            \"reducePrice\": 0,\r\n            \"priceStatus\": 0,\r\n            \"memberPrice\": []\r\n        },\r\n        {\r\n            \"attr\": [\r\n                {\r\n                    \"attrId\": 6,\r\n                    \"attrName\": \"颜色\",\r\n                    \"attrValue\": \"白色\"\r\n                },\r\n                {\r\n                    \"attrId\": 7,\r\n                    \"attrName\": \"内存\",\r\n                    \"attrValue\": \"4GB\"\r\n                }\r\n            ],\r\n            \"skuName\": \"HUAWEI Mate 30 Pro 白色 4GB\",\r\n            \"price\": \"4000\",\r\n            \"skuTitle\": \"HUAWEI Mate 30 Pro 白色 4GB\",\r\n            \"skuSubtitle\": \"现货抢购\",\r\n            \"images\": [\r\n                {\r\n                    \"imgUrl\": \"\",\r\n                    \"defaultImg\": 0\r\n                },\r\n                {\r\n                    \"imgUrl\": \"\",\r\n                    \"defaultImg\": 0\r\n                },\r\n                {\r\n                    \"imgUrl\": \"\",\r\n                    \"defaultImg\": 0\r\n                }\r\n            ],\r\n            \"descar\": [\r\n                \"白色\",\r\n                \"4GB\"\r\n            ],\r\n            \"fullCount\": 0,\r\n            \"discount\": 0,\r\n            \"countStatus\": 0,\r\n            \"fullPrice\": 0,\r\n            \"reducePrice\": 0,\r\n            \"priceStatus\": 0,\r\n            \"memberPrice\": []\r\n        },\r\n        {\r\n            \"attr\": [\r\n                {\r\n                    \"attrId\": 6,\r\n                    \"attrName\": \"颜色\",\r\n                    \"attrValue\": \"白色\"\r\n                },\r\n                {\r\n                    \"attrId\": 7,\r\n                    \"attrName\": \"内存\",\r\n                    \"attrValue\": \"8GB\"\r\n                }\r\n            ],\r\n            \"skuName\": \"HUAWEI Mate 30 Pro 白色 8GB\",\r\n            \"price\": \"8000\",\r\n            \"skuTitle\": \"HUAWEI Mate 30 Pro 白色 8GB\",\r\n            \"skuSubtitle\": \"现货抢购\",\r\n            \"images\": [\r\n                {\r\n                    \"imgUrl\": \"\",\r\n                    \"defaultImg\": 0\r\n                },\r\n                {\r\n                    \"imgUrl\": \"\",\r\n                    \"defaultImg\": 0\r\n                },\r\n                {\r\n                    \"imgUrl\": \"\",\r\n                    \"defaultImg\": 0\r\n                }\r\n            ],\r\n            \"descar\": [\r\n                \"白色\",\r\n                \"8GB\"\r\n            ],\r\n            \"fullCount\": 0,\r\n            \"discount\": 0,\r\n            \"countStatus\": 0,\r\n            \"fullPrice\": 0,\r\n            \"reducePrice\": 0,\r\n            \"priceStatus\": 0,\r\n            \"memberPrice\": []\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:88/api/product/spuinfo/save",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "88",
+							"path": [
+								"api",
+								"product",
+								"spuinfo",
+								"save"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

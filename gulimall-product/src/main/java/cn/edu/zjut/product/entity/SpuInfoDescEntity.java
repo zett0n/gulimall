@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 import java.io.Serializable;
 
@@ -15,6 +16,7 @@ import java.io.Serializable;
  * @date 2021-08-23 23:20:45
  */
 @Data
+@Accessors(chain = true)
 @TableName("pms_spu_info_desc")
 public class SpuInfoDescEntity implements Serializable {
     private static final long serialVersionUID = 1L;

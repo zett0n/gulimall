@@ -1,7 +1,7 @@
 package cn.edu.zjut.coupon.service.impl;
 
-import cn.edu.zjut.common.to.MemberPrice;
-import cn.edu.zjut.common.to.SkuReductionTO;
+import cn.edu.zjut.common.dto.MemberPrice;
+import cn.edu.zjut.common.dto.SkuReductionDTO;
 import cn.edu.zjut.common.utils.PageUtils;
 import cn.edu.zjut.common.utils.Query;
 import cn.edu.zjut.coupon.dao.SkuFullReductionDao;
@@ -40,40 +40,39 @@ public class SkuFullReductionServiceImpl extends ServiceImpl<SkuFullReductionDao
     }
 
     @Override
-    public void saveSkuReduction(SkuReductionTO skuReductionTO) {
+    public void saveSkuReduction(SkuReductionDTO skuReductionDTO) {
         // 7、sku 优惠、满减信息 [gulimall-sms]
         // 7.1、sms_sku_ladder
         SkuLadderEntity skuLadderEntity = new SkuLadderEntity();
-        skuLadderEntity.setSkuId(skuReductionTO.getSkuId());
-        skuLadderEntity.setFullCount(skuReductionTO.getFullCount());
-        skuLadderEntity.setDiscount(skuReductionTO.getDiscount());
-        skuLadderEntity.setAddOther(skuReductionTO.getCountStatus());
-        if (skuReductionTO.getFullCount() > 0) {
+
+        skuLadderEntity.setSkuId(skuReductionDTO.getSkuId())
+                .setFullCount(skuReductionDTO.getFullCount())
+                .setDiscount(skuReductionDTO.getDiscount())
+                .setAddOther(skuReductionDTO.getCountStatus());
+
+        if (skuReductionDTO.getFullCount() > 0) {
             this.skuLadderService.save(skuLadderEntity);
         }
 
         // 7.2、sms_sku_full_reduction
         SkuFullReductionEntity reductionEntity = new SkuFullReductionEntity();
-        BeanUtils.copyProperties(skuReductionTO, reductionEntity);
+        BeanUtils.copyProperties(skuReductionDTO, reductionEntity);
         if (reductionEntity.getFullPrice().compareTo(BigDecimal.ZERO) > 0) {
             this.save(reductionEntity);
         }
 
-
         // 7.3、sms_member_price
-        List<MemberPrice> memberPrice = skuReductionTO.getMemberPrice();
+        List<MemberPrice> memberPrice = skuReductionDTO.getMemberPrice();
 
         List<MemberPriceEntity> collect = memberPrice.stream().map(item -> {
             MemberPriceEntity priceEntity = new MemberPriceEntity();
-            priceEntity.setSkuId(skuReductionTO.getSkuId());
-            priceEntity.setMemberLevelId(item.getId());
-            priceEntity.setMemberLevelName(item.getName());
-            priceEntity.setMemberPrice(item.getPrice());
-            priceEntity.setAddOther(1);
+            priceEntity.setSkuId(skuReductionDTO.getSkuId())
+                    .setMemberLevelId(item.getId())
+                    .setMemberLevelName(item.getName())
+                    .setMemberPrice(item.getPrice())
+                    .setAddOther(1);
             return priceEntity;
-        }).filter(item -> {
-            return item.getMemberPrice().compareTo(BigDecimal.ZERO) > 0;
-        }).collect(Collectors.toList());
+        }).filter(item -> item.getMemberPrice().compareTo(BigDecimal.ZERO) > 0).collect(Collectors.toList());
 
         this.memberPriceService.saveBatch(collect);
     }

@@ -4,6 +4,7 @@
 package cn.edu.zjut.product.vo;
 
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -15,6 +16,7 @@ import java.util.List;
  * @website http://www.bejson.com/java2pojo/
  */
 @Data
+@Accessors(chain = true)
 public class Skus {
 
     private List<Attr> attr;

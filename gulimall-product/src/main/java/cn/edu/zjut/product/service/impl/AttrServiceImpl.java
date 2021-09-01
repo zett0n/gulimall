@@ -116,9 +116,10 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
         // 保存关联关系（销售属性不需要）
         if (Objects.equals(attrVo.getAttrType(), ProductConstant.AttrEnum.ATTR_TYPE_BASE.getVal()) && attrVo.getAttrGroupId() != null) {
             AttrAttrgroupRelationEntity attrAttrgroupRelationEntity = new AttrAttrgroupRelationEntity();
-            attrAttrgroupRelationEntity.setAttrGroupId(attrVo.getAttrGroupId());
+
             // 保存基本数据时 attrEntity 的 attrId 更新了
-            attrAttrgroupRelationEntity.setAttrId(attrEntity.getAttrId());
+            attrAttrgroupRelationEntity.setAttrGroupId(attrVo.getAttrGroupId()).setAttrId(attrEntity.getAttrId());
+
             this.attrAttrgroupRelationDao.insert(attrAttrgroupRelationEntity);
         }
     }
@@ -166,8 +167,7 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
         if (Objects.equals(attrEntity.getAttrType(), ProductConstant.AttrEnum.ATTR_TYPE_BASE.getVal())) {
             // 修改或新增分组关联
             AttrAttrgroupRelationEntity attrAttrgroupRelationEntity = new AttrAttrgroupRelationEntity();
-            attrAttrgroupRelationEntity.setAttrGroupId(attrVo.getAttrGroupId());
-            attrAttrgroupRelationEntity.setAttrId(attrVo.getAttrId());
+            attrAttrgroupRelationEntity.setAttrGroupId(attrVo.getAttrGroupId()).setAttrId(attrVo.getAttrId());
 
             Integer count = this.attrAttrgroupRelationDao.selectCount(new UpdateWrapper<AttrAttrgroupRelationEntity>()
                     .eq("attr_id", attrVo.getAttrId()));
@@ -190,16 +190,14 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
         }
         List<Long> attrIds = attrAttrgroupRelationEntities.stream().map(AttrAttrgroupRelationEntity::getAttrId).collect(Collectors.toList());
 
-        List<AttrEntity> attrEntities = this.listByIds(attrIds);
-
-        return attrEntities;
+        return this.listByIds(attrIds);
     }
 
     @Override
     public void deleteRelation(AttrGroupRelationVO[] attrGroupRelationVOS) {
         // this.attrAttrgroupRelationDao.delete(new QueryWrapper<>().eq("attr_id", ).eq("attr_group_id"))
 
-        List<AttrAttrgroupRelationEntity> attrAttrgroupRelationEntities = Arrays.asList(attrGroupRelationVOS).stream().map(attrGroupRelationVO -> {
+        List<AttrAttrgroupRelationEntity> attrAttrgroupRelationEntities = Arrays.stream(attrGroupRelationVOS).map(attrGroupRelationVO -> {
             AttrAttrgroupRelationEntity attrAttrgroupRelationEntity = new AttrAttrgroupRelationEntity();
             BeanUtils.copyProperties(attrGroupRelationVO, attrAttrgroupRelationEntity);
             return attrAttrgroupRelationEntity;
@@ -218,16 +216,12 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
         // 当前分组只能关联别的分组没有引用的属性
         // 找出当前分类下的其他分组
         List<AttrGroupEntity> groups = this.attrGroupDao.selectList(new QueryWrapper<AttrGroupEntity>().eq("catelog_id", catelogId));
-        List<Long> groupIds = groups.stream().map(item -> {
-            return item.getAttrGroupId();
-        }).collect(Collectors.toList());
+        List<Long> groupIds = groups.stream().map(AttrGroupEntity::getAttrGroupId).collect(Collectors.toList());
 
         // 找出这些分组相关联的属性
         List<AttrAttrgroupRelationEntity> relations = this.attrAttrgroupRelationDao.selectList(new QueryWrapper<AttrAttrgroupRelationEntity>().in(
                 "attr_group_id", groupIds));
-        List<Long> attrIds = relations.stream().map(item -> {
-            return item.getAttrId();
-        }).collect(Collectors.toList());
+        List<Long> attrIds = relations.stream().map(AttrAttrgroupRelationEntity::getAttrId).collect(Collectors.toList());
 
         // 从当前分类的所有属性中移除这些属性
         QueryWrapper<AttrEntity> wrapper = new QueryWrapper<AttrEntity>().eq("catelog_id", catelogId).eq("attr_type",
@@ -243,8 +237,6 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
         }
         IPage<AttrEntity> page = this.page(new Query<AttrEntity>().getPage(params), wrapper);
 
-        PageUtils pageUtils = new PageUtils(page);
-
-        return pageUtils;
+        return new PageUtils(page);
     }
 }
