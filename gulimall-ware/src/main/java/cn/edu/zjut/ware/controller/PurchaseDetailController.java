@@ -21,8 +21,10 @@ import java.util.Map;
 public class PurchaseDetailController {
     @Autowired
     private PurchaseDetailService purchaseDetailService;
-
-    // 03、查询采购需求
+    
+    /**
+     * 03、查询采购需求
+     */
     @GetMapping("/list")
     public R list(@RequestParam Map<String, Object> params) {
         PageUtils page = this.purchaseDetailService.queryPage(params);

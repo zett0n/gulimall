@@ -19,6 +19,7 @@
         <module>renren-fast</module>
         <module>gulimall-gateway</module>
         <module>gulimall-third-party</module>
+        <module>gulimall-search</module>
     </modules>
 
     <!--properties内为自定义属性-->
@@ -40,6 +41,7 @@
         <validation.api.version>2.0.1.Final</validation.api.version>
         <!--<hibernate.validator.version>5.0.2.Final</hibernate.validator.version>-->
         <alicloud.oss.version>2.2.0.RELEASE</alicloud.oss.version>
+        <elasticsearch.version>7.4.2</elasticsearch.version>
     </properties>
 
     <!--  子模块按需继承父模块（作用：锁定版本，子模块不用再写 version）  -->
@@ -122,6 +124,24 @@
                 <artifactId>spring-cloud-starter-alicloud-oss</artifactId>
                 <version>${alicloud.oss.version}</version>
             </dependency>
+
+            <!-- 重写覆盖 spring-boot-dependencies 中 ES 依赖版本  -->
+            <dependency>
+                <groupId>org.elasticsearch.client</groupId>
+                <artifactId>elasticsearch-rest-high-level-client</artifactId>
+                <version>${elasticsearch.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.elasticsearch</groupId>
+                <artifactId>elasticsearch</artifactId>
+                <version>${elasticsearch.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.elasticsearch.client</groupId>
+                <artifactId>elasticsearch-rest-client</artifactId>
+                <version>${elasticsearch.version}</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 

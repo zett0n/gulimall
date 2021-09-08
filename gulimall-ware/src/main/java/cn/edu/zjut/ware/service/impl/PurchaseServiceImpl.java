@@ -96,7 +96,7 @@ public class PurchaseServiceImpl extends ServiceImpl<PurchaseDao, PurchaseEntity
     public void received(List<Long> purchaseIds) {
         // 1、确认当前采购单是新建或者已分配状态
         List<PurchaseEntity> purchaseEntities = purchaseIds.stream()
-                // TODO stream api 学习
+                // TODO stream api 复习
                 .map(this::getById)
                 .filter(item -> Objects.equals(item.getStatus(), WareConstant.PurchaseStatusEnum.CREATED.getVal())
                         || Objects.equals(item.getStatus(), WareConstant.PurchaseStatusEnum.ASSIGNED.getVal()))
@@ -148,9 +148,12 @@ public class PurchaseServiceImpl extends ServiceImpl<PurchaseDao, PurchaseEntity
                 // 到 wms_purchase_detail 表中查出采购项的具体信息
                 PurchaseDetailEntity purchaseDetailEntity = this.purchaseDetailService.getById(item.getItemId());
                 // 入库到 wms_ware_sku 表
-                this.wareSkuService.addStock(purchaseDetailEntity.getSkuId(), purchaseDetailEntity.getWareId(), purchaseDetailEntity.getSkuNum());
+                this.wareSkuService.addStock(
+                        purchaseDetailEntity.getSkuId(),
+                        purchaseDetailEntity.getWareId(),
+                        purchaseDetailEntity.getSkuNum()
+                );
             }
-
             purchaseDetailUpdates.add(purchaseDetailUpdate);
         }
         this.purchaseDetailService.updateBatchById(purchaseDetailUpdates);
@@ -158,8 +161,11 @@ public class PurchaseServiceImpl extends ServiceImpl<PurchaseDao, PurchaseEntity
         // 改变采购单状态
         PurchaseEntity purchaseUpdate = new PurchaseEntity();
 
-        purchaseUpdate.setId(purchaseDoneVO.getId());
-        purchaseUpdate.setStatus(purchaseSuccess ? WareConstant.PurchaseStatusEnum.FINISH.getVal() : WareConstant.PurchaseStatusEnum.HAS_ERROR.getVal());
+        purchaseUpdate.setId(purchaseDoneVO.getId())
+                .setStatus(purchaseSuccess ?
+                        WareConstant.PurchaseStatusEnum.FINISH.getVal() :
+                        WareConstant.PurchaseStatusEnum.HAS_ERROR.getVal()
+                );
         purchaseUpdate.setUpdateTime(new Date());
 
         this.updateById(purchaseUpdate);

@@ -7,6 +7,11 @@ import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * 可以只在 common 里配置 MB 分页插件吗？
+ * Maven 引入 common 只是引jar包，而 @Bean 产生的分页插件 bean 实在内存里的
+ */
+
 @Configuration
 @MapperScan("cn.edu.zjut.coupon.dao")
 public class MybatisPlusConfig {

@@ -1,5 +1,6 @@
 package cn.edu.zjut.product.service.impl;
 
+import cn.edu.zjut.common.constant.DefaultConstant;
 import cn.edu.zjut.common.utils.PageUtils;
 import cn.edu.zjut.common.utils.Query;
 import cn.edu.zjut.product.dao.CategoryDao;
@@ -25,39 +26,36 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
-        IPage<CategoryEntity> page =
-                this.page(new Query<CategoryEntity>().getPage(params), new QueryWrapper<CategoryEntity>());
+        IPage<CategoryEntity> page = this.page(new Query<CategoryEntity>().getPage(params), new QueryWrapper<>());
 
         return new PageUtils(page);
     }
 
     @Override
     public List<CategoryEntity> listWithTree() {
-        // TODO stream api 学习
+        // TODO stream api 复习
         // 1、查出所有分类
-        List<CategoryEntity> entities = this.baseMapper.selectList(null);
+        List<CategoryEntity> categoryEntities = this.baseMapper.selectList(null);
 
         // 2、组装成父子的树形结构
-        // 2.1）、找到所有的一级分类，给children设置子分类
-        return entities.stream()
+        return categoryEntities.stream()
                 // 过滤找出一级分类
-                .filter(categoryEntity -> categoryEntity.getParentCid() == 0)
+                .filter(categoryEntity -> categoryEntity.getParentCid() == DefaultConstant.NO_PARENT_CATEGORY)
                 // 处理，给一级菜单递归设置子菜单
-                .peek(menu -> menu.setChildren(getChildless(menu, entities)))
-                // 按sort属性排序
-                .sorted(Comparator.comparingInt(menu -> (menu.getSort() == null ? 0 : menu.getSort())))
+                .peek(menu -> menu.setChildren(findChildren(menu, categoryEntities)))
+                // 因为按sort属性排序，所以 menu-> .. 将需要排序的字段 sort 映射给 Comparator 排序
+                .sorted(Comparator.comparingInt(menu -> (menu.getSort() == null ? DefaultConstant.SORT_DEFAULT_VALUE : menu.getSort())))
                 .collect(Collectors.toList());
     }
 
     /**
      * 递归查找所有菜单的子菜单
      */
-    private List<CategoryEntity> getChildless(CategoryEntity root, List<CategoryEntity> all) {
-        return all.stream().filter(categoryEntity -> categoryEntity.getParentCid().equals(root.getCatId()))
-                .peek(categoryEntity -> {
-                    // 找到子菜单
-                    categoryEntity.setChildren(getChildless(categoryEntity, all));
-                }).sorted(Comparator.comparingInt(menu -> (menu.getSort() == null ? 0 : menu.getSort())))
+    private List<CategoryEntity> findChildren(CategoryEntity root, List<CategoryEntity> all) {
+        return all.stream()
+                .filter(categoryEntity -> categoryEntity.getParentCid().equals(root.getCatId()))
+                .peek(categoryEntity -> categoryEntity.setChildren(findChildren(categoryEntity, all)))
+                .sorted(Comparator.comparingInt(menu -> (menu.getSort() == null ? DefaultConstant.SORT_DEFAULT_VALUE : menu.getSort())))
                 .collect(Collectors.toList());
     }
 
@@ -69,7 +67,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
 
     @Override
     public Long[] findCatelogPath(Long catelogId) {
-        List<Long> catelogPath = findParentPath(catelogId, new ArrayList<Long>());
+        List<Long> catelogPath = findParentPath(catelogId, new ArrayList<>());
         Collections.reverse(catelogPath);
         return catelogPath.toArray(new Long[0]);
     }
@@ -78,14 +76,14 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         path.add(catelogId);
 
         Long parentCid = this.getById(catelogId).getParentCid();
-        if (parentCid != 0) {
+        if (parentCid != DefaultConstant.NO_PARENT_CATEGORY) {
             findParentPath(parentCid, path);
         }
         return path;
     }
 
-    @Override
     @Transactional
+    @Override
     public void updateCascade(CategoryEntity category) {
         this.updateById(category);
 

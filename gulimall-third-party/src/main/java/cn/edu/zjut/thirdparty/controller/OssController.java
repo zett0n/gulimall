@@ -8,7 +8,7 @@ import com.aliyun.oss.model.PolicyConditions;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.text.SimpleDateFormat;
@@ -35,12 +35,16 @@ public class OssController {
     @Value("${spring.cloud.alicloud.secret-key}")
     String accessKey;
 
-    @RequestMapping("/oss/policy")
+    /**
+     * 1、获取对象存储服务端签名
+     */
+    @GetMapping("/oss/policy")
     public R policy() {
-
-        String host = "https://" + this.bucket + "." + this.endpoint; // host的格式为 bucketname.endpoint
+        // host的格式为 bucketname.endpoint
+        String host = "https://" + this.bucket + "." + this.endpoint;
 
         String format = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+
         // 用户上传文件时指定的前缀
         String dir = format + "/";
 
@@ -58,7 +62,7 @@ public class OssController {
             String encodedPolicy = BinaryUtil.toBase64String(binaryData);
             String postSignature = this.ossClient.calculatePostSignature(postPolicy);
 
-            respMap = new LinkedHashMap<String, String>();
+            respMap = new LinkedHashMap<>();
             respMap.put("accessid", this.accessId);
             respMap.put("policy", encodedPolicy);
             respMap.put("signature", postSignature);

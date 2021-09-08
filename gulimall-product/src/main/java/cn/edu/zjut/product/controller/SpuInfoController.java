@@ -22,10 +22,13 @@ import java.util.Map;
 @RestController
 @RequestMapping("product/spuinfo")
 public class SpuInfoController {
+
     @Autowired
     private SpuInfoService spuInfoService;
 
-    // 18、spu检索
+    /**
+     * 18、spu检索
+     */
     @GetMapping("/list")
     public R list(@RequestParam Map<String, Object> params) {
         PageUtils page = this.spuInfoService.queryPageByCondition(params);
@@ -33,7 +36,24 @@ public class SpuInfoController {
         return R.ok().put("page", page);
     }
 
+    /**
+     * 19、新增商品
+     */
+    @PostMapping("/save")
+    public R save(@RequestBody SpuSaveVO spuSaveVO) {
+        this.spuInfoService.saveSpuInfo(spuSaveVO);
+        return R.ok();
+    }
 
+    /**
+     * 20、商品上架
+     */
+    @PostMapping("/{spuId}/up")
+    public R spuUp(@PathVariable("spuId") Long spuId) {
+        this.spuInfoService.up(spuId);
+        return R.ok();
+    }
+    
     /**
      * 信息
      */
@@ -42,14 +62,6 @@ public class SpuInfoController {
         SpuInfoEntity spuInfo = this.spuInfoService.getById(id);
 
         return R.ok().put("spuInfo", spuInfo);
-    }
-
-    // 19、新增商品
-    @PostMapping("/save")
-    public R save(@RequestBody SpuSaveVO spuSaveVO) {
-        // this.spuInfoService.save(spuInfo);
-        this.spuInfoService.saveSpuInfo(spuSaveVO);
-        return R.ok();
     }
 
     /**

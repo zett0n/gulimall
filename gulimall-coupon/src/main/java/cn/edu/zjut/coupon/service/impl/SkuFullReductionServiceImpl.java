@@ -35,7 +35,10 @@ public class SkuFullReductionServiceImpl extends ServiceImpl<SkuFullReductionDao
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
-        IPage<SkuFullReductionEntity> page = this.page(new Query<SkuFullReductionEntity>().getPage(params), new QueryWrapper<>());
+        IPage<SkuFullReductionEntity> page = this.page(
+                new Query<SkuFullReductionEntity>().getPage(params),
+                new QueryWrapper<>()
+        );
         return new PageUtils(page);
     }
 

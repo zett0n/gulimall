@@ -31,17 +31,41 @@ public class AttrController {
     @Autowired
     private ProductAttrValueService productAttrValueService;
 
-    /**
-     * 列表
-     */
-    @RequestMapping("/list")
-    public R list(@RequestParam Map<String, Object> params) {
-        PageUtils page = this.attrService.queryPage(params);
 
-        return R.ok().put("page", page);
+    /**
+     * 06、保存属性【规格参数，销售属性】
+     */
+    @PostMapping("/save")
+    public R save(@RequestBody AttrVO attrVo) {
+        this.attrService.saveAttr(attrVo);
+
+        return R.ok();
     }
 
-    // 22、获取spu规格
+    /**
+     * 07、查询属性详情
+     */
+    @GetMapping("/info/{attrId}")
+    public R info(@PathVariable("attrId") Long attrId) {
+        // AttrEntity attr = this.attrService.getById(attrId);
+        AttrRespVO attrRespVO = this.attrService.getAttrInfo(attrId);
+
+        return R.ok().put("attr", attrRespVO);
+    }
+
+    /**
+     * 08、修改属性
+     */
+    @PostMapping("/update")
+    public R update(@RequestBody AttrVO attrVo) {
+        this.attrService.updateAttr(attrVo);
+
+        return R.ok();
+    }
+
+    /**
+     * 22、获取spu规格
+     */
     @GetMapping("/base/listforspu/{spuId}")
     public R baseAttrlistforspu(@PathVariable("spuId") Long spuId) {
 
@@ -59,42 +83,23 @@ public class AttrController {
     }
 
     /**
-     * 信息
+     * 23、修改商品规格
      */
-    @GetMapping("/info/{attrId}")
-    public R info(@PathVariable("attrId") Long attrId) {
-        // AttrEntity attr = this.attrService.getById(attrId);
-        AttrRespVO attrRespVO = this.attrService.getAttrInfo(attrId);
-
-        return R.ok().put("attr", attrRespVO);
-    }
-
-    /**
-     * 保存
-     */
-    @PostMapping("/save")
-    public R save(@RequestBody AttrVO attrVo) {
-        this.attrService.saveAttr(attrVo);
-
-        return R.ok();
-    }
-
-    /**
-     * 修改
-     */
-    @PostMapping("/update")
-    public R update(@RequestBody AttrVO attrVo) {
-        this.attrService.updateAttr(attrVo);
-
-        return R.ok();
-    }
-
-    // 23、修改商品规格
     @PostMapping("/update/{spuId}")
     public R updateSpuAttr(@PathVariable("spuId") Long spuId, @RequestBody List<ProductAttrValueEntity> productAttrValueEntities) {
         this.productAttrValueService.updateSpuAttr(spuId, productAttrValueEntities);
 
         return R.ok();
+    }
+
+    /**
+     * 列表
+     */
+    @RequestMapping("/list")
+    public R list(@RequestParam Map<String, Object> params) {
+        PageUtils page = this.attrService.queryPage(params);
+
+        return R.ok().put("page", page);
     }
 
     /**

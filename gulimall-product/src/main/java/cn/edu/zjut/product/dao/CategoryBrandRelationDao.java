@@ -1,11 +1,9 @@
 package cn.edu.zjut.product.dao;
 
+import cn.edu.zjut.product.entity.CategoryBrandRelationEntity;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-
-import cn.edu.zjut.product.entity.CategoryBrandRelationEntity;
 
 /**
  * 品牌分类关联
@@ -18,4 +16,5 @@ import cn.edu.zjut.product.entity.CategoryBrandRelationEntity;
 public interface CategoryBrandRelationDao extends BaseMapper<CategoryBrandRelationEntity> {
 
     void updateCategory(@Param("catId") Long catId, @Param("name") String name);
+    
 }

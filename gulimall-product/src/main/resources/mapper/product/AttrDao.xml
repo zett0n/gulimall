@@ -17,4 +17,14 @@
         <result property="valueType" column="value_type"/>
     </resultMap>
 
+    <select id="selectSearchAttrIds" resultType="java.lang.Long">
+        select attr_id
+        from `pms_attr`
+        where search_type = 1
+        and attr_id in
+        <foreach collection="attrIds" item="attrId" separator="," open="(" close=")">
+            #{attrId}
+        </foreach>
+    </select>
+
 </mapper>

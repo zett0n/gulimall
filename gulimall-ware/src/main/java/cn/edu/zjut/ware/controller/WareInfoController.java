@@ -23,8 +23,10 @@ import java.util.Map;
 public class WareInfoController {
     @Autowired
     private WareInfoService wareInfoService;
-
-    // 01、仓库列表
+    
+    /**
+     * 01、仓库列表
+     */
     @GetMapping("/list")
     public R list(@RequestParam Map<String, Object> params) {
         PageUtils page = this.wareInfoService.queryPage(params);

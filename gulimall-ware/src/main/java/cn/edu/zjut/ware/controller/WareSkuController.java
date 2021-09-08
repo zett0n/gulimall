@@ -1,5 +1,6 @@
 package cn.edu.zjut.ware.controller;
 
+import cn.edu.zjut.common.dto.SkuHasStockDTO;
 import cn.edu.zjut.common.utils.PageUtils;
 import cn.edu.zjut.common.utils.R;
 import cn.edu.zjut.ware.entity.WareSkuEntity;
@@ -8,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 
@@ -21,10 +23,13 @@ import java.util.Map;
 @RestController
 @RequestMapping("ware/waresku")
 public class WareSkuController {
+
     @Autowired
     private WareSkuService wareSkuService;
 
-    // 02、查询商品库存
+    /**
+     * 02、查询商品库存
+     */
     @GetMapping("/list")
     public R list(@RequestParam Map<String, Object> params) {
         PageUtils page = this.wareSkuService.queryPage(params);
@@ -32,6 +37,15 @@ public class WareSkuController {
         return R.ok().put("page", page);
     }
 
+    // 查询 sku 是否有库存
+    @PostMapping("/hasstock")
+    public R<List<SkuHasStockDTO>> hasStock(@RequestBody List<Long> skuIds) {
+        List<SkuHasStockDTO> skuHasStockDTOs = this.wareSkuService.hasStock(skuIds);
+        R<List<SkuHasStockDTO>> ok = R.ok();
+        ok.setData(skuHasStockDTOs);
+
+        return ok;
+    }
 
     /**
      * 信息

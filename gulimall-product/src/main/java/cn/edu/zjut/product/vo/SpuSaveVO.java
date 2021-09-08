@@ -19,6 +19,8 @@ import java.util.List;
 @Accessors(chain = true)
 public class SpuSaveVO {
 
+    //TODO jsr303 注解
+
     private String spuName;
     private String spuDescription;
     private Long catalogId;

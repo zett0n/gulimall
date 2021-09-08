@@ -16,7 +16,6 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
@@ -40,10 +39,16 @@ public class CategoryBrandRelationServiceImpl extends ServiceImpl<CategoryBrandR
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
-        IPage<CategoryBrandRelationEntity> page = this.page(new Query<CategoryBrandRelationEntity>().getPage(params),
-                new QueryWrapper<CategoryBrandRelationEntity>());
+        IPage<CategoryBrandRelationEntity> page = this.page(
+                new Query<CategoryBrandRelationEntity>().getPage(params),
+                new QueryWrapper<>());
 
         return new PageUtils(page);
+    }
+
+    @Override
+    public List<CategoryBrandRelationEntity> listByBrandId(Long brandId) {
+        return this.list(new QueryWrapper<CategoryBrandRelationEntity>().eq("brand_id", brandId));
     }
 
     @Override
@@ -62,22 +67,16 @@ public class CategoryBrandRelationServiceImpl extends ServiceImpl<CategoryBrandR
     }
 
     // UpdateWrapper 方式更新字段值
-    // TODO @Transactional?
-    @Transactional
     @Override
     public void updateBrand(Long brandId, String name) {
         CategoryBrandRelationEntity categoryBrandRelationEntity = new CategoryBrandRelationEntity();
-
-        categoryBrandRelationEntity.setBrandId(brandId);
-        categoryBrandRelationEntity.setBrandName(name);
+        categoryBrandRelationEntity.setBrandId(brandId).setBrandName(name);
 
         this.update(categoryBrandRelationEntity,
                 new UpdateWrapper<CategoryBrandRelationEntity>().eq("brand_id", brandId));
     }
 
     // 自定义sql 方式更新字段值
-    // TODO @Transactional?
-    @Transactional
     @Override
     public void updateCategory(Long catId, String name) {
         this.baseMapper.updateCategory(catId, name);
@@ -86,12 +85,13 @@ public class CategoryBrandRelationServiceImpl extends ServiceImpl<CategoryBrandR
     @Override
     public List<BrandEntity> getBrandsByCatId(Long catId) {
 
-        List<CategoryBrandRelationEntity> catelogId = this.categoryBrandRelationDao.selectList(new QueryWrapper<CategoryBrandRelationEntity>().eq("catelog_id", catId));
-        List<BrandEntity> collect = catelogId.stream().map(item -> {
+        List<CategoryBrandRelationEntity> catelogId = this.categoryBrandRelationDao.selectList(
+                new QueryWrapper<CategoryBrandRelationEntity>().eq("catelog_id", catId));
+
+        return catelogId.stream().map(item -> {
             Long brandId = item.getBrandId();
-            BrandEntity byId = this.brandService.getById(brandId);
-            return byId;
+            return this.brandService.getById(brandId);
         }).collect(Collectors.toList());
-        return collect;
     }
+
 }

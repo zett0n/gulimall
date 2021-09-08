@@ -1,12 +1,5 @@
 package cn.edu.zjut.product.controller;
 
-import java.util.Arrays;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
-
 import cn.edu.zjut.common.utils.PageUtils;
 import cn.edu.zjut.common.utils.R;
 import cn.edu.zjut.common.validation.group.AddGroup;
@@ -14,6 +7,12 @@ import cn.edu.zjut.common.validation.group.UpdateGroup;
 import cn.edu.zjut.common.validation.group.UpdateStatusGroup;
 import cn.edu.zjut.product.entity.BrandEntity;
 import cn.edu.zjut.product.service.BrandService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Arrays;
+import java.util.Map;
 
 /**
  * 品牌
@@ -25,11 +24,14 @@ import cn.edu.zjut.product.service.BrandService;
 @RestController
 @RequestMapping("product/brand")
 public class BrandController {
+
     @Autowired
     private BrandService brandService;
 
+
     /**
      * 列表
+     * 重写了 queryPage，加入模糊查询
      */
     @RequestMapping("/list")
     public R list(@RequestParam Map<String, Object> params) {
@@ -37,6 +39,27 @@ public class BrandController {
 
         return R.ok().put("page", page);
     }
+
+    /**
+     * 修改
+     *
+     * @Validated 可以按分组校验
+     */
+    @PostMapping("/update")
+    public R update(@Validated({UpdateGroup.class}) @RequestBody BrandEntity brand) {
+        this.brandService.updateDetail(brand);
+
+        return R.ok();
+    }
+
+    // 修改状态
+    @PostMapping("/update/status")
+    public R updateStatus(@Validated({UpdateStatusGroup.class}) @RequestBody BrandEntity brand) {
+        this.brandService.updateById(brand);
+
+        return R.ok();
+    }
+
 
     /**
      * 信息
@@ -51,29 +74,9 @@ public class BrandController {
     /**
      * 保存
      */
-    @RequestMapping("/save")
+    @PostMapping("/save")
     public R save(@Validated({AddGroup.class}) @RequestBody BrandEntity brand) {
         this.brandService.save(brand);
-
-        return R.ok();
-    }
-
-    /**
-     * 修改
-     * 
-     * @Validated 可以按分组校验
-     */
-    @RequestMapping("/update")
-    public R update(@Validated({UpdateGroup.class}) @RequestBody BrandEntity brand) {
-        this.brandService.updateDetail(brand);
-
-        return R.ok();
-    }
-
-    // 修改状态
-    @RequestMapping("/update/status")
-    public R updateStatus(@Validated({UpdateStatusGroup.class}) @RequestBody BrandEntity brand) {
-        this.brandService.updateById(brand);
 
         return R.ok();
     }

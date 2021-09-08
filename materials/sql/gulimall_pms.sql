@@ -105,7 +105,7 @@ create table pms_category
     parent_cid    bigint comment '父分类id',
     cat_level     int comment '层级',
     show_status   tinyint comment '是否显示[0-不显示，1显示]',
-    sort          int comment '排序',
+    sort          int comment '排序，越小优先级越高，默认0',
     icon          char(255) comment '图标地址',
     product_unit  char(50) comment '计量单位',
     product_count int comment '商品数量',

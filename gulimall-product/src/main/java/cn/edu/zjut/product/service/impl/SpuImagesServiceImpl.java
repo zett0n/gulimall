@@ -29,19 +29,22 @@ public class SpuImagesServiceImpl extends ServiceImpl<SpuImagesDao, SpuImagesEnt
         return new PageUtils(page);
     }
 
-    // TODO @Transactional?
     @Transactional
     @Override
     public void saveImages(Long id, List<String> imgUrls) {
         if (imgUrls == null || imgUrls.isEmpty()) {
             return;
         }
-        List<SpuImagesEntity> collect = imgUrls.stream().map(imgUrl -> {
-            SpuImagesEntity spuImagesEntity = new SpuImagesEntity();
-            spuImagesEntity.setSpuId(id);
-            spuImagesEntity.setImgUrl(imgUrl);
-            return spuImagesEntity;
-        }).collect(Collectors.toList());
+
+        List<SpuImagesEntity> collect = imgUrls.stream()
+                .map(imgUrl -> {
+                    SpuImagesEntity spuImagesEntity = new SpuImagesEntity();
+                    spuImagesEntity.setSpuId(id)
+                            .setImgUrl(imgUrl);
+                    
+                    return spuImagesEntity;
+                })
+                .collect(Collectors.toList());
 
         this.saveBatch(collect);
     }

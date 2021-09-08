@@ -28,9 +28,7 @@ public class ProductAttrValueServiceImpl extends ServiceImpl<ProductAttrValueDao
 
         return new PageUtils(page);
     }
-
-    // TODO @Transactional?
-    @Transactional
+    
     @Override
     public void saveProductAttr(List<ProductAttrValueEntity> collect) {
         this.saveBatch(collect);
@@ -40,7 +38,7 @@ public class ProductAttrValueServiceImpl extends ServiceImpl<ProductAttrValueDao
     public List<ProductAttrValueEntity> baseAttrListforspu(Long spuId) {
         return this.baseMapper.selectList(new QueryWrapper<ProductAttrValueEntity>().eq("spu_id", spuId));
     }
-    
+
     @Transactional
     @Override
     public void updateSpuAttr(Long spuId, List<ProductAttrValueEntity> productAttrValueEntities) {

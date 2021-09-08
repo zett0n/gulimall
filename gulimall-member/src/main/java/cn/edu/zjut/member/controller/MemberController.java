@@ -1,16 +1,15 @@
 package cn.edu.zjut.member.controller;
 
-import java.util.Arrays;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-
 import cn.edu.zjut.common.utils.PageUtils;
 import cn.edu.zjut.common.utils.R;
 import cn.edu.zjut.member.entity.MemberEntity;
 import cn.edu.zjut.member.feign.CouponFeignService;
 import cn.edu.zjut.member.service.MemberService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Arrays;
+import java.util.Map;
 
 /**
  * 会员
@@ -22,6 +21,7 @@ import cn.edu.zjut.member.service.MemberService;
 @RestController
 @RequestMapping("member/member")
 public class MemberController {
+
     @Autowired
     private MemberService memberService;
 

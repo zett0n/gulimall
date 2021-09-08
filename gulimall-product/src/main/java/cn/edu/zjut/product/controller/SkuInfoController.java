@@ -21,10 +21,13 @@ import java.util.Map;
 @RestController
 @RequestMapping("product/skuinfo")
 public class SkuInfoController {
+    
     @Autowired
     private SkuInfoService skuInfoService;
 
-    // 21、sku检索
+    /**
+     * 21、sku检索
+     */
     @GetMapping("/list")
     public R list(@RequestParam Map<String, Object> params) {
         PageUtils page = this.skuInfoService.queryPageByCondition(params);

@@ -1,5 +1,6 @@
 package cn.edu.zjut.product.service.impl;
 
+import cn.edu.zjut.common.constant.DefaultConstant;
 import cn.edu.zjut.common.utils.PageUtils;
 import cn.edu.zjut.common.utils.Query;
 import cn.edu.zjut.product.dao.AttrGroupDao;
@@ -28,31 +29,36 @@ public class AttrGroupServiceImpl extends ServiceImpl<AttrGroupDao, AttrGroupEnt
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
-        IPage<AttrGroupEntity> page =
-                this.page(new Query<AttrGroupEntity>().getPage(params), new QueryWrapper<>());
+        IPage<AttrGroupEntity> page = this.page(
+                new Query<AttrGroupEntity>().getPage(params),
+                new QueryWrapper<>());
 
         return new PageUtils(page);
     }
 
     @Override
     public PageUtils queryPage(Map<String, Object> params, Long catelogId) {
-        // TODO sql优化
+        // sql优化？
         // select * from pms_attr_group where catelog_id=? and (atrr_group_id=key or attr_group_name like %key%)
         QueryWrapper<AttrGroupEntity> queryWrapper = new QueryWrapper<>();
 
-        if (catelogId != 0) {
+        // 只有选三级分类，前端传非默认值的 catelogId 才将其纳入查询条件
+        if (catelogId != DefaultConstant.ID_SELECT_ALL) {
             queryWrapper.eq("catelog_id", catelogId);
         }
 
-        String key = (String) params.get("key");
         // 如果 key 不为 null 和 ”“，需要根据关键字模糊查询
+        String key = (String) params.get("key");
         if (StringUtils.isNotEmpty(key)) {
-            queryWrapper.and(wrapper -> {
-                wrapper.eq("attr_group_id", key).or().like("attr_group_name", key);
-            });
+            queryWrapper.and(wrapper -> wrapper
+                    .eq("attr_group_id", key)
+                    .or()
+                    .like("attr_group_name", key));
         }
 
-        IPage<AttrGroupEntity> page = this.page(new Query<AttrGroupEntity>().getPage(params), queryWrapper);
+        IPage<AttrGroupEntity> page = this.page(
+                new Query<AttrGroupEntity>().getPage(params),
+                queryWrapper);
         return new PageUtils(page);
     }
 

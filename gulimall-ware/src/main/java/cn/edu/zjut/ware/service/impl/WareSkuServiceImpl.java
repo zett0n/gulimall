@@ -1,6 +1,7 @@
 package cn.edu.zjut.ware.service.impl;
 
 import cn.edu.zjut.common.constant.DefaultConstant;
+import cn.edu.zjut.common.dto.SkuHasStockDTO;
 import cn.edu.zjut.common.utils.PageUtils;
 import cn.edu.zjut.common.utils.Query;
 import cn.edu.zjut.common.utils.R;
@@ -19,6 +20,7 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 
 @Service("wareSkuService")
@@ -47,11 +49,13 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
             queryWrapper.eq("ware_id", wareId);
         }
 
-        IPage<WareSkuEntity> page = this.page(new Query<WareSkuEntity>().getPage(params), queryWrapper);
+        IPage<WareSkuEntity> page = this.page(
+                new Query<WareSkuEntity>().getPage(params),
+                queryWrapper
+        );
         return new PageUtils(page);
     }
 
-    // TODO @Transactional?
     @Transactional
     @Override
     public void addStock(Long skuId, Long wareId, Integer skuNum) {
@@ -67,14 +71,13 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
         } else {
             WareSkuEntity wareSkuEntity = new WareSkuEntity();
 
-            wareSkuEntity.setSkuId(skuId);
-            wareSkuEntity.setStock(skuNum);
-            wareSkuEntity.setWareId(wareId);
-            wareSkuEntity.setStockLocked(DefaultConstant.STOCK_UNLOCK);
-
+            wareSkuEntity.setSkuId(skuId)
+                    .setStock(skuNum)
+                    .setWareId(wareId)
+                    .setStockLocked(DefaultConstant.STOCK_UNLOCK);
 
             // 远程查询sku的名字，如果失败，整个事务无需回滚
-            // 1、自己catch异常
+            // 1、自己catch异常？
             // 2. TODO 还可以用什么办法让异常出现以后不回滚？高级
             try {
                 R r = this.productFeignService.info(skuId);
@@ -88,6 +91,25 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
             }
             this.wareSkuDao.insert(wareSkuEntity);
         }
+    }
+
+    @Override
+    public List<SkuHasStockDTO> hasStock(List<Long> skuIds) {
+        // TODO 当前使用了循环查库
+        // select sum(stock - stock_locked) as left_stock from wms_ware_sku where sku_id = #{skuId}
+        // 优化方案
+        // select sku_id, sku_name, sum(stock-stock_locked) as left_stock from wms_ware_sku group by sku_id;
+
+
+        return skuIds.stream()
+                .map(skuId -> {
+                    SkuHasStockDTO skuHasStockDTO = new SkuHasStockDTO();
+                    Long count = this.baseMapper.getSkuStock(skuId);
+                    skuHasStockDTO.setSkuId(skuId)
+                            .setHasStock(count != null && count > 0);
+                    return skuHasStockDTO;
+                })
+                .collect(Collectors.toList());
     }
 
 }

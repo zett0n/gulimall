@@ -28,14 +28,18 @@ public class PurchaseController {
     @Autowired
     private PurchaseService purchaseService;
 
-    // 04、合并采购需求
+    /**
+     * 04、合并采购需求
+     */
     @PostMapping("/merge")
     public R merge(@RequestBody MergeVO mergeVO) {
         this.purchaseService.mergePurchase(mergeVO);
         return R.ok();
     }
 
-    // 05、查询未领取的采购单
+    /**
+     * 05、查询未领取的采购单
+     */
     @RequestMapping("/unreceive/list")
     public R unreceiveList(@RequestParam Map<String, Object> params) {
         PageUtils page = this.purchaseService.queryPageUnreceive(params);
@@ -43,14 +47,18 @@ public class PurchaseController {
         return R.ok().put("page", page);
     }
 
-    // 06、领取采购单
+    /**
+     * 06、领取采购单
+     */
     @PostMapping("/received")
     public R received(@RequestBody List<Long> purchaseIds) {
         this.purchaseService.received(purchaseIds);
         return R.ok();
     }
 
-    // 07、完成采购
+    /**
+     * 07、完成采购
+     */
     @PostMapping("/done")
     public R done(@RequestBody PurchaseDoneVO purchaseDoneVO) {
         this.purchaseService.done(purchaseDoneVO);
