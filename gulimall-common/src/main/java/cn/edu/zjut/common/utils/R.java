@@ -10,6 +10,8 @@ package cn.edu.zjut.common.utils;
 
 import cn.edu.zjut.common.constant.DefaultConstant;
 import cn.edu.zjut.common.exception.EmBizError;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
 import org.apache.http.HttpStatus;
 
 import java.util.HashMap;
@@ -17,25 +19,34 @@ import java.util.Map;
 
 /**
  * 返回数据
+ * 关于 R<T>
+ * Jackson 对于 HashMap 类型会有特殊的处理方式，具体来说就是会对类进行向上转型为 Map，导致子类的私有属性消失
  *
  * @author Mark sunlightcs@gmail.com
  */
-public class R<T> extends HashMap<String, Object> {
+public class R extends HashMap<String, Object> {
     private static final long serialVersionUID = 1L;
-
-    private T data;
-
-    public T getData() {
-        return this.data;
-    }
-
-    public void setData(T data) {
-        this.data = data;
-    }
 
     public R() {
         put("code", DefaultConstant.R_SUCCESS_CODE);
         put("msg", "success");
+    }
+
+    public R put(String key, Object value) {
+        super.put(key, value);
+        return this;
+    }
+
+    public Integer getCode() {
+        return (Integer) this.get("code");
+    }
+
+    public <T> T getData(TypeReference<T> typeReference) {
+        Object data = get("data");
+
+        // SpringMVC 会自动将 data 转换为 ArrayList
+        // 这里利用 fastjson 先把 data 转为 JSON 字符串再转为指定格式
+        return JSON.parseObject(JSON.toJSONString(data), typeReference);
     }
 
     public static R error() {
@@ -74,12 +85,4 @@ public class R<T> extends HashMap<String, Object> {
         return new R();
     }
 
-    public R put(String key, Object value) {
-        super.put(key, value);
-        return this;
-    }
-
-    public Integer getCode() {
-        return (Integer) this.get("code");
-    }
 }

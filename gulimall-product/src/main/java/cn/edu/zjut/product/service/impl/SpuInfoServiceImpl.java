@@ -296,17 +296,15 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
         Map<Long, Boolean> stockMap = null;
 
         try {
-            // TODO 关于 R<T>
-            // 不能存这里没用是因为Jackson对于HashMap类型会有特殊的处理方式，具体来说就是会对类进行向上转型为Map，导致子类的私有属性消失
-            // 这里R拿不到data数据的，因为远程调用传的是JSON数据，不包含R的data。R的写法老师写错了
-            // 直接R.ok().put("data",xxx)返回吧，自己再转一下
-            //  map 是null 怎么封装, 空指针异常,老师直接跳过了
-            R<List<SkuHasStockDTO>> skuHasStock = this.wareFeignService.hasStock(skuIds);
+            // map 是null 怎么封装, 空指针异常,老师直接跳过了
+            R r = this.wareFeignService.hasStock(skuIds);
 
+            // TypeReference 的构造器访问权限为 protected（子类或者同包）
+            // 这里用匿名内部类（继承 TypeReference 的匿名子类）实现跨包调用
             TypeReference<List<SkuHasStockDTO>> typeReference = new TypeReference<List<SkuHasStockDTO>>() {
             };
-            stockMap = skuHasStock.getData(typeReference).stream()
-                    .collect(Collectors.toMap(SkuHasStockDTO::getSkuId, item -> item.hasStock()));
+            stockMap = r.getData(typeReference).stream()
+                    .collect(Collectors.toMap(SkuHasStockDTO::getSkuId, SkuHasStockDTO::getHasStock));
 
         } catch (Exception e) {
             this.log.error("库存服务查询异常：原因{}", e);
