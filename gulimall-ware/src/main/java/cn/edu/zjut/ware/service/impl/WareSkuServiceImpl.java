@@ -100,7 +100,6 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
         // 优化方案
         // select sku_id, sku_name, sum(stock-stock_locked) as left_stock from wms_ware_sku group by sku_id;
 
-
         return skuIds.stream()
                 .map(skuId -> {
                     SkuHasStockDTO skuHasStockDTO = new SkuHasStockDTO();

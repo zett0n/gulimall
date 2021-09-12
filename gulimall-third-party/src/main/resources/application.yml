@@ -11,9 +11,10 @@ spring:
       oss:
         endpoint: oss-cn-hangzhou.aliyuncs.com
         bucket: zett0n-gulimall
+
   # 指定时间格式化规则
   jackson:
-    date-format: yyyy-MM-dd HH:mmm:ss
+    date-format: yyyy-MM-dd HH:mm:ss
     time-zone: GMT+8
 
 server:

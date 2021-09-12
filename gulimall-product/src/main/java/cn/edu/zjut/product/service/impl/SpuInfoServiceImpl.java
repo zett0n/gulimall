@@ -234,9 +234,7 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
 
         String key = (String) params.get("key");
         if (StringUtils.isNotEmpty(key)) {
-            wrapper.and((w) -> {
-                w.eq("id", key).or().like("spu_name", key);
-            });
+            wrapper.and((w) -> w.eq("id", key).or().like("spu_name", key));
         }
 
         // status=1 and (id=1 or spu_name like xxx)
@@ -261,26 +259,34 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
         return new PageUtils(page);
     }
 
+
+    /**
+     * 封装产品上架相关信息发送给 Es
+     *
+     * @param spuId 品牌 id
+     */
     // @GlobalTransactional(rollbackFor = Exception.class)
     // @Transactional(rollbackFor = Exception.class)
     @Override
     public void up(Long spuId) {
-
-        // 1、查出当前spuId对应的所有sku信息,品牌的名字
+        // 1、查出当前 spuId 对应的所有 sku 相关信息
+        // 1.1、从 pms_sku_info 查出 sku 基本信息
         List<SkuInfoEntity> skuInfoEntities = this.skuInfoService.getSkusBySpuId(spuId);
 
-        // 4、根据 spuId 查出当前sku的所有可以被用来检索的规格属性
+        // 1.2、根据 spuId 查出当前 sku 的所有可被检索的规格属性
+        // 从 pms_product_attr_value 查出 spuId 对应的所有属性（包括不可检索）
         List<ProductAttrValueEntity> productAttrValueEntities = this.productAttrValueService.baseAttrListforspu(spuId);
-
         List<Long> attrIds = productAttrValueEntities.stream()
                 .map(ProductAttrValueEntity::getAttrId)
                 .collect(Collectors.toList());
 
+        // 将所有属性带入 pms_attr 筛选出可被检索的规格属性
         List<Long> searchAttrIds = this.attrService.selectSearchAttrIds(attrIds);
 
-        //转换为Set集合，元素数量没减少但是查询效率变为 O(1)
+        // 转换为Set集合，元素数量没减少但是查询效率 O(n) -> O(1)
         Set<Long> searchAttrIdSet = new HashSet<>(searchAttrIds);
 
+        // 封装 SkuEsDTO.Attrs
         List<SkuEsDTO.Attrs> attrsList = productAttrValueEntities.stream()
                 .filter(item -> searchAttrIdSet.contains(item.getAttrId()))
                 .map(item -> {
@@ -290,31 +296,30 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
                 })
                 .collect(Collectors.toList());
 
-
-        // 发送远程调用，库存系统查询是否有库存
-        List<Long> skuIds = skuInfoEntities.stream().map(SkuInfoEntity::getSkuId).collect(Collectors.toList());
+        // 1.3、发送远程调用，库存系统查询是否有库存
         Map<Long, Boolean> stockMap = null;
+        List<Long> skuIds = skuInfoEntities.stream()
+                .map(SkuInfoEntity::getSkuId)
+                .collect(Collectors.toList());
 
         try {
-            // map 是null 怎么封装, 空指针异常,老师直接跳过了
             R r = this.wareFeignService.hasStock(skuIds);
 
             // TypeReference 的构造器访问权限为 protected（子类或者同包）
             // 这里用匿名内部类（继承 TypeReference 的匿名子类）实现跨包调用
             TypeReference<List<SkuHasStockDTO>> typeReference = new TypeReference<List<SkuHasStockDTO>>() {
             };
+
             stockMap = r.getData(typeReference).stream()
                     .collect(Collectors.toMap(SkuHasStockDTO::getSkuId, SkuHasStockDTO::getHasStock));
-
         } catch (Exception e) {
             this.log.error("库存服务查询异常：原因{}", e);
         }
 
-        // 2、封装每个sku的信息
+        // 2、封装每个 sku 的信息
         Map<Long, Boolean> finalStockMap = stockMap;
         List<SkuEsDTO> upProducts = skuInfoEntities.stream()
                 .map(skuInfoEntity -> {
-
                     // 组装需要的数据
                     SkuEsDTO skuEsDTO = new SkuEsDTO();
                     BeanUtils.copyProperties(skuInfoEntity, skuEsDTO);
@@ -323,17 +328,17 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
 
                     // 设置库存信息
                     if (finalStockMap == null) {
-                        //TODO false?
+                        // 默认有库存（方便调试时服务器超时报异常的情况）
                         skuEsDTO.setHasStock(true);
                     } else {
                         skuEsDTO.setHasStock(finalStockMap.get(skuInfoEntity.getSkuId()));
                     }
 
                     // TODO 应该为可定制
-                    // 2、热度评分（默认0）
+                    // 热度评分（默认0）
                     skuEsDTO.setHotScore(0L);
 
-                    // 3、查询品牌和分类的名字信息
+                    // 查询品牌和分类的名字信息
                     BrandEntity brandEntity = this.brandService.getById(skuEsDTO.getBrandId());
                     skuEsDTO.setBrandName(brandEntity.getName())
                             .setBrandImg(brandEntity.getLogo());
@@ -344,24 +349,20 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
                     // 设置可检索属性
                     skuEsDTO.setAttrs(attrsList);
 
-                    // TODO 这里老师没有这行
-                    BeanUtils.copyProperties(skuInfoEntity, skuEsDTO);
-
                     return skuEsDTO;
                 })
                 .collect(Collectors.toList());
 
-        // 将数据发给 Es 进行保存 gulimall-search
+        // 3、将数据发给 gulimall-search Es 进行保存
+        // 因为 Es 在保存商品时设置了 id，因此重复保存只会更新属性值（接口幂等）
         R r = this.searchFeignService.productStatusUp(upProducts);
 
         if (r.getCode() == DefaultConstant.R_SUCCESS_CODE) {
             // 远程调用成功，修改当前 spu 的状态 (pms_spu_info 的 publish_status 和 update_time)
+            // 数据库修改失败怎么保证 Es 和 MySQL 数据一致性？由于 Es 接口幂等性，再重新上传商品即可
             this.baseMapper.updateSpuStatus(spuId, ProductConstant.ProductStatusEnum.SPU_UP.getVal());
-
         } else {
             // 远程调用失败
-            // TODO 重复调用？接口幂等性、重试机制、Feign 调用流程:
-
         }
     }
 

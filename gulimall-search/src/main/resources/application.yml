@@ -7,7 +7,7 @@ spring:
         server-addr: 127.0.0.1:8848
 
   jackson:
-    date-format: yyyy-MM-dd HH:mmm:ss
+    date-format: yyyy-MM-dd HH:mm:ss
     time-zone: GMT+8
 
   thymeleaf:

@@ -34,7 +34,7 @@ public class ProductSaveServiceImpl implements ProductSaveService {
     @Override
     public boolean productStatusUp(List<SkuEsDTO> skuEsDTOs) throws IOException {
 
-        // 1.在 Es 中建立索引，建立映射关系（classpath: new_product_mapping.json）
+        // 1.在 Es 中建立索引，建立映射关系（classpath: product_mapping.txt）
 
         // 2. 在 ES 中保存这些数据
         BulkRequest bulkRequest = new BulkRequest();
@@ -52,7 +52,7 @@ public class ProductSaveServiceImpl implements ProductSaveService {
 
         BulkResponse bulk = this.esRestClient.bulk(bulkRequest, ElasticSearchConfig.COMMON_OPTIONS);
 
-        // TODO 如果批量错误
+        // TODO 如果有错误，需要处理
         boolean hasFailures = bulk.hasFailures();
 
         List<String> collect = Arrays.stream(bulk.getItems())

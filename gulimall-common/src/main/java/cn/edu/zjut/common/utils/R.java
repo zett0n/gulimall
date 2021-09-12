@@ -42,9 +42,9 @@ public class R extends HashMap<String, Object> {
     }
 
     public <T> T getData(TypeReference<T> typeReference) {
+        // SpringMVC 会自动将 data 转换为 ArrayList
         Object data = get("data");
 
-        // SpringMVC 会自动将 data 转换为 ArrayList
         // 这里利用 fastjson 先把 data 转为 JSON 字符串再转为指定格式
         return JSON.parseObject(JSON.toJSONString(data), typeReference);
     }

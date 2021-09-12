@@ -27,9 +27,11 @@ public enum EmBizError {
      */
     VALID_EXCEPTION(10001, "参数格式校验失败"),
     /**
-     * 商品异常
+     * Es检索商品异常
      */
-    PRODUCT_UP_EXCEPTION(11000, "商品上架异常");
+    ES_CONNECTION_EXCEPTION(11000, "Es 连接异常"),
+    PRODUCT_UP_EXCEPTION(11001, "商品上架异常"),
+    ;
 
     private final int errCode;
     private final String errMsg;

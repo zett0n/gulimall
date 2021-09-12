@@ -42,6 +42,7 @@ public class SpuInfoController {
     @PostMapping("/save")
     public R save(@RequestBody SpuSaveVO spuSaveVO) {
         this.spuInfoService.saveSpuInfo(spuSaveVO);
+
         return R.ok();
     }
 
@@ -51,9 +52,10 @@ public class SpuInfoController {
     @PostMapping("/{spuId}/up")
     public R spuUp(@PathVariable("spuId") Long spuId) {
         this.spuInfoService.up(spuId);
+
         return R.ok();
     }
-    
+
     /**
      * 信息
      */

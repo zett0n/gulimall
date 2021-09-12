@@ -31,16 +31,17 @@ public class ElasticSaveController {
      */
     @PostMapping(value = "/product")
     public R productStatusUp(@RequestBody List<SkuEsDTO> skuEsDTOs) {
-
         boolean hasFailures;
         try {
             hasFailures = this.productSaveService.productStatusUp(skuEsDTOs);
         } catch (IOException e) {
+            // Es 连不上等问题
             log.error("ElasticSaveController - 商品上架错误: ", e);
-            return R.error(EmBizError.PRODUCT_UP_EXCEPTION);
+            return R.error(EmBizError.ES_CONNECTION_EXCEPTION);
         }
 
         if (hasFailures) {
+            // sku 数据存在问题
             return R.error(EmBizError.PRODUCT_UP_EXCEPTION);
         }
 
