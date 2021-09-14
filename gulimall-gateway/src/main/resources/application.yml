@@ -54,10 +54,17 @@ spring:
           filters:
             - RewritePath=/api/(?<segment>.*), /renren-fast/$\{segment}
 
+        - id: host_route
+          uri: lb://gulimall-product
+          predicates:
+            - Host=**.gulimall.com
+
   # 指定时间格式化规则
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
     time-zone: GMT+8
+  thymeleaf:
+    cache: false
 
 server:
   port: 88

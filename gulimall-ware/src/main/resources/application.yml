@@ -10,11 +10,12 @@ spring:
     url: jdbc:mysql://localhost:3306/gulimall_wms
     username: root
     password: root
-
   # 指定时间格式化规则
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
     time-zone: GMT+8
+  thymeleaf:
+    cache: false
 
 mybatis-plus:
   mapper-locations: classpath:/mapper/**/*.xml
@@ -28,6 +29,7 @@ mybatis-plus:
 
 server:
   port: 11000
+
 logging:
   level:
     cn.edu.zjut: debug

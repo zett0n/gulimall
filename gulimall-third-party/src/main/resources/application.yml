@@ -11,11 +11,12 @@ spring:
       oss:
         endpoint: oss-cn-hangzhou.aliyuncs.com
         bucket: zett0n-gulimall
-
   # 指定时间格式化规则
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
     time-zone: GMT+8
+  thymeleaf:
+    cache: false
 
 server:
   port: 30000

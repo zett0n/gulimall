@@ -1,12 +1,12 @@
 package cn.edu.zjut.product.service;
 
-import java.util.List;
-import java.util.Map;
-
-import com.baomidou.mybatisplus.extension.service.IService;
-
 import cn.edu.zjut.common.utils.PageUtils;
 import cn.edu.zjut.product.entity.CategoryEntity;
+import cn.edu.zjut.product.vo.Catalog2VO;
+import com.baomidou.mybatisplus.extension.service.IService;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * 商品三级分类
@@ -27,4 +27,8 @@ public interface CategoryService extends IService<CategoryEntity> {
     Long[] findCatelogPath(Long catelogId);
 
     void updateCascade(CategoryEntity category);
+
+    List<CategoryEntity> getRootCategories();
+
+    Map<String, List<Catalog2VO>> getCatalogJSON();
 }

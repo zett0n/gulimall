@@ -7,6 +7,7 @@ import cn.edu.zjut.product.dao.CategoryDao;
 import cn.edu.zjut.product.entity.CategoryEntity;
 import cn.edu.zjut.product.service.CategoryBrandRelationService;
 import cn.edu.zjut.product.service.CategoryService;
+import cn.edu.zjut.product.vo.Catalog2VO;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -93,5 +94,77 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
 
             // TODO 更新其他关联
         }
+    }
+
+    /**
+     * 查询一级分类
+     */
+    @Override
+    public List<CategoryEntity> getRootCategories() {
+        return this.baseMapper.selectList(new QueryWrapper<CategoryEntity>().eq("cat_level", 1L));
+    }
+
+    /**
+     * 查询所有目录，组装为 JSON
+     * 只需查一次数据库，后续通过 stream 封装
+     */
+    @Override
+    public Map<String, List<Catalog2VO>> getCatalogJSON() {
+        // 查询目录所有信息
+        List<CategoryEntity> categoryEntities = this.baseMapper.selectList(null);
+
+        // 获取一级分类
+        List<CategoryEntity> level1Categories = filterByParentCid(categoryEntities, 0L);
+
+        // map 用于封装返回结果
+        Map<String, List<Catalog2VO>> map = new HashMap<>();
+
+        level1Categories.forEach(l1 -> {
+            List<Catalog2VO> catalog2VOs = null;
+
+            // 对于每个一级分类，查询它的二级分类
+            List<CategoryEntity> level2Categories = filterByParentCid(categoryEntities, l1.getCatId());
+
+            if (!level2Categories.isEmpty()) {
+                catalog2VOs = level2Categories.stream()
+                        .map(l2 -> {
+                            Catalog2VO catalog2VO = new Catalog2VO();
+                            catalog2VO.setCatalog1Id(l1.getCatId().toString())
+                                    .setId(l2.getCatId().toString())
+                                    .setName(l2.getName());
+
+                            List<Catalog2VO.Catalog3VO> catalog3VOs = null;
+
+                            // 对于每个二级分类，查询它的三级分类
+                            List<CategoryEntity> level3Categories = filterByParentCid(categoryEntities, l2.getCatId());
+                            if (!level3Categories.isEmpty()) {
+                                catalog3VOs = level3Categories.stream()
+                                        .map(l3 -> {
+                                            Catalog2VO.Catalog3VO catalog3VO = new Catalog2VO.Catalog3VO();
+                                            catalog3VO.setCatalog2Id(l2.getCatId().toString())
+                                                    .setId(l3.getCatId().toString())
+                                                    .setName(l3.getName());
+
+                                            return catalog3VO;
+                                        })
+                                        .collect(Collectors.toList());
+                            }
+                            catalog2VO.setCatalog3List(catalog3VOs);
+                            return catalog2VO;
+                        })
+                        .collect(Collectors.toList());
+            }
+            map.put(l1.getCatId().toString(), catalog2VOs);
+        });
+        return map;
+    }
+
+    /**
+     * 按父分类 id 过滤出对应的子分类
+     */
+    private List<CategoryEntity> filterByParentCid(List<CategoryEntity> categoryEntities, Long parentCid) {
+        return categoryEntities.stream()
+                .filter(item -> Objects.equals(item.getParentCid(), parentCid))
+                .collect(Collectors.toList());
     }
 }
