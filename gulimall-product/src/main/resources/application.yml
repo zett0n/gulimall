@@ -16,6 +16,9 @@ spring:
     time-zone: GMT+8
   thymeleaf:
     cache: false
+  redis:
+    host: 127.0.0.1
+    port: 6379
 
 mybatis-plus:
   mapper-locations: classpath:/mapper/**/*.xml
