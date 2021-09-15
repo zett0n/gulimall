@@ -13,8 +13,8 @@ import com.alibaba.fastjson.TypeReference;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
@@ -25,13 +25,28 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Service("categoryService")
+@Slf4j
 public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity> implements CategoryService {
 
-    @Autowired
-    private CategoryBrandRelationService categoryBrandRelationService;
+    private final CategoryBrandRelationService categoryBrandRelationService;
 
-    @Autowired
-    private StringRedisTemplate stringRedisTemplate;
+    private final StringRedisTemplate stringRedisTemplate;
+
+    /*
+     * 不使用 RedisTemplate 而用 StringRedisTemplate 原因：
+     * 存入 redis 中的 value 使用 JSON 字符串的形式兼容性更好
+     * 如果使用 <String, Object> 方式，会采用 Java 序列化机制，如果其他微服务使用非 Java 语言无法读取数据
+     */
+    private final ValueOperations<String, String> ops;
+
+    // TODO Autowird 空指针的解决办法与思考
+    // 这里三个成员变量如果都用 Autowired，ops 初始化时还未执行 stringRedisTemplate 的自动注入就会报空指针
+    public CategoryServiceImpl(CategoryBrandRelationService categoryBrandRelationService, StringRedisTemplate stringRedisTemplate) {
+        this.categoryBrandRelationService = categoryBrandRelationService;
+        this.stringRedisTemplate = stringRedisTemplate;
+        this.ops = this.stringRedisTemplate.opsForValue();
+    }
+
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -39,6 +54,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
 
         return new PageUtils(page);
     }
+
 
     @Override
     public List<CategoryEntity> listWithTree() {
@@ -57,6 +73,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
                 .collect(Collectors.toList());
     }
 
+
     /**
      * 递归查找所有菜单的子菜单
      */
@@ -68,11 +85,13 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
                 .collect(Collectors.toList());
     }
 
+
     @Override
     public void removeMenuByIds(List<Long> asList) {
         // TODO 检查要删除的菜单是否被别的地方引用
         this.baseMapper.deleteBatchIds(asList);
     }
+
 
     @Override
     public Long[] findCatelogPath(Long catelogId) {
@@ -80,6 +99,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         Collections.reverse(catelogPath);
         return catelogPath.toArray(new Long[0]);
     }
+
 
     private List<Long> findParentPath(Long catelogId, List<Long> path) {
         path.add(catelogId);
@@ -90,6 +110,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         }
         return path;
     }
+
 
     @Transactional
     @Override
@@ -104,6 +125,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         }
     }
 
+
     /**
      * 查询一级分类
      */
@@ -112,21 +134,17 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         return this.baseMapper.selectList(new QueryWrapper<CategoryEntity>().eq("cat_level", 1L));
     }
 
-    /*
+
+    /**
      * 高并发下缓存失效问题：
-     * 缓存穿透：查询一个null数据                       解决方案：缓存空数据
-     * 缓存雪崩：大量的key同时过期                      解决方案：加随机时间。加上过期时间
-     * 缓存击穿：大量并发进来同时查询一个正好过期的数据     解决方案：加锁 ? 默认是无加锁的;使用sync = true来解决击穿问题
+     * 缓存穿透：查询一个 null 数据                     解决方案：缓存空数据
+     * 缓存雪崩：大量的 key 同时过期                    解决方案：加随机时间。加上过期时间
+     * 缓存击穿：大量并发进来同时查询一个正好过期的数据     解决方案：加锁
      */
     @Override
     public Map<String, List<Catalog2VO>> getCatalogJSON() {
-        /*
-         * 不使用 RedisTemplate 而用 StringRedisTemplate 原因：
-         * 存入 redis 中的 value 使用 JSON 字符串的形式兼容性更好
-         * 如果使用 <String, Object> 方式，会采用 Java 序列化机制，如果其他微服务使用非 Java 语言无法读取数据
-         */
-        ValueOperations<String, String> ops = this.stringRedisTemplate.opsForValue();
-        String catalogJSON = ops.get("catalogJSON");
+        // 尝试从 redis 中获取数据
+        String catalogJSON = this.ops.get("catalogJSON");
 
         if (StringUtils.isEmpty(catalogJSON)) {
             // redis 中未找到，从数据库中查询
@@ -134,19 +152,61 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
 
             // 存入 redis，指定过期时间（24h ~ 25h 随机的任一秒）
             catalogJSON = JSON.toJSONString(catalogJSONFromDB);
-            ops.set("catalogJSON", catalogJSON,
+            this.ops.set("catalogJSON", catalogJSON,
                     DefaultConstant.REDIS_BASIC_TTL + new Random().nextInt(DefaultConstant.REDIS_EXTRA_TTL_UPPER_LIMIT),
                     TimeUnit.SECONDS);
 
             return catalogJSONFromDB;
         }
 
-        // redis 中找到，JSON 转 Map
+        // redis 中找到数据，JSON 转 Map 并返回
+        return ConvertJSONToMap(catalogJSON);
+    }
+
+
+    /**
+     * 通过 JVM 本地锁解决缓存击穿问题
+     * 在分布式模式下，使用本地锁只能锁本机 JVM 的线程
+     * 当然，高并发场景下每台机器（一个 JVM）同时访问一次数据库，压力不大
+     */
+    public Map<String, List<Catalog2VO>> getCatalogJSONFromDBWithLocalLock() {
+        // 尝试从 redis 中获取数据
+        String catalogJSON = this.ops.get("catalogJSON");
+
+        if (StringUtils.isEmpty(catalogJSON)) {
+            // redis 中未找到，从数据库中查询
+            // 加锁防止缓存击穿
+            synchronized (this) {
+                // 获得锁后，再次检查 redis 是否有数据(double check)
+                catalogJSON = this.ops.get("catalogJSON");
+
+                if (StringUtils.isEmpty(catalogJSON)) {
+                    // 仍然没有，查询数据库
+                    Map<String, List<Catalog2VO>> catalogJSONFromDB = getCatalogJSONFromDB();
+
+                    // 存入 redis，指定过期时间（24h ~ 25h 随机的任一秒）
+                    catalogJSON = JSON.toJSONString(catalogJSONFromDB);
+                    this.ops.set("catalogJSON", catalogJSON,
+                            DefaultConstant.REDIS_BASIC_TTL + new Random().nextInt(DefaultConstant.REDIS_EXTRA_TTL_UPPER_LIMIT),
+                            TimeUnit.SECONDS);
+
+                    // 返回结果并释放锁
+                    return catalogJSONFromDB;
+                }
+            }
+        }
+        // redis 中找到数据，JSON 转 Map 并返回
+        return ConvertJSONToMap(catalogJSON);
+    }
+
+
+    // JSON 转 Map
+    private Map<String, List<Catalog2VO>> ConvertJSONToMap(String catalogJSON) {
         TypeReference<Map<String, List<Catalog2VO>>> typeReference = new TypeReference<Map<String, List<Catalog2VO>>>() {
         };
-
         return JSON.parseObject(catalogJSON, typeReference);
     }
+
 
     /**
      * 查询所有目录，组装为 JSON
@@ -154,6 +214,8 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
      */
     @Override
     public Map<String, List<Catalog2VO>> getCatalogJSONFromDB() {
+        log.debug("查询了数据库...");
+
         // 查询目录所有信息
         List<CategoryEntity> categoryEntities = this.baseMapper.selectList(null);
 
@@ -203,6 +265,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         return map;
     }
 
+
     /**
      * 按父分类 id 过滤出对应的子分类
      */
@@ -211,4 +274,5 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
                 .filter(item -> Objects.equals(item.getParentCid(), parentCid))
                 .collect(Collectors.toList());
     }
+
 }
