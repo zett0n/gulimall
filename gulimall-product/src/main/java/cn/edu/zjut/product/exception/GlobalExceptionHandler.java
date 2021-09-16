@@ -15,7 +15,7 @@ import java.util.Map;
  * 全局异常处理
  */
 @Slf4j
-@RestControllerAdvice(basePackages = "cn.edu.zjut.product.controller")
+@RestControllerAdvice(basePackages = "cn.edu.zjut.product.api")
 public class GlobalExceptionHandler {
 
     /**
@@ -29,7 +29,7 @@ public class GlobalExceptionHandler {
         Map<String, String> errMap = new HashMap<>();
         bindingResult.getFieldErrors()
                 .forEach(fieldError -> errMap.put(fieldError.getField(), fieldError.getDefaultMessage()));
-        
+
         return R.error(EmBizError.VALID_EXCEPTION).put("data", errMap);
     }
 

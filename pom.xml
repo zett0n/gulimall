@@ -42,6 +42,8 @@
         <!--<hibernate.validator.version>5.0.2.Final</hibernate.validator.version>-->
         <alicloud.oss.version>2.2.0.RELEASE</alicloud.oss.version>
         <elasticsearch.version>7.4.2</elasticsearch.version>
+
+        <redisson.version>3.11.1</redisson.version>
     </properties>
 
     <!--  子模块按需继承父模块（作用：锁定版本，子模块不用再写 version）  -->
@@ -140,6 +142,13 @@
                 <groupId>org.elasticsearch.client</groupId>
                 <artifactId>elasticsearch-rest-client</artifactId>
                 <version>${elasticsearch.version}</version>
+            </dependency>
+
+            <!--redisson-->
+            <dependency>
+                <groupId>org.redisson</groupId>
+                <artifactId>redisson</artifactId>
+                <version>${redisson.version}</version>
             </dependency>
 
         </dependencies>

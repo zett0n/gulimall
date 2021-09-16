@@ -21,19 +21,19 @@ import java.util.Map;
 public class OssController {
 
     @Autowired
-    OSS ossClient;
+    private OSS ossClient;
 
     @Value("${spring.cloud.alicloud.oss.endpoint}")
-    String endpoint;
+    private String endpoint;
 
     @Value("${spring.cloud.alicloud.oss.bucket}")
-    String bucket;
+    private String bucket;
 
     @Value("${spring.cloud.alicloud.access-key}")
-    String accessId;
+    private String accessId;
 
     @Value("${spring.cloud.alicloud.secret-key}")
-    String accessKey;
+    private String accessKey;
 
     /**
      * 1、获取对象存储服务端签名

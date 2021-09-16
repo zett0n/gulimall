@@ -32,7 +32,9 @@ public class IndexController {
     @GetMapping("/index/catalog.json")
     @ResponseBody
     public Map<String, List<Catalog2VO>> getCatalogJSON() {
-        // return this.categoryService.getCatalogJSON();
-        return this.categoryService.getCatalogJSONFromDBWithLocalLock();
+        // return this.categoryService.getCatalogJSONFromDB();
+        // return this.categoryService.getCatalogJSONFromRedis();
+        // return this.categoryService.getCatalogJSONFromRedisWithLocalLock();
+        return this.categoryService.getCatalogJSONFromRedisWithRedisLock();
     }
 }

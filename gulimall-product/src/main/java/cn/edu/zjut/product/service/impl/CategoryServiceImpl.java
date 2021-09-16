@@ -17,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
+import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -136,85 +137,15 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
 
 
     /**
-     * 高并发下缓存失效问题：
-     * 缓存穿透：查询一个 null 数据                     解决方案：缓存空数据
-     * 缓存雪崩：大量的 key 同时过期                    解决方案：加随机时间。加上过期时间
-     * 缓存击穿：大量并发进来同时查询一个正好过期的数据     解决方案：加锁
-     */
-    @Override
-    public Map<String, List<Catalog2VO>> getCatalogJSON() {
-        // 尝试从 redis 中获取数据
-        String catalogJSON = this.ops.get("catalogJSON");
-
-        if (StringUtils.isEmpty(catalogJSON)) {
-            // redis 中未找到，从数据库中查询
-            Map<String, List<Catalog2VO>> catalogJSONFromDB = getCatalogJSONFromDB();
-
-            // 存入 redis，指定过期时间（24h ~ 25h 随机的任一秒）
-            catalogJSON = JSON.toJSONString(catalogJSONFromDB);
-            this.ops.set("catalogJSON", catalogJSON,
-                    DefaultConstant.REDIS_BASIC_TTL + new Random().nextInt(DefaultConstant.REDIS_EXTRA_TTL_UPPER_LIMIT),
-                    TimeUnit.SECONDS);
-
-            return catalogJSONFromDB;
-        }
-
-        // redis 中找到数据，JSON 转 Map 并返回
-        return ConvertJSONToMap(catalogJSON);
-    }
-
-
-    /**
-     * 通过 JVM 本地锁解决缓存击穿问题
-     * 在分布式模式下，使用本地锁只能锁本机 JVM 的线程
-     * 当然，高并发场景下每台机器（一个 JVM）同时访问一次数据库，压力不大
-     */
-    public Map<String, List<Catalog2VO>> getCatalogJSONFromDBWithLocalLock() {
-        // 尝试从 redis 中获取数据
-        String catalogJSON = this.ops.get("catalogJSON");
-
-        if (StringUtils.isEmpty(catalogJSON)) {
-            // redis 中未找到，从数据库中查询
-            // 加锁防止缓存击穿
-            synchronized (this) {
-                // 获得锁后，再次检查 redis 是否有数据(double check)
-                catalogJSON = this.ops.get("catalogJSON");
-
-                if (StringUtils.isEmpty(catalogJSON)) {
-                    // 仍然没有，查询数据库
-                    Map<String, List<Catalog2VO>> catalogJSONFromDB = getCatalogJSONFromDB();
-
-                    // 存入 redis，指定过期时间（24h ~ 25h 随机的任一秒）
-                    catalogJSON = JSON.toJSONString(catalogJSONFromDB);
-                    this.ops.set("catalogJSON", catalogJSON,
-                            DefaultConstant.REDIS_BASIC_TTL + new Random().nextInt(DefaultConstant.REDIS_EXTRA_TTL_UPPER_LIMIT),
-                            TimeUnit.SECONDS);
-
-                    // 返回结果并释放锁
-                    return catalogJSONFromDB;
-                }
-            }
-        }
-        // redis 中找到数据，JSON 转 Map 并返回
-        return ConvertJSONToMap(catalogJSON);
-    }
-
-
-    // JSON 转 Map
-    private Map<String, List<Catalog2VO>> ConvertJSONToMap(String catalogJSON) {
-        TypeReference<Map<String, List<Catalog2VO>>> typeReference = new TypeReference<Map<String, List<Catalog2VO>>>() {
-        };
-        return JSON.parseObject(catalogJSON, typeReference);
-    }
-
-
-    /**
-     * 查询所有目录，组装为 JSON
-     * 只需查一次数据库，后续通过 stream 封装
+     * 从数据库中查询所有目录，封装为 Map
+     * 只需查一次数据库，后续通过 stream 封装，避免了循环查库
+     * <p>
+     * 【问题】所有目录作为热点数据，数据库查询压力过大
+     * 【解决】引入缓存
      */
     @Override
     public Map<String, List<Catalog2VO>> getCatalogJSONFromDB() {
-        log.debug("查询了数据库...");
+        log.debug("查询数据库...");
 
         // 查询目录所有信息
         List<CategoryEntity> categoryEntities = this.baseMapper.selectList(null);
@@ -275,4 +206,129 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
                 .collect(Collectors.toList());
     }
 
+    /**
+     * 从缓存中获取数据，未找到则从数据库中查询
+     * 应对一般并发没有问题
+     * <p>
+     * 【高并发下缓存失效问题】
+     * 缓存穿透：查询一个 null 数据，请求穿透 Redis 直接访问了数据库         解决方案：缓存空数据
+     * 缓存雪崩：大量的 key 同时过期，瞬间数据库压力过大                    解决方案：加随机过期时间
+     * 缓存击穿：大量并发进来同时查询一个正好过期的数据，瞬间数据库压力过大     解决方案：加锁
+     */
+    @Override
+    public Map<String, List<Catalog2VO>> getCatalogJSONFromRedis() {
+        // 尝试从 redis 中获取数据
+        String catalogJSON = this.ops.get("catalogJSON");
+
+        if (StringUtils.isEmpty(catalogJSON)) {
+            // redis 中未找到，从数据库中查询
+            Map<String, List<Catalog2VO>> catalogJSONFromDB = getCatalogJSONFromDB();
+
+            // 存入 redis，指定随机过期时间（24h ~ 25h 随机的任一秒）
+            catalogJSON = JSON.toJSONString(catalogJSONFromDB);
+            this.ops.set("catalogJSON", catalogJSON,
+                    DefaultConstant.REDIS_BASIC_TTL + new Random().nextInt(DefaultConstant.REDIS_EXTRA_TTL_UPPER_LIMIT),
+                    TimeUnit.SECONDS);
+
+            return catalogJSONFromDB;
+        }
+        // redis 中找到数据，JSON 转 Map 并返回
+        return ConvertJSONToMap(catalogJSON);
+    }
+
+
+    /**
+     * 通过 JVM 本地锁解决缓存击穿问题
+     * 在分布式模式下，使用本地锁只能锁本机 JVM 的线程
+     * 当然，高并发场景下每台机器（一个 JVM）同时访问一次数据库，压力不大
+     */
+    public Map<String, List<Catalog2VO>> getCatalogJSONFromRedisWithLocalLock() {
+        // 尝试从 redis 中获取数据
+        String catalogJSON = this.ops.get("catalogJSON");
+
+        if (StringUtils.isEmpty(catalogJSON)) {
+            // redis 中未找到，从数据库中查询
+            // 加锁防止缓存击穿
+            synchronized (this) {
+                // 获得锁后，再次检查 redis 是否有数据(double check)
+                catalogJSON = this.ops.get("catalogJSON");
+
+                // double check
+                if (StringUtils.isEmpty(catalogJSON)) {
+                    // 仍然没有，查询数据库
+                    Map<String, List<Catalog2VO>> catalogJSONFromDB = getCatalogJSONFromDB();
+
+                    // 存入 redis，指定随机过期时间（24h ~ 25h 随机的任一秒）
+                    catalogJSON = JSON.toJSONString(catalogJSONFromDB);
+                    this.ops.set("catalogJSON", catalogJSON,
+                            DefaultConstant.REDIS_BASIC_TTL + new Random().nextInt(DefaultConstant.REDIS_EXTRA_TTL_UPPER_LIMIT),
+                            TimeUnit.SECONDS);
+
+                    // 返回结果并释放锁
+                    return catalogJSONFromDB;
+                }
+            }
+        }
+        // redis 中找到数据，JSON 转 Map 并返回
+        return ConvertJSONToMap(catalogJSON);
+    }
+
+
+    /**
+     * 通过 Redis 分布式锁解决缓存击穿问题
+     */
+    @Override
+    public Map<String, List<Catalog2VO>> getCatalogJSONFromRedisWithRedisLock() {
+        // token 用于在删锁时判断是否是锁当前 JVM 的锁
+        String token = UUID.randomUUID().toString();
+
+        // 设置 redis 分布式锁，加锁和设置 ttl 为原子操作
+        Boolean lock = this.ops.setIfAbsent("lock", token, DefaultConstant.REDIS_LOCK_TOKEN_TTL, TimeUnit.SECONDS);
+
+        if (Boolean.TRUE.equals(lock)) {
+            log.debug("获取分布式锁成功！");
+
+            // 加锁成功
+            Map<String, List<Catalog2VO>> catalogJSONFromRedis;
+
+            // try finally 保证业务奔溃就删锁，而不是等到 ttl
+            try {
+                // 执行业务...
+                catalogJSONFromRedis = getCatalogJSONFromRedis();
+            } finally {
+                // lua 脚本原子删锁
+                String script = "if redis.call(\"get\",KEYS[1]) == ARGV[1]\n" +
+                        "then\n" +
+                        "    return redis.call(\"del\",KEYS[1])\n" +
+                        "else\n" +
+                        "    return 0\n" +
+                        "end";
+
+                // public <T> T execute(RedisScript<T> script, List<K> keys, Object... args)
+                this.stringRedisTemplate.execute(new DefaultRedisScript<>(script, Long.class),
+                        Collections.singletonList("lock"),
+                        token
+                );
+            }
+            return catalogJSONFromRedis;
+        } else {
+            log.debug("获取分布式锁失败，重试...");
+
+            // 加锁失败，休眠 100ms 自旋重试
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            return getCatalogJSONFromRedisWithRedisLock();
+        }
+    }
+
+
+    // JSON 转 Map
+    private Map<String, List<Catalog2VO>> ConvertJSONToMap(String catalogJSON) {
+        TypeReference<Map<String, List<Catalog2VO>>> typeReference = new TypeReference<Map<String, List<Catalog2VO>>>() {
+        };
+        return JSON.parseObject(catalogJSON, typeReference);
+    }
 }

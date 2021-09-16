@@ -30,9 +30,12 @@ public interface CategoryService extends IService<CategoryEntity> {
 
     List<CategoryEntity> getRootCategories();
 
-    Map<String, List<Catalog2VO>> getCatalogJSON();
-
-    Map<String, List<Catalog2VO>> getCatalogJSONFromDBWithLocalLock();
-
     Map<String, List<Catalog2VO>> getCatalogJSONFromDB();
+
+    Map<String, List<Catalog2VO>> getCatalogJSONFromRedis();
+
+    Map<String, List<Catalog2VO>> getCatalogJSONFromRedisWithLocalLock();
+
+    Map<String, List<Catalog2VO>> getCatalogJSONFromRedisWithRedisLock();
+
 }
