@@ -19,6 +19,18 @@ spring:
   redis:
     host: 127.0.0.1
     port: 6379
+  cache:
+    type: redis
+    redis:
+      # 禁用前缀（包括 cacheName::）
+      # use-key-prefix: false
+      # 如果没有指定 prefix，前缀就为 cacheName::
+      # key-prefix: CACHE_
+      # 缓存空值，防止缓存穿透
+      cache-null-values: true
+      # 单位：ms
+      time-to-live: 3600000
+
 
 mybatis-plus:
   mapper-locations: classpath:/mapper/**/*.xml

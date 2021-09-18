@@ -36,8 +36,8 @@ public class AttrController {
      * 06、保存属性【规格参数，销售属性】
      */
     @PostMapping("/save")
-    public R save(@RequestBody AttrVO attrVo) {
-        this.attrService.saveAttr(attrVo);
+    public R save(@RequestBody AttrVO attrVO) {
+        this.attrService.saveAttr(attrVO);
 
         return R.ok();
     }
@@ -57,8 +57,8 @@ public class AttrController {
      * 08、修改属性
      */
     @PostMapping("/update")
-    public R update(@RequestBody AttrVO attrVo) {
-        this.attrService.updateAttr(attrVo);
+    public R update(@RequestBody AttrVO attrVO) {
+        this.attrService.updateAttr(attrVO);
 
         return R.ok();
     }

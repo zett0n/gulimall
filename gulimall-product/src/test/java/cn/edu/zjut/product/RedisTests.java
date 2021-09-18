@@ -23,7 +23,7 @@ public class RedisTests {
 
     @Test
     public void testRedisson() {
-        System.out.println(redissonClient);
+        System.out.println(this.redissonClient);
     }
-    
+
 }

@@ -105,20 +105,20 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
 
     @Transactional
     @Override
-    public void saveAttr(AttrVO attrVo) {
+    public void saveAttr(AttrVO attrVO) {
         AttrEntity attrEntity = new AttrEntity();
-        BeanUtils.copyProperties(attrVo, attrEntity);
+        BeanUtils.copyProperties(attrVO, attrEntity);
 
         // 保存基本数据
         this.save(attrEntity);
 
         // 保存关联关系（销售属性不需要）
-        if (Objects.equals(attrVo.getAttrType(), ProductConstant.AttrEnum.ATTR_TYPE_BASE.getVal())
-                && attrVo.getAttrGroupId() != null) {
+        if (Objects.equals(attrVO.getAttrType(), ProductConstant.AttrEnum.ATTR_TYPE_BASE.getVal())
+                && attrVO.getAttrGroupId() != null) {
             AttrAttrgroupRelationEntity attrAttrgroupRelationEntity = new AttrAttrgroupRelationEntity();
 
             // 保存基本数据时 attrEntity 的 attrId 更新了
-            attrAttrgroupRelationEntity.setAttrGroupId(attrVo.getAttrGroupId())
+            attrAttrgroupRelationEntity.setAttrGroupId(attrVO.getAttrGroupId())
                     .setAttrId(attrEntity.getAttrId());
 
             this.attrAttrgroupRelationDao.insert(attrAttrgroupRelationEntity);
@@ -163,23 +163,23 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
 
     @Override
     @Transactional
-    public void updateAttr(AttrVO attrVo) {
+    public void updateAttr(AttrVO attrVO) {
         AttrEntity attrEntity = new AttrEntity();
-        BeanUtils.copyProperties(attrVo, attrEntity);
+        BeanUtils.copyProperties(attrVO, attrEntity);
         this.updateById(attrEntity);
 
         if (Objects.equals(attrEntity.getAttrType(), ProductConstant.AttrEnum.ATTR_TYPE_BASE.getVal())) {
             // 修改或新增分组关联
             AttrAttrgroupRelationEntity attrAttrgroupRelationEntity = new AttrAttrgroupRelationEntity();
-            attrAttrgroupRelationEntity.setAttrGroupId(attrVo.getAttrGroupId())
-                    .setAttrId(attrVo.getAttrId());
+            attrAttrgroupRelationEntity.setAttrGroupId(attrVO.getAttrGroupId())
+                    .setAttrId(attrVO.getAttrId());
 
             Integer count = this.attrAttrgroupRelationDao.selectCount(
-                    new UpdateWrapper<AttrAttrgroupRelationEntity>().eq("attr_id", attrVo.getAttrId())
+                    new UpdateWrapper<AttrAttrgroupRelationEntity>().eq("attr_id", attrVO.getAttrId())
             );
             if (count > 0) {
                 this.attrAttrgroupRelationDao.update(attrAttrgroupRelationEntity,
-                        new UpdateWrapper<AttrAttrgroupRelationEntity>().eq("attr_id", attrVo.getAttrId()));
+                        new UpdateWrapper<AttrAttrgroupRelationEntity>().eq("attr_id", attrVO.getAttrId()));
             } else {
                 this.attrAttrgroupRelationDao.insert(attrAttrgroupRelationEntity);
             }

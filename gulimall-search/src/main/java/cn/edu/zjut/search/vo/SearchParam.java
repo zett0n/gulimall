@@ -6,8 +6,7 @@ import lombok.experimental.Accessors;
 import java.util.List;
 
 /**
- * @author: zhangshuaiyin
- * @date: 2021/3/11 15:22
+ * 封装查询条件
  */
 @Data
 @Accessors(chain = true)
@@ -34,17 +33,17 @@ public class SearchParam {
     private String sort;
 
     /**
-     * 是否显示有货
+     * 是否显示有货 0/1
      */
     private Integer hasStock;
 
     /**
-     * 价格区间查询
+     * 价格区间查询 _500 / 100_500 / 500_
      */
     private String skuPrice;
 
     /**
-     * 按照属性进行筛选
+     * 按照属性进行筛选 1_5寸:6寸:7寸
      */
     private List<String> attrs;
 
@@ -57,6 +56,5 @@ public class SearchParam {
      * 原生的所有查询条件
      */
     private String _queryString;
-
 
 }

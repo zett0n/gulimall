@@ -21,13 +21,13 @@ public interface AttrService extends IService<AttrEntity> {
 
     PageUtils queryPage(Map<String, Object> params);
 
-    void saveAttr(AttrVO attrVo);
+    void saveAttr(AttrVO attrVO);
 
     PageUtils queryBaseAttrPage(Map<String, Object> params, Long catelogId, String attrType);
 
     AttrRespVO getAttrInfo(Long attrId);
 
-    void updateAttr(AttrVO attrVo);
+    void updateAttr(AttrVO attrVO);
 
     List<AttrEntity> getRelationAttr(Long attrgroupId);
 
@@ -37,9 +37,6 @@ public interface AttrService extends IService<AttrEntity> {
 
     /**
      * 在指定的所有属性集合里，挑出可被检索的属性
-     *
-     * @param attrIds
-     * @return
      */
     List<Long> selectSearchAttrIds(List<Long> attrIds);
 }

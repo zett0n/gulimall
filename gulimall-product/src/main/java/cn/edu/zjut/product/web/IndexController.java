@@ -3,6 +3,7 @@ package cn.edu.zjut.product.web;
 import cn.edu.zjut.product.entity.CategoryEntity;
 import cn.edu.zjut.product.service.CategoryService;
 import cn.edu.zjut.product.vo.Catalog2VO;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -13,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 @Controller
+@Slf4j
 public class IndexController {
 
     @Autowired
@@ -34,7 +36,7 @@ public class IndexController {
     public Map<String, List<Catalog2VO>> getCatalogJSON() {
         // return this.categoryService.getCatalogJSONFromDB();
         // return this.categoryService.getCatalogJSONFromRedis();
-        // return this.categoryService.getCatalogJSONFromRedisWithLocalLock();
-        return this.categoryService.getCatalogJSONFromRedisWithRedisLock();
+        return this.categoryService.getCatalogJSONFromRedisWithSpringCache();
     }
+
 }
