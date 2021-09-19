@@ -19,7 +19,7 @@ import java.util.List;
  * @date: 2021/3/11 15:22
  */
 @Slf4j
-@RequestMapping(value = "search/save")
+@RequestMapping("search/save")
 @RestController
 public class ElasticSaveController {
 

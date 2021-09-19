@@ -9,10 +9,10 @@ import org.springframework.web.bind.annotation.PathVariable;
  * @author: zhangshuaiyin
  * @date: 2021/3/11 15:22
  */
-@FeignClient("mall-product")
+@FeignClient("gulimall-product")
 public interface ProductFeignService {
 
-    @GetMapping("/product/attr/info/{attrId}")
+    @GetMapping("product/attr/info/{attrId}")
     R attrInfo(@PathVariable("attrId") Long attrId);
 
 }

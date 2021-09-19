@@ -49,6 +49,14 @@ public class R extends HashMap<String, Object> {
         return JSON.parseObject(JSON.toJSONString(data), typeReference);
     }
 
+    public <T> T getData(String key, TypeReference<T> typeReference) {
+        // SpringMVC 会自动将 data 转换为 ArrayList
+        Object data = get(key);
+
+        // 这里利用 fastjson 先把 data 转为 JSON 字符串再转为指定格式
+        return JSON.parseObject(JSON.toJSONString(data), typeReference);
+    }
+
     public static R error() {
         return error(HttpStatus.SC_INTERNAL_SERVER_ERROR, "未知异常，请联系管理员");
     }

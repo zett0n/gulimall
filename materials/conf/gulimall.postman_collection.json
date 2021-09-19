@@ -23,14 +23,11 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:88/api/ware/purchase/received",
-							"protocol": "http",
+							"raw": "{{LOCAL_GATEWAY}}/ware/purchase/received",
 							"host": [
-								"localhost"
+								"{{LOCAL_GATEWAY}}"
 							],
-							"port": "88",
 							"path": [
-								"api",
 								"ware",
 								"purchase",
 								"received"
@@ -54,14 +51,11 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:88/api/ware/purchase/merge",
-							"protocol": "http",
+							"raw": "{{LOCAL_GATEWAY}}/ware/purchase/merge",
 							"host": [
-								"localhost"
+								"{{LOCAL_GATEWAY}}"
 							],
-							"port": "88",
 							"path": [
-								"api",
 								"ware",
 								"purchase",
 								"merge"
@@ -76,14 +70,11 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:88/api/ware/purchase/unreceive/list?t=1630340881841",
-							"protocol": "http",
+							"raw": "{{LOCAL_GATEWAY}}/ware/purchase/unreceive/list?t=1630340881841",
 							"host": [
-								"localhost"
+								"{{LOCAL_GATEWAY}}"
 							],
-							"port": "88",
 							"path": [
-								"api",
 								"ware",
 								"purchase",
 								"unreceive",
@@ -114,14 +105,11 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:88/api/ware/purchase/done",
-							"protocol": "http",
+							"raw": "{{LOCAL_GATEWAY}}/ware/purchase/done",
 							"host": [
-								"localhost"
+								"{{LOCAL_GATEWAY}}"
 							],
-							"port": "88",
 							"path": [
-								"api",
 								"ware",
 								"purchase",
 								"done"
@@ -150,14 +138,11 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:88/api/product/spuinfo/save",
-							"protocol": "http",
+							"raw": "{{LOCAL_GATEWAY}}/product/spuinfo/save",
 							"host": [
-								"localhost"
+								"{{LOCAL_GATEWAY}}"
 							],
-							"port": "88",
 							"path": [
-								"api",
 								"product",
 								"spuinfo",
 								"save"
@@ -181,17 +166,72 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:88/api/product/spuinfo/save",
+							"raw": "{{LOCAL_GATEWAY}}/product/spuinfo/save",
+							"host": [
+								"{{LOCAL_GATEWAY}}"
+							],
+							"path": [
+								"product",
+								"spuinfo",
+								"save"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "其他",
+			"item": []
+		},
+		{
+			"name": "检索系统",
+			"item": [
+				{
+					"name": "Es 运行测试",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:9200",
 							"protocol": "http",
 							"host": [
 								"localhost"
 							],
-							"port": "88",
+							"port": "9200"
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "信息检索",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "search.gulimall.com/list.html?keyword=华为&catalog3Id=225&skuPrice=5000_",
+							"host": [
+								"search",
+								"gulimall",
+								"com"
+							],
 							"path": [
-								"api",
-								"product",
-								"spuinfo",
-								"save"
+								"list.html"
+							],
+							"query": [
+								{
+									"key": "keyword",
+									"value": "华为"
+								},
+								{
+									"key": "catalog3Id",
+									"value": "225"
+								},
+								{
+									"key": "skuPrice",
+									"value": "5000_"
+								}
 							]
 						}
 					},

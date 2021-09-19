@@ -31,7 +31,7 @@ public class SearchResult {
     private Integer totalPages;
 
 
-//     private List<Integer> pageNavs;
+    private List<Integer> pageNavs;
 
     /**
      * 当前查询到的结果，所有涉及到的品牌
@@ -51,19 +51,20 @@ public class SearchResult {
 
 
     //===========================以上是返回给页面的所有信息============================//
-//
-//
-//     /* 面包屑导航数据 */
-//     private List<NavVO> navs;
-//
-//     @Data
-//     public static class NavVO {
-//         private String navName;
-//         private String navValue;
-//         private String link;
-//     }
-//
-//
+
+
+    /* 面包屑导航数据 */
+    private List<NavVO> navs;
+
+    @Data
+    @Accessors(chain = true)
+    public static class NavVO {
+        private String navName;
+        private String navValue;
+        private String link;
+    }
+
+
     @Data
     @Accessors(chain = true)
     public static class BrandVO {

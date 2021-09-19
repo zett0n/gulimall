@@ -6,9 +6,12 @@ package cn.edu.zjut.search.constant;
  */
 public class EsConstant {
 
-    // sku 数据在 Es 中的索引, 已经修改完映射并数据迁移
 
-    public static final String PRODUCT_INDEX = "product";
+    // sku 数据在 Es 中的索引
+    // public static final String PRODUCT_INDEX = "product";
+    // 修改完映射并数据迁移
+    public static final String PRODUCT_INDEX = "gulimall_product";
 
-    public static final Integer PRODUCT_PAGE_SIZE = 2;
+    // 检索结果页面每页的商品个数
+    public static final Integer PRODUCT_PAGE_SIZE = 10;
 }
