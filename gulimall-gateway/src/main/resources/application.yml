@@ -1,3 +1,10 @@
+server:
+  port: 88
+
+logging:
+  level:
+    cn.edu.zjut: debug
+
 spring:
   application:
     name: gulimall-gateway
@@ -57,12 +64,17 @@ spring:
         - id: host_route
           uri: lb://gulimall-product
           predicates:
-            - Host=gulimall.com
+            - Host=gulimall.com, item.gulimall.com
 
         - id: search_route
           uri: lb://gulimall-search
           predicates:
             - Host=search.gulimall.com
+
+        - id: auth_route
+          uri: lb://gulimall-auth-server
+          predicates:
+            - Host=auth.gulimall.com
 
   # 指定时间格式化规则
   jackson:
@@ -71,9 +83,3 @@ spring:
   thymeleaf:
     cache: false
 
-server:
-  port: 88
-
-logging:
-  level:
-    cn.edu.zjut: debug

@@ -3,6 +3,7 @@ package cn.edu.zjut.product.service;
 import cn.edu.zjut.common.utils.PageUtils;
 import cn.edu.zjut.product.entity.AttrGroupEntity;
 import cn.edu.zjut.product.vo.AttrGroupWithAttrsVO;
+import cn.edu.zjut.product.vo.SpuItemAttrGroupVO;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -22,5 +23,7 @@ public interface AttrGroupService extends IService<AttrGroupEntity> {
     PageUtils queryPage(Map<String, Object> params, Long catelogId);
 
     List<AttrGroupWithAttrsVO> getAttrGroupWithAttrsByCatelogId(Long catelogId);
+
+    List<SpuItemAttrGroupVO> getAttrGroupWithAttrsBySpuId(Long spuId, Long catalogId);
 }
 

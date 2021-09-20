@@ -3,7 +3,7 @@
 
 <mapper namespace="cn.edu.zjut.product.dao.SkuSaleAttrValueDao">
 
-	<!-- 可根据自己的需求，是否要使用 -->
+    <!-- 可根据自己的需求，是否要使用 -->
     <resultMap type="cn.edu.zjut.product.entity.SkuSaleAttrValueEntity" id="skuSaleAttrValueMap">
         <result property="id" column="id"/>
         <result property="skuId" column="sku_id"/>
@@ -13,5 +13,21 @@
         <result property="attrSort" column="attr_sort"/>
     </resultMap>
 
+    <resultMap type="cn.edu.zjut.product.vo.SkuItemSaleAttrVO" id="SkuItemSaleAttrVOMap">
+        <result property="attrId" column="attr_id"/>
+        <result property="attrName" column="attr_name"/>
+        <collection property="attrValues" ofType="cn.edu.zjut.product.vo.AttrValueWithSkuIdVO">
+            <result property="attrValue" column="attr_value"/>
+            <result property="skuIds" column="sku_ids"/>
+        </collection>
+    </resultMap>
+
+    <select id="getSaleAttrsBySpuId" resultMap="SkuItemSaleAttrVOMap">
+        select psaav.attr_id, psaav.attr_name, psaav.attr_value, group_concat(distinct psi.sku_id) as sku_ids
+        from pms_sku_info psi
+                 left join pms_sku_sale_attr_value psaav on psi.sku_id = psaav.sku_id
+        where psi.spu_id = #{spuId}
+        group by psaav.attr_id, psaav.attr_name, psaav.attr_value
+    </select>
 
 </mapper>

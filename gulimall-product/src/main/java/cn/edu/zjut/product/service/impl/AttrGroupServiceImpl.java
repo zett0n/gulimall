@@ -9,6 +9,7 @@ import cn.edu.zjut.product.entity.AttrGroupEntity;
 import cn.edu.zjut.product.service.AttrGroupService;
 import cn.edu.zjut.product.service.AttrService;
 import cn.edu.zjut.product.vo.AttrGroupWithAttrsVO;
+import cn.edu.zjut.product.vo.SpuItemAttrGroupVO;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -76,5 +77,12 @@ public class AttrGroupServiceImpl extends ServiceImpl<AttrGroupDao, AttrGroupEnt
             attrsVO.setAttrs(attrs);
             return attrsVO;
         }).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<SpuItemAttrGroupVO> getAttrGroupWithAttrsBySpuId(Long spuId, Long catalogId) {
+        // 查出当前 spu 对应的所有属性的分组信息 以及 当前分组下的所有属性对应的值
+        return this.baseMapper.getAttrGroupWithAttrsBySpuId(spuId, catalogId);
+
     }
 }

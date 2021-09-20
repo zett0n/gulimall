@@ -88,6 +88,14 @@
             <artifactId>spring-boot-starter-thymeleaf</artifactId>
         </dependency>
 
+        <!--配置文件参数提示-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
+            <!--<optional>true</optional>-->
+        </dependency>
+
+
         <!--中间件-->
 
     </dependencies>

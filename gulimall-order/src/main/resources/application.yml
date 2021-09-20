@@ -1,3 +1,10 @@
+server:
+  port: 9000
+
+logging:
+  level:
+    cn.edu.zjut: debug
+
 spring:
   application:
     name: gulimall-order
@@ -27,9 +34,3 @@ mybatis-plus:
       logic-not-delete-value: 1
       logic-delete-value: 0
 
-server:
-  port: 9000
-
-logging:
-  level:
-    cn.edu.zjut: debug
