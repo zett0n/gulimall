@@ -52,7 +52,9 @@ public class BrandController {
         return R.ok();
     }
 
-    // 修改状态
+    /**
+     * 修改状态
+     */
     @PostMapping("/update/status")
     public R updateStatus(@Validated({UpdateStatusGroup.class}) @RequestBody BrandEntity brand) {
         this.brandService.updateById(brand);

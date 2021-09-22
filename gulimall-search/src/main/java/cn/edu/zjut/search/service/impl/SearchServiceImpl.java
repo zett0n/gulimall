@@ -345,7 +345,7 @@ public class SearchServiceImpl implements SearchService {
                 navVO.setNavValue(s[1]);
                 R r = this.productFeignService.attrInfo(Long.parseLong(s[0]));
                 if (r.getCode() == 0) {
-                    AttrResponseVO data = r.getData("attr", new TypeReference<AttrResponseVO>() {
+                    AttrResponseVO data = r.parseObjectFromMap("attr", new TypeReference<AttrResponseVO>() {
                     });
                     navVO.setNavName(data.getAttrName());
                 } else {

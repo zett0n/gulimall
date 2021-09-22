@@ -1,6 +1,5 @@
 package cn.edu.zjut.product.service.impl;
 
-import cn.edu.zjut.common.constant.DefaultConstant;
 import cn.edu.zjut.common.utils.PageUtils;
 import cn.edu.zjut.common.utils.Query;
 import cn.edu.zjut.product.dao.SkuInfoDao;
@@ -25,6 +24,8 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ThreadPoolExecutor;
+
+import static cn.edu.zjut.common.constant.DefaultConstant.ID_SELECT_ALL;
 
 
 @Service("skuInfoService")
@@ -81,13 +82,13 @@ public class SkuInfoServiceImpl extends ServiceImpl<SkuInfoDao, SkuInfoEntity> i
 
         String catelogId = (String) params.get("catelogId");
         if (StringUtils.isNotEmpty(catelogId)
-                && !String.valueOf(DefaultConstant.ID_SELECT_ALL).equalsIgnoreCase(catelogId)) {
+                && !String.valueOf(ID_SELECT_ALL).equalsIgnoreCase(catelogId)) {
             queryWrapper.eq("catalog_id", catelogId);
         }
 
         String brandId = (String) params.get("brandId");
         if (StringUtils.isNotEmpty(brandId)
-                && !String.valueOf(DefaultConstant.ID_SELECT_ALL).equalsIgnoreCase(brandId)) {
+                && !String.valueOf(ID_SELECT_ALL).equalsIgnoreCase(brandId)) {
             queryWrapper.eq("brand_id", brandId);
         }
 

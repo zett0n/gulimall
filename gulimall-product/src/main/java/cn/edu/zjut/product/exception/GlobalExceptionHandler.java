@@ -19,7 +19,7 @@ import java.util.Map;
 public class GlobalExceptionHandler {
 
     /**
-     * 数据校验异常处理
+     * JSR303 数据校验异常处理
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public R handleValidException(MethodArgumentNotValidException e) {
@@ -27,8 +27,7 @@ public class GlobalExceptionHandler {
 
         BindingResult bindingResult = e.getBindingResult();
         Map<String, String> errMap = new HashMap<>();
-        bindingResult.getFieldErrors()
-                .forEach(fieldError -> errMap.put(fieldError.getField(), fieldError.getDefaultMessage()));
+        bindingResult.getFieldErrors().forEach(fieldError -> errMap.put(fieldError.getField(), fieldError.getDefaultMessage()));
 
         return R.error(EmBizError.VALID_EXCEPTION).put("data", errMap);
     }

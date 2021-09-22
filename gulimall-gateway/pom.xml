@@ -13,17 +13,6 @@
     <description>网关服务</description>
 
     <dependencies>
-        <!--<dependency>-->
-        <!--    <groupId>cn.edu.zjut</groupId>-->
-        <!--    <artifactId>gulimall-common</artifactId>-->
-        <!--    <exclusions>-->
-        <!--        <exclusion>-->
-        <!--            <groupId>org.springframework.boot</groupId>-->
-        <!--            <artifactId>spring-boot-starter-web</artifactId>-->
-        <!--        </exclusion>-->
-        <!--    </exclusions>-->
-        <!--</dependency>-->
-
         <!--服务注册发现-->
         <dependency>
             <groupId>com.alibaba.cloud</groupId>
@@ -41,6 +30,17 @@
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-gateway</artifactId>
         </dependency>
+
+        <!--<dependency>-->
+        <!--    <groupId>cn.edu.zjut</groupId>-->
+        <!--    <artifactId>gulimall-common</artifactId>-->
+        <!--    <exclusions>-->
+        <!--        <exclusion>-->
+        <!--            <groupId>org.springframework.boot</groupId>-->
+        <!--            <artifactId>spring-boot-starter-web</artifactId>-->
+        <!--        </exclusion>-->
+        <!--    </exclusions>-->
+        <!--</dependency>-->
 
     </dependencies>
 

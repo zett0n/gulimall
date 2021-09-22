@@ -8,7 +8,6 @@
 
 package cn.edu.zjut.common.utils;
 
-import cn.edu.zjut.common.constant.DefaultConstant;
 import cn.edu.zjut.common.exception.EmBizError;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
@@ -16,6 +15,8 @@ import org.apache.http.HttpStatus;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import static cn.edu.zjut.common.constant.DefaultConstant.R_SUCCESS_CODE;
 
 /**
  * 返回数据
@@ -28,7 +29,7 @@ public class R extends HashMap<String, Object> {
     private static final long serialVersionUID = 1L;
 
     public R() {
-        put("code", DefaultConstant.R_SUCCESS_CODE);
+        put("code", R_SUCCESS_CODE);
         put("msg", "success");
     }
 
@@ -41,20 +42,16 @@ public class R extends HashMap<String, Object> {
         return (Integer) this.get("code");
     }
 
-    public <T> T getData(TypeReference<T> typeReference) {
-        // SpringMVC 会自动将 data 转换为 ArrayList
-        Object data = get("data");
-
-        // 这里利用 fastjson 先把 data 转为 JSON 字符串再转为指定格式
-        return JSON.parseObject(JSON.toJSONString(data), typeReference);
+    public String getMsg() {
+        return (String) this.get("msg");
     }
 
-    public <T> T getData(String key, TypeReference<T> typeReference) {
+    public <T> T parseObjectFromMap(String key, TypeReference<T> typeReference) {
         // SpringMVC 会自动将 data 转换为 ArrayList
-        Object data = get(key);
+        Object value = get(key);
 
         // 这里利用 fastjson 先把 data 转为 JSON 字符串再转为指定格式
-        return JSON.parseObject(JSON.toJSONString(data), typeReference);
+        return JSON.parseObject(JSON.toJSONString(value), typeReference);
     }
 
     public static R error() {
@@ -72,7 +69,9 @@ public class R extends HashMap<String, Object> {
         return r;
     }
 
-    // 进一步封装全局异常
+    /**
+     * 进一步封装全局异常
+     */
     public static R error(EmBizError emBizError) {
         return error(emBizError.getErrCode(), emBizError.getErrMsg());
     }

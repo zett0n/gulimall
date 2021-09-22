@@ -1,5 +1,11 @@
 server:
   port: 30000
+  servlet:
+    session:
+      cookie:
+        name: GULI-SESSION
+        # 为了实现 session 跨域所有微服务都使用父域名
+        domain: gulimall.com
 
 logging:
   level:
@@ -24,5 +30,9 @@ spring:
     time-zone: GMT+8
   thymeleaf:
     cache: false
-
+  redis:
+    port: 6379
+    host: 127.0.0.1
+  session:
+    store-type: redis
 

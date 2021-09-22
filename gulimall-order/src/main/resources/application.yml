@@ -1,5 +1,11 @@
 server:
   port: 9000
+  servlet:
+    session:
+      cookie:
+        name: GULI-SESSION
+        # 为了实现 session 跨域所有微服务都使用父域名
+        domain: gulimall.com
 
 logging:
   level:
@@ -23,6 +29,11 @@ spring:
     time-zone: GMT+8
   thymeleaf:
     cache: false
+  redis:
+    host: 127.0.0.1
+    port: 6379
+  session:
+    store-type: redis
 
 mybatis-plus:
   mapper-locations: classpath:/mapper/**/*.xml

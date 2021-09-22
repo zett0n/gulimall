@@ -1,6 +1,5 @@
 package cn.edu.zjut.product.service.impl;
 
-import cn.edu.zjut.common.constant.DefaultConstant;
 import cn.edu.zjut.common.constant.ProductConstant;
 import cn.edu.zjut.common.dto.SkuHasStockDTO;
 import cn.edu.zjut.common.dto.SkuReductionDTO;
@@ -29,6 +28,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static cn.edu.zjut.common.constant.DefaultConstant.*;
 
 
 @Service("spuInfoService")
@@ -133,7 +134,7 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
         spuBoundDTO.setSpuId(spuId);
 
         R r1 = this.couponFeignService.saveSpuBounds(spuBoundDTO);
-        if (r1.getCode() != DefaultConstant.R_SUCCESS_CODE) {
+        if (r1.getCode() != R_SUCCESS_CODE) {
             this.log.error("远程保存spu积分信息失败");
         }
 
@@ -149,7 +150,7 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
             // 保存默认图片
             String defaultImg = "";
             for (Images image : sku.getImages()) {
-                if (image.getDefaultImg() == DefaultConstant.SKU_DEFAULT_IMG) {
+                if (image.getDefaultImg() == SKU_DEFAULT_IMG) {
                     defaultImg = image.getImgUrl();
                 }
             }
@@ -209,7 +210,7 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
             // 如果没有优惠的信息，无需调用优惠服务
             if (skuReductionDTO.getFullCount() > 0 || skuReductionDTO.getFullPrice().compareTo(BigDecimal.ZERO) > 0) {
                 R r2 = this.couponFeignService.saveSkuReduction(skuReductionDTO);
-                if (r2.getCode() != DefaultConstant.R_SUCCESS_CODE) {
+                if (r2.getCode() != R_SUCCESS_CODE) {
                     this.log.error("远程保存sku优惠信息失败");
                 }
             }
@@ -245,13 +246,13 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
 
         String brandId = (String) params.get("brandId");
         if (StringUtils.isNotEmpty(brandId) &&
-                !String.valueOf(DefaultConstant.ID_SELECT_ALL).equalsIgnoreCase(brandId)) {
+                !String.valueOf(ID_SELECT_ALL).equalsIgnoreCase(brandId)) {
             wrapper.eq("brand_id", brandId);
         }
 
         String catelogId = (String) params.get("catelogId");
         if (StringUtils.isNotEmpty(catelogId) &&
-                !String.valueOf(DefaultConstant.ID_SELECT_ALL).equalsIgnoreCase(catelogId)) {
+                !String.valueOf(ID_SELECT_ALL).equalsIgnoreCase(catelogId)) {
             wrapper.eq("catalog_id", catelogId);
         }
 
@@ -310,7 +311,7 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
             TypeReference<List<SkuHasStockDTO>> typeReference = new TypeReference<List<SkuHasStockDTO>>() {
             };
 
-            stockMap = r.getData(typeReference).stream()
+            stockMap = r.parseObjectFromMap("data", typeReference).stream()
                     .collect(Collectors.toMap(SkuHasStockDTO::getSkuId, SkuHasStockDTO::getHasStock));
         } catch (Exception e) {
             this.log.error("库存服务查询异常：原因{}", e);
@@ -357,7 +358,7 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
         // 因为 Es 在保存商品时设置了 id，因此重复保存只会更新属性值（接口幂等）
         R r = this.searchFeignService.productStatusUp(upProducts);
 
-        if (r.getCode() == DefaultConstant.R_SUCCESS_CODE) {
+        if (r.getCode() == R_SUCCESS_CODE) {
             // 远程调用成功，修改当前 spu 的状态 (pms_spu_info 的 publish_status 和 update_time)
             // 数据库修改失败怎么保证 Es 和 MySQL 数据一致性？由于 Es 接口幂等性，再重新上传商品即可
             this.baseMapper.updateSpuStatus(spuId, ProductConstant.ProductStatusEnum.SPU_UP.getVal());

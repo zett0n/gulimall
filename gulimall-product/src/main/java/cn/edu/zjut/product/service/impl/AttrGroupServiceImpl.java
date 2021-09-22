@@ -1,6 +1,5 @@
 package cn.edu.zjut.product.service.impl;
 
-import cn.edu.zjut.common.constant.DefaultConstant;
 import cn.edu.zjut.common.utils.PageUtils;
 import cn.edu.zjut.common.utils.Query;
 import cn.edu.zjut.product.dao.AttrGroupDao;
@@ -21,6 +20,8 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import static cn.edu.zjut.common.constant.DefaultConstant.ID_SELECT_ALL;
 
 @Service("attrGroupService")
 public class AttrGroupServiceImpl extends ServiceImpl<AttrGroupDao, AttrGroupEntity> implements AttrGroupService {
@@ -44,7 +45,7 @@ public class AttrGroupServiceImpl extends ServiceImpl<AttrGroupDao, AttrGroupEnt
         QueryWrapper<AttrGroupEntity> queryWrapper = new QueryWrapper<>();
 
         // 只有选三级分类，前端传非默认值的 catelogId 才将其纳入查询条件
-        if (catelogId != DefaultConstant.ID_SELECT_ALL) {
+        if (catelogId != ID_SELECT_ALL) {
             queryWrapper.eq("catelog_id", catelogId);
         }
 

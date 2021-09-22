@@ -1,6 +1,5 @@
 package cn.edu.zjut.ware.service.impl;
 
-import cn.edu.zjut.common.constant.DefaultConstant;
 import cn.edu.zjut.common.dto.SkuHasStockDTO;
 import cn.edu.zjut.common.utils.PageUtils;
 import cn.edu.zjut.common.utils.Query;
@@ -22,6 +21,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static cn.edu.zjut.common.constant.DefaultConstant.R_SUCCESS_CODE;
+import static cn.edu.zjut.common.constant.DefaultConstant.STOCK_UNLOCK;
 
 @Service("wareSkuService")
 public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> implements WareSkuService {
@@ -74,7 +75,7 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
             wareSkuEntity.setSkuId(skuId)
                     .setStock(skuNum)
                     .setWareId(wareId)
-                    .setStockLocked(DefaultConstant.STOCK_UNLOCK);
+                    .setStockLocked(STOCK_UNLOCK);
 
             // 远程查询sku的名字，如果失败，整个事务无需回滚
             // 1、自己catch异常？
@@ -83,7 +84,7 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
                 R r = this.productFeignService.info(skuId);
                 Map<String, Object> data = (Map<String, Object>) r.get("skuInfo");
 
-                if (r.getCode() == DefaultConstant.R_SUCCESS_CODE) {
+                if (r.getCode() == R_SUCCESS_CODE) {
                     wareSkuEntity.setSkuName((String) data.get("skuName"));
                 }
             } catch (Exception e) {

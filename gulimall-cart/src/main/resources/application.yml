@@ -1,0 +1,38 @@
+server:
+  port: 40000
+  servlet:
+    session:
+      cookie:
+        name: GULI-SESSION
+        # 为了实现 session 跨域所有微服务都使用父域名
+        domain: gulimall.com
+
+logging:
+  level:
+    cn.edu.zjut: debug
+
+spring:
+  application:
+    name: gulimall-cart
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+  thymeleaf:
+    cache: false
+  redis:
+    host: 127.0.0.1
+    port: 6379
+  session:
+    store-type: redis
+
+# 线程池
+thread:
+  pool:
+    core-size: 20
+    max-size: 200
+    keep-alive-time: 10
+    queue-length: 100000

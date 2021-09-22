@@ -1,5 +1,11 @@
 server:
   port: 10000
+  servlet:
+    session:
+      cookie:
+        name: GULI-SESSION
+        # 为了实现 session 跨域所有微服务都使用父域名
+        domain: gulimall.com
 
 logging:
   level:
@@ -37,6 +43,8 @@ spring:
       cache-null-values: true
       # 单位：ms
       time-to-live: 3600000
+  session:
+    store-type: redis
 
 mybatis-plus:
   mapper-locations: classpath:/mapper/**/*.xml

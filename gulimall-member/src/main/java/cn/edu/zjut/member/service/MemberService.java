@@ -1,8 +1,10 @@
 package cn.edu.zjut.member.service;
 
-import com.baomidou.mybatisplus.extension.service.IService;
 import cn.edu.zjut.common.utils.PageUtils;
 import cn.edu.zjut.member.entity.MemberEntity;
+import cn.edu.zjut.member.vo.MemberUserLoginVO;
+import cn.edu.zjut.member.vo.MemberUserRegisterVO;
+import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.Map;
 
@@ -16,5 +18,11 @@ import java.util.Map;
 public interface MemberService extends IService<MemberEntity> {
 
     PageUtils queryPage(Map<String, Object> params);
+
+    void register(MemberUserRegisterVO vo);
+
+    boolean checkExist(String field, String value);
+
+    MemberEntity login(MemberUserLoginVO vo);
 }
 

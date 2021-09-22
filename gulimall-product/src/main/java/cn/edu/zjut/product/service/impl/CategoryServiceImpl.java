@@ -1,6 +1,5 @@
 package cn.edu.zjut.product.service.impl;
 
-import cn.edu.zjut.common.constant.DefaultConstant;
 import cn.edu.zjut.common.utils.PageUtils;
 import cn.edu.zjut.common.utils.Query;
 import cn.edu.zjut.product.dao.CategoryDao;
@@ -30,6 +29,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+
+import static cn.edu.zjut.common.constant.DefaultConstant.*;
 
 @Service("categoryService")
 @Slf4j
@@ -83,11 +84,11 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         // 2、组装成父子的树形结构
         return categoryEntities.stream()
                 // 过滤找出一级分类
-                .filter(categoryEntity -> categoryEntity.getParentCid() == DefaultConstant.NO_PARENT_CATEGORY)
+                .filter(categoryEntity -> categoryEntity.getParentCid() == NO_PARENT_CATEGORY)
                 // 处理，给一级菜单递归设置子菜单
                 .peek(menu -> menu.setChildren(findChildren(menu, categoryEntities)))
                 // 因为按sort属性排序，所以 menu-> .. 将需要排序的字段 sort 映射给 Comparator 排序
-                .sorted(Comparator.comparingInt(menu -> (menu.getSort() == null ? DefaultConstant.SORT_DEFAULT_VALUE : menu.getSort())))
+                .sorted(Comparator.comparingInt(menu -> (menu.getSort() == null ? SORT_DEFAULT_VALUE : menu.getSort())))
                 .collect(Collectors.toList());
     }
 
@@ -99,7 +100,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         return all.stream()
                 .filter(categoryEntity -> categoryEntity.getParentCid().equals(root.getCatId()))
                 .peek(categoryEntity -> categoryEntity.setChildren(findChildren(categoryEntity, all)))
-                .sorted(Comparator.comparingInt(menu -> (menu.getSort() == null ? DefaultConstant.SORT_DEFAULT_VALUE : menu.getSort())))
+                .sorted(Comparator.comparingInt(menu -> (menu.getSort() == null ? SORT_DEFAULT_VALUE : menu.getSort())))
                 .collect(Collectors.toList());
     }
 
@@ -123,7 +124,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         path.add(catelogId);
 
         Long parentCid = this.getById(catelogId).getParentCid();
-        if (parentCid != DefaultConstant.NO_PARENT_CATEGORY) {
+        if (parentCid != NO_PARENT_CATEGORY) {
             findParentPath(parentCid, path);
         }
         return path;
@@ -305,7 +306,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         String token = UUID.randomUUID().toString();
 
         // 设置 redis 分布式锁，加锁和设置 ttl 为原子操作
-        Boolean lock = this.ops.setIfAbsent(this.CATALOG_JSON_REDIS_LOCK_KEY, token, DefaultConstant.REDIS_LOCK_TOKEN_TTL, TimeUnit.SECONDS);
+        Boolean lock = this.ops.setIfAbsent(this.CATALOG_JSON_REDIS_LOCK_KEY, token, REDIS_LOCK_TOKEN_TTL, TimeUnit.SECONDS);
 
         if (Boolean.TRUE.equals(lock)) {
             // 加锁成功
@@ -379,7 +380,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         // 存入 redis，【缓存雪崩】指定随机过期时间（24h ~ 25h 随机的任一秒）
         catalogJSON = JSON.toJSONString(catalogJSONFromDB);
         this.ops.set(this.CATALOG_JSON_REDIS_KEY, catalogJSON,
-                DefaultConstant.REDIS_BASIC_TTL + new Random().nextInt(DefaultConstant.REDIS_EXTRA_TTL_UPPER_LIMIT),
+                REDIS_BASIC_TTL + new Random().nextInt(REDIS_EXTRA_TTL_UPPER_LIMIT),
                 TimeUnit.SECONDS);
 
         return catalogJSONFromDB;
