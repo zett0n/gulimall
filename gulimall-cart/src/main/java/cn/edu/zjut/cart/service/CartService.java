@@ -7,6 +7,9 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 public interface CartService {
+    /**
+     * 将商品添加到购物车
+     */
     CartItemVO addToCart(Long skuId, Integer num) throws ExecutionException, InterruptedException;
 
     /**
@@ -15,14 +18,14 @@ public interface CartService {
     CartItemVO getCartItem(Long skuId);
 
     /**
-     * 获取购物车里面的信息
+     * 获取购物车数据，如果用户登录了，会将游客购物车信息合并
      */
     CartVO getCart() throws ExecutionException, InterruptedException;
 
     /**
      * 清空购物车的数据
      */
-    public void clearCartInfo(String cartKey);
+    public void clearCart(String cartKey);
 
     /**
      * 勾选购物项

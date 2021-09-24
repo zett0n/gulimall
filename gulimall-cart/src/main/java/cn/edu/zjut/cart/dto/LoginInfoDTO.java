@@ -5,6 +5,7 @@ import lombok.experimental.Accessors;
 
 @Data
 @Accessors(chain = true)
+// @ToString
 public class LoginInfoDTO {
 
     private Long userId;

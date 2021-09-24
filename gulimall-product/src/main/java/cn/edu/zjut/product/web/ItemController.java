@@ -24,5 +24,6 @@ public class ItemController {
         model.addAttribute("item", skuItemVO);
 
         return "item";
+        // return "myitem";
     }
 }
