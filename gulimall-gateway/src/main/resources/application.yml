@@ -8,6 +8,12 @@ logging:
 spring:
   application:
     name: gulimall-gateway
+  # 指定时间格式化规则
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+  thymeleaf:
+    cache: false
   cloud:
     nacos:
       discovery:
@@ -81,10 +87,9 @@ spring:
           predicates:
             - Host=cart.gulimall.com
 
-  # 指定时间格式化规则
-  jackson:
-    date-format: yyyy-MM-dd HH:mm:ss
-    time-zone: GMT+8
-  thymeleaf:
-    cache: false
+        - id: order_route
+          uri: lb://gulimall-order
+          predicates:
+            - Host=order.gulimall.com
+
 

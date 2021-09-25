@@ -8,8 +8,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 @Controller
@@ -23,7 +25,7 @@ public class CartController {
         CartVO vo = this.cartService.getCart();
         model.addAttribute("cart", vo);
 
-        return "cartList2";
+        return "cartList";
     }
 
     /**
@@ -56,7 +58,7 @@ public class CartController {
     }
 
     /**
-     * 商品是否选中
+     * 修改商品选中状态
      * TODO ajax方案
      */
     @GetMapping("/checkItem")
@@ -84,6 +86,16 @@ public class CartController {
         this.cartService.deleteIdCartInfo(skuId);
 
         return "redirect:http://cart.gulimall.com/cart.html";
+    }
+
+
+    /**
+     * 获取用户选中的购物项
+     */
+    @GetMapping("/getCheckedItems")
+    @ResponseBody
+    public List<CartItemVO> getCheckedItems() {
+        return this.cartService.getUserCheckedItems();
     }
 
 }

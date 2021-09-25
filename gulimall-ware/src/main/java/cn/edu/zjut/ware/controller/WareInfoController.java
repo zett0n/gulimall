@@ -1,15 +1,16 @@
 package cn.edu.zjut.ware.controller;
 
-import cn.edu.zjut.common.utils.PageUtils;
-import cn.edu.zjut.common.utils.R;
-import cn.edu.zjut.ware.entity.WareInfoEntity;
-import cn.edu.zjut.ware.service.WareInfoService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-
 import java.util.Arrays;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import cn.edu.zjut.common.utils.PageUtils;
+import cn.edu.zjut.common.utils.R;
+import cn.edu.zjut.common.vo.FareVO;
+import cn.edu.zjut.ware.entity.WareInfoEntity;
+import cn.edu.zjut.ware.service.WareInfoService;
 
 /**
  * 仓库信息
@@ -21,9 +22,18 @@ import java.util.Map;
 @RestController
 @RequestMapping("ware/wareinfo")
 public class WareInfoController {
+
     @Autowired
     private WareInfoService wareInfoService;
-    
+
+    /**
+     * 获取运费信息
+     */
+    @GetMapping("/fare/{addrId}")
+    FareVO getFare(@PathVariable("addrId") Long addrId) {
+        return this.wareInfoService.getFare(addrId);
+    }
+
     /**
      * 01、仓库列表
      */
@@ -33,7 +43,6 @@ public class WareInfoController {
 
         return R.ok().put("page", page);
     }
-
 
     /**
      * 信息

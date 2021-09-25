@@ -43,5 +43,9 @@ public interface CartService {
      */
     void deleteIdCartInfo(Integer skuId);
 
-    List<CartItemVO> getUserCartItems();
+    /**
+     * 获取用户选中的购物项
+     */
+    List<CartItemVO> getUserCheckedItems();
+
 }

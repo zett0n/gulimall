@@ -1,10 +1,12 @@
 package cn.edu.zjut.ware.service;
 
-import com.baomidou.mybatisplus.extension.service.IService;
-import cn.edu.zjut.common.utils.PageUtils;
-import cn.edu.zjut.ware.entity.WareInfoEntity;
-
 import java.util.Map;
+
+import com.baomidou.mybatisplus.extension.service.IService;
+
+import cn.edu.zjut.common.utils.PageUtils;
+import cn.edu.zjut.common.vo.FareVO;
+import cn.edu.zjut.ware.entity.WareInfoEntity;
 
 /**
  * 仓库信息
@@ -16,5 +18,6 @@ import java.util.Map;
 public interface WareInfoService extends IService<WareInfoEntity> {
 
     PageUtils queryPage(Map<String, Object> params);
-}
 
+    FareVO getFare(Long addrId);
+}

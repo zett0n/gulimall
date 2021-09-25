@@ -16,6 +16,7 @@ import org.springframework.data.redis.core.BoundHashOperations;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -38,23 +39,12 @@ public class CartServiceImpl implements CartService {
     private ThreadPoolExecutor executor;
 
 
-    // private BoundHashOperations<String, Object, Object> cartOps;
-
-    // public CartServiceImpl(StringRedisTemplate stringRedisTemplate, ProductFeignService productFeignService, ThreadPoolExecutor executor) {
-    //     this.stringRedisTemplate = stringRedisTemplate;
-    //     this.productFeignService = productFeignService;
-    //     this.executor = executor;
-    //
-    //     this.cartOps = getCartOps();
-    // }
-
-
     /**
      * 判断游客是否登录，登录返回 true
      */
     private boolean checkUserLogin() {
         LoginInfoDTO loginInfoDTO = CartInterceptor.threadLocal.get();
-        log.debug("loginInfoDTO: {}", loginInfoDTO);
+        // log.debug("{}", loginInfoDTO);
         return loginInfoDTO.getUserId() != null;
     }
 
@@ -200,8 +190,21 @@ public class CartServiceImpl implements CartService {
         cartOps.delete(skuId.toString());
     }
 
+
     @Override
-    public List<CartItemVO> getUserCartItems() {
-        return null;
+    public List<CartItemVO> getUserCheckedItems() {
+        LoginInfoDTO loginInfoDTO = CartInterceptor.threadLocal.get();
+        String userCartKey = CART_PREFIX + loginInfoDTO.getUserId();
+        List<CartItemVO> userCartItems = getCartItems(userCartKey);
+
+        return userCartItems.stream()
+                .filter(CartItemVO::getCheck)
+                .peek(item -> {
+                    // 远程查询最新价格 TODO 循环feign
+                    BigDecimal price = this.productFeignService.getPrice(item.getSkuId());
+                    item.setPrice(price);
+                })
+                .collect(Collectors.toList());
     }
+
 }

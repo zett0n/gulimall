@@ -1,9 +1,10 @@
 package cn.edu.zjut.member.service;
 
-import com.baomidou.mybatisplus.extension.service.IService;
 import cn.edu.zjut.common.utils.PageUtils;
 import cn.edu.zjut.member.entity.MemberReceiveAddressEntity;
+import com.baomidou.mybatisplus.extension.service.IService;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -16,5 +17,7 @@ import java.util.Map;
 public interface MemberReceiveAddressService extends IService<MemberReceiveAddressEntity> {
 
     PageUtils queryPage(Map<String, Object> params);
+
+    List<MemberReceiveAddressEntity> getAddressById(Long memberId);
 }
 

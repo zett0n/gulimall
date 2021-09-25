@@ -1,10 +1,15 @@
 package cn.edu.zjut.order.service;
 
+import java.util.Map;
+import java.util.concurrent.ExecutionException;
+
 import com.baomidou.mybatisplus.extension.service.IService;
+
 import cn.edu.zjut.common.utils.PageUtils;
 import cn.edu.zjut.order.entity.OrderEntity;
-
-import java.util.Map;
+import cn.edu.zjut.order.vo.OrderConfirmVO;
+import cn.edu.zjut.order.vo.OrderSubmitVO;
+import cn.edu.zjut.order.vo.SubmitOrderResponseVO;
 
 /**
  * 订单
@@ -16,5 +21,8 @@ import java.util.Map;
 public interface OrderService extends IService<OrderEntity> {
 
     PageUtils queryPage(Map<String, Object> params);
-}
 
+    OrderConfirmVO confirmOrder() throws ExecutionException, InterruptedException;
+
+    SubmitOrderResponseVO submitOrder(OrderSubmitVO orderSubmitVO);
+}

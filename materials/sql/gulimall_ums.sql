@@ -158,7 +158,7 @@ create table ums_member_receive_address
    region               varchar(100) comment '区',
    detail_address       varchar(255) comment '详细地址(街道)',
    areacode             varchar(15) comment '省市区代码',
-   default_status       tinyint(1) comment '是否默认',
+   default_status       tinyint(1) comment '是否默认收获地址',
    primary key (id)
 );
 

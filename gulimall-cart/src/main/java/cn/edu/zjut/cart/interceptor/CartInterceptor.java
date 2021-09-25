@@ -3,6 +3,7 @@ package cn.edu.zjut.cart.interceptor;
 import cn.edu.zjut.cart.dto.LoginInfoDTO;
 import cn.edu.zjut.common.vo.MemberResponseVO;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -23,8 +24,10 @@ import static cn.edu.zjut.common.constant.CartConstant.VISITOR_COOKIE_TIMEOUT;
  * <p>
  * 方法调用顺序：preHandle -> Controller -> 业务 -> 返回 ModelAndView -> postHandle -> DispatcherServlet 视图渲染 -> afterCompletion
  */
+@Component
 public class CartInterceptor implements HandlerInterceptor {
 
+    // 要使用 @Value 的前提是整个类交给容器管理 @Component
     @Value("${server.servlet.session.cookie.domain}")
     private String domain;
 
@@ -92,8 +95,8 @@ public class CartInterceptor implements HandlerInterceptor {
             loginInfoDTO.setFirstVisit(false);
 
             Cookie cookie = new Cookie(VISITOR_COOKIE_KEY, loginInfoDTO.getVisitorId());
-            // cookie.setDomain(this.domain);
-            cookie.setDomain("gulimall.com");
+            // cookie.setDomain("gulimall.com");
+            cookie.setDomain(this.domain);
             cookie.setMaxAge(VISITOR_COOKIE_TIMEOUT);
             response.addCookie(cookie);
         }

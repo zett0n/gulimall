@@ -26,6 +26,13 @@ public class SpuInfoController {
     @Autowired
     private SpuInfoService spuInfoService;
 
+    @GetMapping("product/spuinfo/{skuId}")
+    public R getSpuInfoBySkuId(@PathVariable("skuId") Long skuId) {
+        SpuInfoEntity spuInfo = this.spuInfoService.getSpuInfoBySkuId(skuId);
+
+        return R.ok().put("spuInfo", spuInfo);
+    }
+
     /**
      * 18、spu检索
      */
