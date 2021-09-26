@@ -1,14 +1,11 @@
 package cn.edu.zjut.order.service.impl;
 
-import cn.edu.zjut.common.constant.DefaultConstant;
 import cn.edu.zjut.common.dto.SkuHasStockDTO;
+import cn.edu.zjut.common.exception.NoStockException;
 import cn.edu.zjut.common.utils.PageUtils;
 import cn.edu.zjut.common.utils.Query;
 import cn.edu.zjut.common.utils.R;
-import cn.edu.zjut.common.vo.FareVO;
-import cn.edu.zjut.common.vo.MemberAddressVO;
-import cn.edu.zjut.common.vo.MemberResponseVO;
-import cn.edu.zjut.common.vo.OrderItemVO;
+import cn.edu.zjut.common.vo.*;
 import cn.edu.zjut.order.dao.OrderDao;
 import cn.edu.zjut.order.dto.OrderCreateDTO;
 import cn.edu.zjut.order.dto.SpuInfoDTO;
@@ -47,6 +44,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import static cn.edu.zjut.common.constant.DefaultConstant.R_SUCCESS_CODE;
 import static cn.edu.zjut.common.constant.OrderConstant.TOKEN_TTL;
 import static cn.edu.zjut.common.constant.OrderConstant.USER_ORDER_TOKEN_PREFIX;
 
@@ -152,44 +150,71 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
     @Override
     @Transactional
     public SubmitOrderResponseVO submitOrder(OrderSubmitVO orderSubmitVO) {
+
         SubmitOrderResponseVO submitOrderResponseVO = new SubmitOrderResponseVO();
         MemberResponseVO memberResponseVO = OrderInterceptor.loginUser.get();
 
-        /*
-         * A、防重校验令牌
-         * key 不存在或者删除失败：0 删除成功：1
-         */
+        /* ------------------------------------------ A、防重校验令牌 ------------------------------------------ */
+
+        // lua 脚本
         String script = "if redis.call('get', KEYS[1]) == ARGV[1] then return redis.call('del', KEYS[1]) else return 0 end";
+        // key 不存在或者删除失败：0 删除成功：1
         Long execute = this.stringRedisTemplate.execute(new DefaultRedisScript<>(script, Long.class),
                 Collections.singletonList(USER_ORDER_TOKEN_PREFIX + memberResponseVO.getId()), orderSubmitVO.getOrderToken());
 
-        if (execute == 0L) {
-            // 防重令牌验证失败
+        // 防重令牌验证失败
+        if (execute == null || execute == 0L) {
             submitOrderResponseVO.setCode(1);
-        } else {
-            /*
-             * B、创建订单
-             */
-            OrderCreateDTO order = createOrder(orderSubmitVO, memberResponseVO);
-            /*
-             * C、验价
-             */
-            BigDecimal payAmount = order.getOrder().getPayAmount();
-            BigDecimal payPrice = orderSubmitVO.getPayPrice();
-            if (Math.abs(payAmount.subtract(payPrice).doubleValue()) >= 0.01) {
-                // 验价失败
-                submitOrderResponseVO.setCode(2);
-            }
-            /*
-             * D、保存订单
-             */
-            saveOrder(order);
-            /*
-             * E、锁库存
-             * 只要有异常回滚订单
-             */
-
+            return submitOrderResponseVO;
         }
+
+        /* -------------------------------------------- B、创建订单 -------------------------------------------- */
+
+        OrderCreateDTO orderCreateDTO = createOrder(orderSubmitVO, memberResponseVO);
+
+        /* ---------------------------------------------- C、验价 ---------------------------------------------- */
+
+        BigDecimal payAmount = orderCreateDTO.getOrder().getPayAmount();
+        // 前端提交的金钱
+        BigDecimal payPrice = orderSubmitVO.getPayPrice();
+
+        // 验价失败
+        if (Math.abs(payAmount.subtract(payPrice).doubleValue()) >= 0.01) {
+            submitOrderResponseVO.setCode(2);
+            return submitOrderResponseVO;
+        }
+
+        /* --------------------- D、保存订单（开始修改数据库，之前都只为查询，失败了无需抛异常回滚） --------------------- */
+
+        saveOrder(orderCreateDTO);
+
+        /* --------------------------------------------- E、锁库存 --------------------------------------------- */
+
+        // 封装锁库存信息
+        WareSkuLockVO wareSkuLockVO = new WareSkuLockVO();
+
+        List<OrderItemVO> orderItemVOS = orderCreateDTO.getOrderItems().stream().map(item -> {
+            OrderItemVO orderItemVO = new OrderItemVO();
+            orderItemVO.setSkuId(item.getSkuId())
+                    .setCount(item.getSkuQuantity());
+            return orderItemVO;
+        }).collect(Collectors.toList());
+
+        wareSkuLockVO.setOrderSn(orderCreateDTO.getOrder().getOrderSn())
+                .setLocks(orderItemVOS);
+
+        // 远程锁库存
+        R r = this.wareFeignService.orderLockStock(wareSkuLockVO);
+
+        // 锁定库存失败，需要抛出异常，回滚订单
+        if (r.getCode() != R_SUCCESS_CODE) {
+            String msg = (String) r.get("msg");
+            throw new NoStockException(msg);
+        }
+
+        /* -------------------------------------------- F、下单成功 -------------------------------------------- */
+        submitOrderResponseVO.setCode(0)
+                .setOrder(orderCreateDTO.getOrder());
 
         return submitOrderResponseVO;
     }
@@ -199,7 +224,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
      * 创建订单
      */
     private OrderCreateDTO createOrder(OrderSubmitVO orderSubmitVO, MemberResponseVO memberResponseVO) {
-        OrderCreateDTO order = new OrderCreateDTO();
+        OrderCreateDTO orderCreateDTO = new OrderCreateDTO();
 
         // 1、使用 MB 的工具类生成订单号
         String orderSn = IdWorker.getTimeId();
@@ -213,10 +238,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         // 4、后台重新计算价格
         computePrice(orderEntity, orderItemEntities);
 
-        order.setOrder(orderEntity)
+        orderCreateDTO.setOrder(orderEntity)
                 .setOrderItems(orderItemEntities);
 
-        return order;
+        return orderCreateDTO;
     }
 
 
@@ -289,7 +314,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
 
         // 3.2、通过 skuId 查询 spu 相关属性并设置
         R r = this.productFeignService.getSpuInfoBySkuId(skuId);
-        if (r.getCode() == DefaultConstant.R_SUCCESS_CODE) {
+        if (r.getCode() == R_SUCCESS_CODE) {
             SpuInfoDTO spuInfoDTO = r.parseObjectFromMap("spuInfo", new TypeReference<SpuInfoDTO>() {
             });
             orderItemEntity.setSpuId(spuInfoDTO.getId())

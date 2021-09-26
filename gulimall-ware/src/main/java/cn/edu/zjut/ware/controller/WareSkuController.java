@@ -2,6 +2,7 @@ package cn.edu.zjut.ware.controller;
 
 import cn.edu.zjut.common.dto.SkuHasStockDTO;
 import cn.edu.zjut.common.exception.EmBizError;
+import cn.edu.zjut.common.exception.NoStockException;
 import cn.edu.zjut.common.utils.PageUtils;
 import cn.edu.zjut.common.utils.R;
 import cn.edu.zjut.common.vo.WareSkuLockVO;
@@ -34,9 +35,9 @@ public class WareSkuController {
      * 下订单时锁库存
      */
     @PostMapping("/lock/order")
-    public R orderLockStock(@RequestBody WareSkuLockVO lockVo) {
+    public R orderLockStock(@RequestBody WareSkuLockVO wareSkuLockVO) {
         try {
-            Boolean lock = this.wareSkuService.orderLockStock(lockVo);
+            this.wareSkuService.orderLockStock(wareSkuLockVO);
             return R.ok();
         } catch (NoStockException e) {
             return R.error(EmBizError.NO_STOCK_EXCEPTION);

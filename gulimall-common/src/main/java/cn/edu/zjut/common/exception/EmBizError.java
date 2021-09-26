@@ -15,6 +15,7 @@ import lombok.Getter;
  * 13: 购物车
  * 14: 物流
  * 15: 用户
+ * 21: 库存
  */
 @AllArgsConstructor
 @Getter
@@ -39,6 +40,10 @@ public enum EmBizError {
     USERNAME_EXIST_EXCEPTION(15001, "用户名已存在"),
     PHONE_EXIST_EXCEPTION(15002, "手机号已存在"),
     LOGINACCT_PASSWORD_INVALID_EXCEPTION(15003, "账号密码错误"),
+    /**
+     * 下单异常
+     */
+    NO_STOCK_EXCEPTION(21000, "商品库存不足"),
     ;
 
     private final int errCode;

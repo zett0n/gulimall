@@ -1,13 +1,17 @@
 package cn.edu.zjut.ware.service.impl;
 
 import cn.edu.zjut.common.dto.SkuHasStockDTO;
+import cn.edu.zjut.common.exception.NoStockException;
 import cn.edu.zjut.common.utils.PageUtils;
 import cn.edu.zjut.common.utils.Query;
 import cn.edu.zjut.common.utils.R;
+import cn.edu.zjut.common.vo.OrderItemVO;
+import cn.edu.zjut.common.vo.WareSkuLockVO;
 import cn.edu.zjut.ware.dao.WareSkuDao;
 import cn.edu.zjut.ware.entity.WareSkuEntity;
 import cn.edu.zjut.ware.feign.ProductFeignService;
 import cn.edu.zjut.ware.service.WareSkuService;
+import cn.edu.zjut.ware.vo.SkuLockVO;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -110,6 +114,60 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
                     return skuHasStockDTO;
                 })
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * 简单考虑，只针对某个仓库一起锁库存，不会在多个仓库组合锁库存
+     * 锁定库存失败直接抛异常
+     */
+    @Override
+    @Transactional
+    public void orderLockStock(WareSkuLockVO wareSkuLockVO) {
+        // 获取要锁定的订单项
+        List<OrderItemVO> OrderItemVOs = wareSkuLockVO.getLocks();
+
+        // 批量查询库存，封装锁定库存需要的属性返回
+        List<SkuLockVO> skuLockVOS = OrderItemVOs.stream().map(item -> {
+            SkuLockVO skuLockVO = new SkuLockVO();
+
+            Long skuId = item.getSkuId();
+            Integer count = item.getCount();
+            // 找出所有库存大于商品数的仓库
+            List<Long> wareIds = this.baseMapper.listWareIdsHasStock(skuId, count);
+
+            skuLockVO.setSkuId(skuId)
+                    .setNum(count)
+                    .setWareIds(wareIds);
+
+            return skuLockVO;
+        }).collect(Collectors.toList());
+
+        // 批量锁定库存
+        for (SkuLockVO skuLockVO : skuLockVOS) {
+            Long skuId = skuLockVO.getSkuId();
+            List<Long> wareIds = skuLockVO.getWareIds();
+            Integer num = skuLockVO.getNum();
+            // 商品是否被锁住
+            boolean stocked = false;
+
+            if (wareIds.isEmpty()) {
+                // 没有任何仓库有该商品库存，抛异常回滚
+                throw new NoStockException(skuId);
+            }
+            for (Long wareId : wareIds) {
+                Long count = this.baseMapper.lockSkuStock(skuId, wareId, num);
+                if (count == 1) {
+                    // 锁定成功，跳出循环
+                    stocked = true;
+                    break;
+                }
+                // 当前仓库锁定失败（库存不够），下个仓库
+            }
+            if (!stocked) {
+                throw new NoStockException(skuId);
+            }
+        }
+
     }
 
 }

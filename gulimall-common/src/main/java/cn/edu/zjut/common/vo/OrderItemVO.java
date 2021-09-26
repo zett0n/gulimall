@@ -1,12 +1,15 @@
 package cn.edu.zjut.common.vo;
 
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 import java.math.BigDecimal;
 import java.util.List;
 
 @Data
+@Accessors(chain = true)
 public class OrderItemVO {
+    
     private Long skuId;
 
     // private Boolean check = true;
@@ -30,4 +33,5 @@ public class OrderItemVO {
      * 商品重量
      */
     private BigDecimal weight = new BigDecimal("0.085");
+
 }

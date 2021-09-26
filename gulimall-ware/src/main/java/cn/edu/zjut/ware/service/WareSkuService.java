@@ -2,6 +2,7 @@ package cn.edu.zjut.ware.service;
 
 import cn.edu.zjut.common.dto.SkuHasStockDTO;
 import cn.edu.zjut.common.utils.PageUtils;
+import cn.edu.zjut.common.vo.WareSkuLockVO;
 import cn.edu.zjut.ware.entity.WareSkuEntity;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -22,5 +23,10 @@ public interface WareSkuService extends IService<WareSkuEntity> {
     void addStock(Long skuId, Long wareId, Integer skuNum);
 
     List<SkuHasStockDTO> hasStock(List<Long> skuIds);
+
+    /**
+     * 锁库存
+     */
+    void orderLockStock(WareSkuLockVO wareSkuLockVO);
 }
 

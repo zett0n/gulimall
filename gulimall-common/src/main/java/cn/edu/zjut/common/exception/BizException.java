@@ -7,7 +7,6 @@ public class BizException extends RuntimeException {
     private EmBizError emBizError;
 
     public BizException(EmBizError emBizError) {
-
         this.emBizError = emBizError;
     }
 
