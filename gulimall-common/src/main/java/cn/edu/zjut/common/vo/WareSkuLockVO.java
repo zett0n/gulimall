@@ -9,7 +9,7 @@ import java.util.List;
 @Accessors(chain = true)
 public class WareSkuLockVO {
 
-    private String OrderSn;
+    private String orderSn;
 
     private List<OrderItemVO> locks;
 

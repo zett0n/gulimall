@@ -24,6 +24,7 @@ public enum EmBizError {
      * 系统未知异常
      */
     UNKNOWN_EXCEPTION(10000, "系统未知异常"),
+    RPC_EXCEPTION(10001, "远程调用异常"),
     /**
      * 参数校验错误
      */

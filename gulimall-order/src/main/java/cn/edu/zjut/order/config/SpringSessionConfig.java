@@ -7,9 +7,8 @@ import org.springframework.data.redis.serializer.RedisSerializer;
 
 @Configuration
 public class SpringSessionConfig {
-    /**
-     * 修改 Spring Session Redis 序列化方式
-     */
+
+    // 修改 Spring Session Redis 序列化方式
     @Bean
     public RedisSerializer<Object> springSessionDefaultRedisSerializer() {
         return new GenericJackson2JsonRedisSerializer();

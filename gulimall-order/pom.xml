@@ -17,6 +17,7 @@
             <groupId>cn.edu.zjut</groupId>
             <artifactId>gulimall-common</artifactId>
         </dependency>
+
     </dependencies>
 
     <build>

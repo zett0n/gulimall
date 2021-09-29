@@ -11,7 +11,7 @@ public class SkuLockVO {
 
     private Long skuId;
 
-    private Integer num;
+    private Integer skuNum;
 
     private List<Long> wareIds;
 

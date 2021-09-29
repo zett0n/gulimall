@@ -34,6 +34,14 @@ spring:
     port: 6379
   session:
     store-type: redis
+  rabbitmq:
+    host: 127.0.0.1
+    port: 5672
+    virtual-host: /
+    # 开启接收端手动确认
+    listener:
+      simple:
+        acknowledge-mode: manual
 
 mybatis-plus:
   mapper-locations: classpath:/mapper/**/*.xml
@@ -44,4 +52,3 @@ mybatis-plus:
       # 逻辑删除[0-不显示，1显示]
       logic-not-delete-value: 1
       logic-delete-value: 0
-

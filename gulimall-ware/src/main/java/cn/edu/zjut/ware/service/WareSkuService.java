@@ -1,6 +1,8 @@
 package cn.edu.zjut.ware.service;
 
+import cn.edu.zjut.common.dto.OrderDTO;
 import cn.edu.zjut.common.dto.SkuHasStockDTO;
+import cn.edu.zjut.common.dto.mq.StockLockDTO;
 import cn.edu.zjut.common.utils.PageUtils;
 import cn.edu.zjut.common.vo.WareSkuLockVO;
 import cn.edu.zjut.ware.entity.WareSkuEntity;
@@ -28,5 +30,9 @@ public interface WareSkuService extends IService<WareSkuEntity> {
      * 锁库存
      */
     void orderLockStock(WareSkuLockVO wareSkuLockVO);
+
+    void checkBeforeUnlock(StockLockDTO stockLockDTO);
+
+    void checkBeforeUnlock(OrderDTO orderDTO);
 }
 

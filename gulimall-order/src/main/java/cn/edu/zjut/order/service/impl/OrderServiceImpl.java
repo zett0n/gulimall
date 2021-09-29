@@ -1,6 +1,8 @@
 package cn.edu.zjut.order.service.impl;
 
+import cn.edu.zjut.common.dto.OrderDTO;
 import cn.edu.zjut.common.dto.SkuHasStockDTO;
+import cn.edu.zjut.common.enume.OrderStatusEnum;
 import cn.edu.zjut.common.exception.NoStockException;
 import cn.edu.zjut.common.utils.PageUtils;
 import cn.edu.zjut.common.utils.Query;
@@ -11,7 +13,6 @@ import cn.edu.zjut.order.dto.OrderCreateDTO;
 import cn.edu.zjut.order.dto.SpuInfoDTO;
 import cn.edu.zjut.order.entity.OrderEntity;
 import cn.edu.zjut.order.entity.OrderItemEntity;
-import cn.edu.zjut.order.enume.OrderStatusEnum;
 import cn.edu.zjut.order.feign.CartFeignService;
 import cn.edu.zjut.order.feign.MemberFeignService;
 import cn.edu.zjut.order.feign.ProductFeignService;
@@ -27,6 +28,8 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
@@ -71,6 +74,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
 
     @Autowired
     private OrderItemService orderItemService;
+
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
 
 
     @Override
@@ -146,9 +152,14 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         return orderConfirmVO;
     }
 
-
+    /**
+     * 本地事务在分布式系统下的不足：
+     * 1、远程锁定库存成功，但因网络异常导致远程调用抛异常，生成订单的事务被回滚，原子性被打破
+     * 2、远程锁定库存成功，但后续方法执行中发送异常，远程的事务无法回滚，原子性被打破
+     */
     @Override
     @Transactional
+    // @GlobalTransactional
     public SubmitOrderResponseVO submitOrder(OrderSubmitVO orderSubmitVO) {
 
         SubmitOrderResponseVO submitOrderResponseVO = new SubmitOrderResponseVO();
@@ -171,10 +182,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         /* -------------------------------------------- B、创建订单 -------------------------------------------- */
 
         OrderCreateDTO orderCreateDTO = createOrder(orderSubmitVO, memberResponseVO);
+        OrderEntity orderEntity = orderCreateDTO.getOrder();
 
         /* ---------------------------------------------- C、验价 ---------------------------------------------- */
 
-        BigDecimal payAmount = orderCreateDTO.getOrder().getPayAmount();
+        BigDecimal payAmount = orderEntity.getPayAmount();
         // 前端提交的金钱
         BigDecimal payPrice = orderSubmitVO.getPayPrice();
 
@@ -186,24 +198,26 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
 
         /* --------------------- D、保存订单（开始修改数据库，之前都只为查询，失败了无需抛异常回滚） --------------------- */
 
+        // 本地小事务
         saveOrder(orderCreateDTO);
 
-        /* --------------------------------------------- E、锁库存 --------------------------------------------- */
+        /* ------------------------------------------- E、远程锁库存 ------------------------------------------- */
 
         // 封装锁库存信息
         WareSkuLockVO wareSkuLockVO = new WareSkuLockVO();
+        List<OrderItemEntity> orderItems = orderCreateDTO.getOrderItems();
 
-        List<OrderItemVO> orderItemVOS = orderCreateDTO.getOrderItems().stream().map(item -> {
+        List<OrderItemVO> orderItemVOS = orderItems.stream().map(item -> {
             OrderItemVO orderItemVO = new OrderItemVO();
             orderItemVO.setSkuId(item.getSkuId())
                     .setCount(item.getSkuQuantity());
             return orderItemVO;
         }).collect(Collectors.toList());
 
-        wareSkuLockVO.setOrderSn(orderCreateDTO.getOrder().getOrderSn())
+        wareSkuLockVO.setOrderSn(orderEntity.getOrderSn())
                 .setLocks(orderItemVOS);
 
-        // 远程锁库存
+        // 远程锁库存（远程小事务）
         R r = this.wareFeignService.orderLockStock(wareSkuLockVO);
 
         // 锁定库存失败，需要抛出异常，回滚订单
@@ -212,9 +226,27 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
             throw new NoStockException(msg);
         }
 
-        /* -------------------------------------------- F、下单成功 -------------------------------------------- */
+        // TODO 引入其他业务如何考虑 mq？
+        // 远程扣减积分（省略）
+        // 模拟远程小事务出现异常
+        // int i = 1 / 0;
+
+        /* -------------------------------------------- F、延时消息 -------------------------------------------- */
+
+        // TODO 消息队列超时？
+        this.rabbitTemplate.convertAndSend("order-event-exchange", "order.create", orderEntity.getId());
+
+        /* ------------------------------------------- G、清除购物车 ------------------------------------------- */
+
+        // BoundHashOperations<String, Object, Object> hashOps = this.stringRedisTemplate.boundHashOps(
+        //         CartConstant.CART_PREFIX + memberResponseVO.getId());
+        // orderItems.forEach(orderItem -> {
+        //     hashOps.delete(orderItem.getSkuId().toString());
+        // });
+
+        /* -------------------------------------------- H、下单成功 -------------------------------------------- */
         submitOrderResponseVO.setCode(0)
-                .setOrder(orderCreateDTO.getOrder());
+                .setOrder(orderEntity);
 
         return submitOrderResponseVO;
     }
@@ -392,4 +424,33 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         this.save(orderEntity);
         this.orderItemService.saveBatch(orderCreateDTO.getOrderItems());
     }
+
+
+    @Override
+    public OrderEntity getOrderByOrderSn(String orderSn) {
+        return this.getOne(new QueryWrapper<OrderEntity>().eq("order_sn", orderSn));
+    }
+
+
+    // TODO 这里应该要加锁，锁住数据库当前行数据，防止读取到写入之间这段时间客户完成支付
+    // 单条 sql 加事务？这里希望关单和发消息是原子操作，防止关单后断电没发消息，重复消费消息时因状态已改变而不发消息的情况
+    @Transactional
+    @Override
+    public void closeOrder(Long orderId) {
+        // 因为消息发送过来的订单已经是很久前的了，中间可能被改动，因此要查询最新的订单
+        OrderEntity orderEntity = this.getById(orderId);
+
+        // 如果订单还处于新创建的状态，说明超时未支付，进行关单
+        if (Objects.equals(orderEntity.getStatus(), OrderStatusEnum.CREATE_NEW.getCode())) {
+            orderEntity.setStatus(OrderStatusEnum.CANCLED.getCode());
+            this.updateById(orderEntity);
+
+            // 关单后发送消息通知其他服务进行关单相关的操作，如解锁库存
+            OrderDTO orderDTO = new OrderDTO();
+            BeanUtils.copyProperties(orderEntity, orderDTO);
+            
+            this.rabbitTemplate.convertAndSend("stock-event-exchange", "stock.release.twice", orderDTO);
+        }
+    }
+
 }

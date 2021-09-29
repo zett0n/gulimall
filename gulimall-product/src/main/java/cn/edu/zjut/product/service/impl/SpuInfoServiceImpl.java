@@ -72,7 +72,8 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
     private SearchFeignService searchFeignService;
 
 
-    // TODO 高可用完善
+    // 非高并发任务，适合使用 Seata AT 分布式事务
+    // @GlobalTransactional
     @Transactional
     @Override
     public void saveSpuInfo(SpuSaveVO spuSaveVO) {

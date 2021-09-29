@@ -1,8 +1,8 @@
 package cn.edu.zjut.ware.service;
 
-import com.baomidou.mybatisplus.extension.service.IService;
 import cn.edu.zjut.common.utils.PageUtils;
 import cn.edu.zjut.ware.entity.WareOrderTaskEntity;
+import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.Map;
 
@@ -16,5 +16,7 @@ import java.util.Map;
 public interface WareOrderTaskService extends IService<WareOrderTaskEntity> {
 
     PageUtils queryPage(Map<String, Object> params);
+
+    WareOrderTaskEntity getByOrderSn(String orderSn);
 }
 

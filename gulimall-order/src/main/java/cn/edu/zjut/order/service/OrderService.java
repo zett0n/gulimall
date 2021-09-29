@@ -1,15 +1,14 @@
 package cn.edu.zjut.order.service;
 
-import java.util.Map;
-import java.util.concurrent.ExecutionException;
-
-import com.baomidou.mybatisplus.extension.service.IService;
-
 import cn.edu.zjut.common.utils.PageUtils;
 import cn.edu.zjut.order.entity.OrderEntity;
 import cn.edu.zjut.order.vo.OrderConfirmVO;
 import cn.edu.zjut.order.vo.OrderSubmitVO;
 import cn.edu.zjut.order.vo.SubmitOrderResponseVO;
+import com.baomidou.mybatisplus.extension.service.IService;
+
+import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 /**
  * 订单
@@ -25,4 +24,8 @@ public interface OrderService extends IService<OrderEntity> {
     OrderConfirmVO confirmOrder() throws ExecutionException, InterruptedException;
 
     SubmitOrderResponseVO submitOrder(OrderSubmitVO orderSubmitVO);
+
+    OrderEntity getOrderByOrderSn(String orderSn);
+
+    void closeOrder(Long orderId);
 }

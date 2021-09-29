@@ -8,7 +8,7 @@ import lombok.experimental.Accessors;
 import java.io.Serializable;
 
 /**
- * 库存工作单
+ * 库存锁定工作单
  *
  * @author zett0n
  * @email d673326004@163.com

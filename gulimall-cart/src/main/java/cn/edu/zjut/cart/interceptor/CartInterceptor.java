@@ -36,8 +36,8 @@ public class CartInterceptor implements HandlerInterceptor {
 
     /**
      * 调用时间：Controller方法处理之前
-     * 执行顺序：链式Intercepter情况下，Intercepter按照声明的顺序一个接一个执行
-     * 若返回false，则中断执行，注意：不会进入afterCompletion
+     * 执行顺序：链式 Intercepter 情况下，Intercepter 按照声明的顺序一个接一个执行
+     * 若返回 false，则中断执行，注意：不会进入 afterCompletion
      */
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
@@ -95,7 +95,6 @@ public class CartInterceptor implements HandlerInterceptor {
             loginInfoDTO.setFirstVisit(false);
 
             Cookie cookie = new Cookie(VISITOR_COOKIE_KEY, loginInfoDTO.getVisitorId());
-            // cookie.setDomain("gulimall.com");
             cookie.setDomain(this.domain);
             cookie.setMaxAge(VISITOR_COOKIE_TIMEOUT);
             response.addCookie(cookie);

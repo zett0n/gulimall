@@ -1,5 +1,6 @@
 package cn.edu.zjut.order.api;
 
+import cn.edu.zjut.common.exception.EmBizError;
 import cn.edu.zjut.common.utils.PageUtils;
 import cn.edu.zjut.common.utils.R;
 import cn.edu.zjut.order.entity.OrderEntity;
@@ -21,8 +22,25 @@ import java.util.Map;
 @RestController
 @RequestMapping("order/order")
 public class OrderController {
+
     @Autowired
     private OrderService orderService;
+
+
+    /**
+     * @param OrderSn 订单号
+     * @return 订单信息
+     */
+    @GetMapping("/infoByOrderSn/{OrderSn}")
+    public R infoByOrderSn(@PathVariable("OrderSn") String OrderSn) {
+        try {
+            OrderEntity order = this.orderService.getOrderByOrderSn(OrderSn);
+            return R.ok().put("order", order);
+        } catch (Exception e) {
+            return R.error(EmBizError.UNKNOWN_EXCEPTION);
+        }
+    }
+
 
     /**
      * 列表

@@ -9,7 +9,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 /**
- * 库存工作单
+ * 订单锁定工作单
  *
  * @author zett0n
  * @email d673326004@163.com
@@ -19,6 +19,7 @@ import java.util.Date;
 @Accessors(chain = true)
 @TableName("wms_ware_order_task")
 public class WareOrderTaskEntity implements Serializable {
+
     private static final long serialVersionUID = 1L;
 
     /**
