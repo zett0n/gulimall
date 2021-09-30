@@ -1,0 +1,33 @@
+server:
+  port: 25000
+  servlet:
+    session:
+      cookie:
+        name: GULI-SESSION
+        # \u4E3A\u4E86\u5B9E\u73B0 session \u8DE8\u57DF\u6240\u6709\u5FAE\u670D\u52A1\u90FD\u4F7F\u7528\u7236\u57DF\u540D
+        domain: gulimall.com
+
+logging:
+  level:
+    cn.edu.zjut: debug
+
+spring:
+  application:
+    name: gulimall-seckill
+  cloud:
+    # \u5230\u670D\u52A1\u4E2D\u5FC3\u6CE8\u518C
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
+  #\u6307\u5B9A\u65F6\u95F4\u683C\u5F0F\u5316\u89C4\u5219\uFF08\u524D\u7AEF\u4F20\u4E86\u6BEB\u79D2\u503C\uFF09
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+  thymeleaf:
+    cache: false
+  redis:
+    host: 127.0.0.1
+    port: 6379
+  session:
+    store-type: redis
+

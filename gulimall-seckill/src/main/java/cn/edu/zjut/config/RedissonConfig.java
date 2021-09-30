@@ -1,4 +1,4 @@
-package cn.edu.zjut.product.config;
+package cn.edu.zjut.config;
 
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;

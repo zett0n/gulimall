@@ -1,9 +1,10 @@
 package cn.edu.zjut.coupon.service;
 
-import com.baomidou.mybatisplus.extension.service.IService;
 import cn.edu.zjut.common.utils.PageUtils;
 import cn.edu.zjut.coupon.entity.SeckillSessionEntity;
+import com.baomidou.mybatisplus.extension.service.IService;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -16,5 +17,7 @@ import java.util.Map;
 public interface SeckillSessionService extends IService<SeckillSessionEntity> {
 
     PageUtils queryPage(Map<String, Object> params);
+
+    List<SeckillSessionEntity> listInDays(Integer days);
 }
 

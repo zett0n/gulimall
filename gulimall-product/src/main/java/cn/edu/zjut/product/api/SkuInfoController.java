@@ -45,7 +45,7 @@ public class SkuInfoController {
     /**
      * 信息
      */
-    @RequestMapping("/info/{skuId}")
+    @GetMapping("/info/{skuId}")
     public R info(@PathVariable("skuId") Long skuId) {
         SkuInfoEntity skuInfo = this.skuInfoService.getById(skuId);
 
