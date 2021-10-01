@@ -1,5 +1,6 @@
 package cn.edu.zjut.order.service;
 
+import cn.edu.zjut.common.dto.mq.SeckillOrderDTO;
 import cn.edu.zjut.common.utils.PageUtils;
 import cn.edu.zjut.order.entity.OrderEntity;
 import cn.edu.zjut.order.vo.OrderConfirmVO;
@@ -28,4 +29,6 @@ public interface OrderService extends IService<OrderEntity> {
     OrderEntity getOrderByOrderSn(String orderSn);
 
     void closeOrder(Long orderId);
+
+    void createSeckillOrder(SeckillOrderDTO seckillOrderDTO);
 }

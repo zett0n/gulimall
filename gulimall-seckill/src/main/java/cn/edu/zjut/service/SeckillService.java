@@ -10,8 +10,8 @@ public interface SeckillService {
 
     List<SeckillSkuRedisDTO> getCurrentSeckillSkus();
 
-    // SeckillSkuRedisTo getSeckillSkuInfo(Long skuId);
-    //
-    // String kill(String killId, String key, Integer num) throws InterruptedException;
+    SeckillSkuRedisDTO getSeckillSkuInfo(Long skuId);
+
+    String kill(String key, String code, Integer num) throws InterruptedException;
 
 }

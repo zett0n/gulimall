@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit;
 public class ThreadConfig {
 
     @Bean
-    public ThreadPoolExecutor threadPoolExecutor(ThreadPoolConfigProperties config) {
+    public ThreadPoolExecutor threadPoolExecutor(ThreadPoolProperties config) {
         return new ThreadPoolExecutor(
                 config.getCoreSize(),
                 config.getMaxSize(),

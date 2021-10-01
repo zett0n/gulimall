@@ -7,7 +7,9 @@ public class SeckillConstant {
     public static final String SKUS_CACHE_PREFIX = "seckill:skus";
 
     public static final String SKU_STOCK_SEMAPHORE = "seckill:stock:";
-    
+
     public static final String UPLOAD_LOCK = "seckill:upload:lock";
+
+    public static final String KILL_LOCK = "seckill:kill:lock:";
 
 }

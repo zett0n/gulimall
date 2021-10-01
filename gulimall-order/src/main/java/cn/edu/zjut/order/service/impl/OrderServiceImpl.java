@@ -1,7 +1,10 @@
 package cn.edu.zjut.order.service.impl;
 
+import cn.edu.zjut.common.constant.CartConstant;
 import cn.edu.zjut.common.dto.OrderDTO;
 import cn.edu.zjut.common.dto.SkuHasStockDTO;
+import cn.edu.zjut.common.dto.SkuInfoDTO;
+import cn.edu.zjut.common.dto.mq.SeckillOrderDTO;
 import cn.edu.zjut.common.enume.OrderStatusEnum;
 import cn.edu.zjut.common.exception.NoStockException;
 import cn.edu.zjut.common.utils.PageUtils;
@@ -17,7 +20,7 @@ import cn.edu.zjut.order.feign.CartFeignService;
 import cn.edu.zjut.order.feign.MemberFeignService;
 import cn.edu.zjut.order.feign.ProductFeignService;
 import cn.edu.zjut.order.feign.WareFeignService;
-import cn.edu.zjut.order.interceptor.OrderInterceptor;
+import cn.edu.zjut.order.interceptor.OrderLoginInterceptor;
 import cn.edu.zjut.order.service.OrderItemService;
 import cn.edu.zjut.order.service.OrderService;
 import cn.edu.zjut.order.vo.OrderConfirmVO;
@@ -31,6 +34,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.BoundHashOperations;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Service;
@@ -90,7 +94,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
     @Override
     public OrderConfirmVO confirmOrder() throws ExecutionException, InterruptedException {
         OrderConfirmVO orderConfirmVO = new OrderConfirmVO();
-        MemberResponseVO memberResponseVO = OrderInterceptor.loginUser.get();
+        MemberResponseVO memberResponseVO = OrderLoginInterceptor.loginUser.get();
 
         /*
          * 1、异步远程查询所有的收货地址列表
@@ -152,6 +156,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         return orderConfirmVO;
     }
 
+
     /**
      * 本地事务在分布式系统下的不足：
      * 1、远程锁定库存成功，但因网络异常导致远程调用抛异常，生成订单的事务被回滚，原子性被打破
@@ -163,7 +168,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
     public SubmitOrderResponseVO submitOrder(OrderSubmitVO orderSubmitVO) {
 
         SubmitOrderResponseVO submitOrderResponseVO = new SubmitOrderResponseVO();
-        MemberResponseVO memberResponseVO = OrderInterceptor.loginUser.get();
+        MemberResponseVO memberResponseVO = OrderLoginInterceptor.loginUser.get();
 
         /* ------------------------------------------ A、防重校验令牌 ------------------------------------------ */
 
@@ -238,11 +243,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
 
         /* ------------------------------------------- G、清除购物车 ------------------------------------------- */
 
-        // BoundHashOperations<String, Object, Object> hashOps = this.stringRedisTemplate.boundHashOps(
-        //         CartConstant.CART_PREFIX + memberResponseVO.getId());
-        // orderItems.forEach(orderItem -> {
-        //     hashOps.delete(orderItem.getSkuId().toString());
-        // });
+        BoundHashOperations<String, Object, Object> hashOps = this.stringRedisTemplate.boundHashOps(
+                CartConstant.CART_PREFIX + memberResponseVO.getId());
+        orderItems.forEach(orderItem -> {
+            hashOps.delete(orderItem.getSkuId().toString());
+        });
 
         /* -------------------------------------------- H、下单成功 -------------------------------------------- */
         submitOrderResponseVO.setCode(0)
@@ -448,8 +453,46 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
             // 关单后发送消息通知其他服务进行关单相关的操作，如解锁库存
             OrderDTO orderDTO = new OrderDTO();
             BeanUtils.copyProperties(orderEntity, orderDTO);
-            
+
             this.rabbitTemplate.convertAndSend("stock-event-exchange", "stock.release.twice", orderDTO);
+        }
+    }
+
+
+    @Override
+    @Transactional
+    public void createSeckillOrder(SeckillOrderDTO seckillOrderDTO) {
+        MemberResponseVO memberResponseVO = OrderLoginInterceptor.loginUser.get();
+        // 创建订单
+        OrderEntity orderEntity = new OrderEntity();
+        if (memberResponseVO != null) {
+            orderEntity.setMemberUsername(memberResponseVO.getUsername());
+        }
+        orderEntity.setOrderSn(seckillOrderDTO.getOrderSn())
+                .setMemberId(seckillOrderDTO.getMemberId())
+                .setStatus(OrderStatusEnum.CREATE_NEW.getCode())
+                .setCreateTime(new Date())
+                .setPayAmount(seckillOrderDTO.getSeckillPrice().multiply(new BigDecimal(seckillOrderDTO.getNum())));
+
+        // 创建订单项
+        R r = this.productFeignService.info(seckillOrderDTO.getSkuId());
+        if (r.getCode() == R_SUCCESS_CODE) {
+            SkuInfoDTO skuInfoDTO = r.parseObjectFromMap("skuInfo", new TypeReference<SkuInfoDTO>() {
+            });
+            OrderItemEntity orderItemEntity = new OrderItemEntity();
+            orderItemEntity.setOrderSn(seckillOrderDTO.getOrderSn())
+                    .setSpuId(skuInfoDTO.getSpuId())
+                    .setCategoryId(skuInfoDTO.getCatalogId())
+                    .setSkuId(skuInfoDTO.getSkuId())
+                    .setSkuName(skuInfoDTO.getSkuName())
+                    .setSkuPic(skuInfoDTO.getSkuDefaultImg())
+                    .setSkuPrice(skuInfoDTO.getPrice())
+                    .setSkuQuantity(seckillOrderDTO.getNum());
+
+            // TODO 收货地址信息补充
+
+            this.save(orderEntity);
+            this.orderItemService.save(orderItemEntity);
         }
     }
 

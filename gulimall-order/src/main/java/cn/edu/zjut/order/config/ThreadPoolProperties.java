@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties(prefix = "thread.pool")
 @Component
 @Data
-public class ThreadPoolConfigProperties {
+public class ThreadPoolProperties {
     private Integer coreSize;
     private Integer maxSize;
     private Integer keepAliveTime;

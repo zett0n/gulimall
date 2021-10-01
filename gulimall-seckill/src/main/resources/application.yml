@@ -30,4 +30,11 @@ spring:
     port: 6379
   session:
     store-type: redis
-
+  rabbitmq:
+    host: 127.0.0.1
+    port: 5672
+    virtual-host: /
+    # \u5F00\u542F\u63A5\u6536\u7AEF\u624B\u52A8\u786E\u8BA4
+    listener:
+      simple:
+        acknowledge-mode: manual

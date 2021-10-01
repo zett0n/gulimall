@@ -6,7 +6,7 @@ import cn.edu.zjut.cart.interceptor.CartInterceptor;
 import cn.edu.zjut.cart.service.CartService;
 import cn.edu.zjut.cart.vo.CartItemVO;
 import cn.edu.zjut.cart.vo.CartVO;
-import cn.edu.zjut.cart.vo.SkuInfoVO;
+import cn.edu.zjut.common.dto.SkuInfoDTO;
 import cn.edu.zjut.common.utils.R;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
@@ -80,15 +80,15 @@ public class CartServiceImpl implements CartService {
             CompletableFuture<Void> getSkuInfoTask = CompletableFuture.runAsync(() -> {
                 R r = this.productFeignService.info(skuId);
 
-                SkuInfoVO skuInfoVO = r.parseObjectFromMap("skuInfo", new TypeReference<SkuInfoVO>() {
+                SkuInfoDTO skuInfoDTO = r.parseObjectFromMap("skuInfo", new TypeReference<SkuInfoDTO>() {
                 });
 
                 finalCartItemVO.setCheck(true)
                         .setCount(num)
-                        .setImage(skuInfoVO.getSkuDefaultImg())
-                        .setTitle(skuInfoVO.getSkuTitle())
+                        .setImage(skuInfoDTO.getSkuDefaultImg())
+                        .setTitle(skuInfoDTO.getSkuTitle())
                         .setSkuId(skuId)
-                        .setPrice(skuInfoVO.getPrice());
+                        .setPrice(skuInfoDTO.getPrice());
             }, this.executor);
 
             // 异步、远程查询 sku 组合信息

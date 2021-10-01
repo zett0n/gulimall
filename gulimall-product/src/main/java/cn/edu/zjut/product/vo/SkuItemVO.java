@@ -1,5 +1,6 @@
 package cn.edu.zjut.product.vo;
 
+import cn.edu.zjut.common.dto.SeckillSkuRedisDTO;
 import cn.edu.zjut.product.entity.SkuImagesEntity;
 import cn.edu.zjut.product.entity.SkuInfoEntity;
 import cn.edu.zjut.product.entity.SpuInfoDescEntity;
@@ -32,6 +33,6 @@ public class SkuItemVO {
     private List<SpuItemAttrGroupVO> groupAttrs;
 
     // 6、秒杀商品的优惠信息
-    private SeckillSkuVO seckillSkuVO;
+    private SeckillSkuRedisDTO seckillSkuRedisDTO;
 
 }
