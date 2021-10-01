@@ -10,6 +10,9 @@ server:
 logging:
   level:
     cn.edu.zjut: debug
+    # 用于查看 sleuth 日志
+    org.springframework.cloud.openfeign: debug
+    org.springframework.cloud.sleuth: debug
 
 spring:
   application:
@@ -18,6 +21,18 @@ spring:
     nacos:
       discovery:
         server-addr: 127.0.0.1:8848
+    sentinel:
+      transport:
+        # sentinel server
+        dashboard: 127.0.0.1:8858
+  zipkin:
+    base-url: 127.0.0.1:9411
+    discovery-client-enabled: false
+    sender:
+      type: web
+  sleuth:
+    sampler:
+      probability: 1
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/gulimall_wms
@@ -52,3 +67,10 @@ mybatis-plus:
       # 逻辑删除[0-不显示，1显示]
       logic-not-delete-value: 1
       logic-delete-value: 0
+
+# springboot 监控
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'

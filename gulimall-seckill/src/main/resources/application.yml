@@ -10,6 +10,9 @@ server:
 logging:
   level:
     cn.edu.zjut: debug
+    # \u7528\u4E8E\u67E5\u770B sleuth \u65E5\u5FD7
+    org.springframework.cloud.openfeign: debug
+    org.springframework.cloud.sleuth: debug
 
 spring:
   application:
@@ -19,8 +22,29 @@ spring:
     nacos:
       discovery:
         server-addr: 127.0.0.1:8848
+    sentinel:
+      transport:
+        # sentinel server
+        dashboard: 127.0.0.1:8858
+        # \u672C\u673A\u7684 ip\uFF0C\u5982\u679C sentinel \u88C5\u5728\u865A\u62DF\u673A\uFF0C\u5FC5\u987B\u914D\u8FD9\u4E2A
+        # client-ip: 127.0.0.1
+        # \u4E0E sentinel \u5355\u72EC\u8FDE\u63A5\u7684\u7AEF\u53E3\uFF0C\u9ED8\u8BA48719
+        # port: 9999
+  zipkin:
+    # zipkin \u670D\u52A1\u5730\u5740
+    base-url: http://192.168.0.104:9411
+    # \u5173\u95ED\u670D\u52A1\u53D1\u73B0\uFF0C\u5426\u5219 springcloud \u4F1A\u628A zipkin \u7684 url \u4F5C\u4E3A\u670D\u52A1\u540D\u79F0
+    discovery-client-enabled: false
+    sender:
+      # \u8BBE\u7F6E\u4F7F\u7528 http \u65B9\u5F0F\u4F20\u8F93\u6570\u636E\uFF08\u4E5F\u53EF\u4EE5\u7528 mq\uFF09
+      type: web
+  sleuth:
+    sampler:
+      # \u8BBE\u7F6E\u62BD\u6837\u91C7\u6837\u7387\u4E3A 100%\uFF08\u9ED8\u8BA40.1\uFF0C10%)
+      probability: 1
   #\u6307\u5B9A\u65F6\u95F4\u683C\u5F0F\u5316\u89C4\u5219\uFF08\u524D\u7AEF\u4F20\u4E86\u6BEB\u79D2\u503C\uFF09
   jackson:
+    # date-format: yyyy-MM-dd HH:mm:ss.SSS Z
     date-format: yyyy-MM-dd HH:mm:ss
     time-zone: GMT+8
   thymeleaf:
@@ -38,3 +62,10 @@ spring:
     listener:
       simple:
         acknowledge-mode: manual
+
+# springboot \u76D1\u63A7
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'

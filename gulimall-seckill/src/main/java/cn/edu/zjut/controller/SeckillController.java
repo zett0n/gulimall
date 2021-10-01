@@ -34,8 +34,13 @@ public class SeckillController {
     @ResponseBody
     @GetMapping("/sku/{skuId}")
     public R getSeckillSkuInfo(@PathVariable("skuId") Long skuId) {
+        // 测试 sentinel 降级
+        // try {
+        //     TimeUnit.MILLISECONDS.sleep(300);
+        // } catch (InterruptedException e) {
+        //     e.printStackTrace();
+        // }
         SeckillSkuRedisDTO seckillSkuRedisDTO = this.seckillService.getSeckillSkuInfo(skuId);
-
         return R.ok().put("data", seckillSkuRedisDTO);
     }
 

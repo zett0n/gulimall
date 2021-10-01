@@ -1,51 +1,16 @@
-package cn.edu.zjut.ware.config;
+package cn.edu.zjut.ware.listener;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.Exchange;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.core.TopicExchange;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
-import org.springframework.amqp.support.converter.MessageConverter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import javax.annotation.PostConstruct;
 import java.util.HashMap;
 
 @Configuration
-@Slf4j
-public class RabbitConfig {
-
-    @Autowired
-    private RabbitTemplate rabbitTemplate;
-
-
-    /**
-     * 自定义 rabbitmq 序列化规则（JSON）
-     */
-    @Bean
-    public MessageConverter messageConverter() {
-        return new Jackson2JsonMessageConverter();
-    }
-
-
-    @PostConstruct
-    public void initRabbitTemplate() {
-        this.rabbitTemplate.setConfirmCallback((correlationData, ack, cause) -> {
-            // log.info("confirm callback...CorrelationData: {}, ack: {}, cause: {}", correlationData, ack, cause);
-        });
-
-        this.rabbitTemplate.setReturnCallback((message, replyCode, replyText, exchange, routingKey) -> {
-            // TODO 消息可靠性保证：修改数据库当前消息的状态为错误，处理、重发错误消息...
-            log.info("return callback...message: {}, replyCode: {}, exchange: {}, replyText: {}, routingKey:{}",
-                    message, replyCode, exchange, replyText, routingKey);
-        });
-    }
-
-
+public class InitListener {
     /**
      * 用于初次连接 rabbitmq 通过 bean 创建 exchange、queue、binding
      * 如果 broker 中已经存在，不能覆盖，只能再控制台先删除掉
@@ -110,5 +75,5 @@ public class RabbitConfig {
                 "stock.release.#",
                 null);
     }
-
+    
 }

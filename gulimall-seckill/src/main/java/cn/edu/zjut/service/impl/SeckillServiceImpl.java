@@ -12,9 +12,14 @@ import cn.edu.zjut.feign.CouponFeignService;
 import cn.edu.zjut.feign.ProductFeignService;
 import cn.edu.zjut.interceptor.SeckillLoginInterceptor;
 import cn.edu.zjut.service.SeckillService;
+import com.alibaba.csp.sentinel.Entry;
+import com.alibaba.csp.sentinel.SphU;
+import com.alibaba.csp.sentinel.annotation.SentinelResource;
+import com.alibaba.csp.sentinel.slots.block.BlockException;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.redisson.api.RSemaphore;
 import org.redisson.api.RedissonClient;
@@ -32,6 +37,7 @@ import java.util.stream.Collectors;
 import static cn.edu.zjut.common.constant.DefaultConstant.R_SUCCESS_CODE;
 
 @Service
+@Slf4j
 public class SeckillServiceImpl implements SeckillService {
 
     private CouponFeignService couponFeignService;
@@ -152,31 +158,41 @@ public class SeckillServiceImpl implements SeckillService {
      */
     @Override
     public List<SeckillSkuRedisDTO> getCurrentSeckillSkus() {
-        // 获取所有秒杀场次的 key
-        Set<String> keys = this.stringRedisTemplate.keys(SeckillConstant.SESSIONS_CACHE_PREFIX + "*");
+        // sentinel 自定义受保护资源（编程方式）
+        try (Entry entry = SphU.entry("seckillSkus")) {
+            // 获取所有秒杀场次的 key
+            Set<String> keys = this.stringRedisTemplate.keys(SeckillConstant.SESSIONS_CACHE_PREFIX + "*");
 
-        for (String key : keys) {
-            // 字符串处理 seckill:sessions:1633073020000_1633363199000，获得两个时间戳
-            String replace = key.replace(SeckillConstant.SESSIONS_CACHE_PREFIX, "");
-            String[] split = replace.split("_");
-            long startTime = Long.parseLong(split[0]);
-            long endTime = Long.parseLong(split[1]);
+            for (String key : keys) {
+                // 字符串处理 seckill:sessions:1633073020000_1633363199000，获得两个时间戳
+                String replace = key.replace(SeckillConstant.SESSIONS_CACHE_PREFIX, "");
+                String[] split = replace.split("_");
+                long startTime = Long.parseLong(split[0]);
+                long endTime = Long.parseLong(split[1]);
 
-            // 判断现在是否有当前秒杀活动
-            long currentTime = System.currentTimeMillis();
-            if (startTime <= currentTime && currentTime <= endTime) {
-                // 获取 list 所有元素
-                List<String> items = this.stringRedisTemplate.opsForList().range(key, 0, -1);
-                return items.stream()
-                        .map(item -> JSON.parseObject(this.hashOps.get(item), SeckillSkuRedisDTO.class))
-                        .collect(Collectors.toList());
+                // 判断现在是否有当前秒杀活动
+                long currentTime = System.currentTimeMillis();
+                if (startTime <= currentTime && currentTime <= endTime) {
+                    // 获取 list 所有元素
+                    List<String> items = this.stringRedisTemplate.opsForList().range(key, 0, -1);
+                    return items.stream()
+                            .map(item -> JSON.parseObject(this.hashOps.get(item), SeckillSkuRedisDTO.class))
+                            .collect(Collectors.toList());
+                }
             }
+        } catch (BlockException e) {
+            log.warn("【秒杀服务】seckillSkus 资源被限流...");
         }
         return Collections.emptyList();
     }
 
 
+    /**
+     * sentinel 自定义受保护资源（注解方式）
+     * 除了使用 blockHandler 处理，还可以使用 fallback
+     */
     @Override
+    @SentinelResource(value = "seckillSkuInfo", blockHandler = "seckillSkuInfoBlockHandler")
     public SeckillSkuRedisDTO getSeckillSkuInfo(Long skuId) {
         Set<String> keys = this.hashOps.keys();
         long currentTime = System.currentTimeMillis();
@@ -208,6 +224,12 @@ public class SeckillServiceImpl implements SeckillService {
             redisDTO.setRandomCode(null);
         }
         return redisDTO;
+    }
+
+
+    public SeckillSkuRedisDTO seckillSkuInfoBlockHandler(Long skuId, BlockException ex) {
+        log.warn("【秒杀服务】seckillSkuInfo 资源被限流...");
+        return null;
     }
 
 

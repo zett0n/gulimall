@@ -21,7 +21,7 @@ public class OrderSeckillListener {
 
     @RabbitHandler
     public void handleOrderSeckill(SeckillOrderDTO seckillOrderDTO, Message message, Channel channel) throws IOException {
-        log.debug("收到【秒杀模块】【立即】生成订单的消息...");
+        log.debug("收到【秒杀服务】【立即】生成订单的消息...");
         long deliveryTag = message.getMessageProperties().getDeliveryTag();
         try {
             this.orderService.createSeckillOrder(seckillOrderDTO);

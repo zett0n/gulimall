@@ -18,6 +18,10 @@ spring:
     nacos:
       discovery:
         server-addr: 127.0.0.1:8848
+    sentinel:
+      transport:
+        # sentinel server
+        dashboard: 127.0.0.1:8858
     gateway:
       routes:
         # - id: jd_route
@@ -104,5 +108,10 @@ spring:
           predicates:
             - Host=seckill.gulimall.com
 
-
+# springboot 监控
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
 

@@ -16,16 +16,6 @@
         <dependency>
             <groupId>cn.edu.zjut</groupId>
             <artifactId>gulimall-common</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>mysql</groupId>
-                    <artifactId>mysql-connector-java</artifactId>
-                </exclusion>
-                <!--<exclusion>-->
-                <!--    <groupId>com.baomidou</groupId>-->
-                <!--    <artifactId>mybatis-plus-boot-starter</artifactId>-->
-                <!--</exclusion>-->
-            </exclusions>
         </dependency>
 
     </dependencies>

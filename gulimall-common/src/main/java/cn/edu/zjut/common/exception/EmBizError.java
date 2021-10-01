@@ -29,7 +29,8 @@ public enum EmBizError {
      * 参数校验错误
      */
     VALID_EXCEPTION(10001, "参数格式校验失败"),
-    SMS_CODE_EXCEPTION(10002, "验证码获取频率太高，稍后再试"),
+    SMS_CODE_EXCEPTION(10002, "验证码获取频率太高，请稍后再试"),
+    SYSTEM_BUSY_EXCEPTION(10003, "系统繁忙，请稍后再试"),
     /**
      * Es检索商品异常
      */
