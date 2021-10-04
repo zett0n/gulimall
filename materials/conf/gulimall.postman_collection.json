@@ -183,7 +183,37 @@
 		},
 		{
 			"name": "其他",
-			"item": []
+			"item": [
+				{
+					"name": "localhost:20000/sms/sendCode?phone=123&code=1234",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:20000/sms/sendCode?phone=123&code=1234",
+							"host": [
+								"localhost"
+							],
+							"port": "20000",
+							"path": [
+								"sms",
+								"sendCode"
+							],
+							"query": [
+								{
+									"key": "phone",
+									"value": "123"
+								},
+								{
+									"key": "code",
+									"value": "1234"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
 		},
 		{
 			"name": "检索系统",
@@ -232,6 +262,67 @@
 									"key": "skuPrice",
 									"value": "5000_"
 								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "秒杀系统",
+			"item": [
+				{
+					"name": "kill",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://seckill.gulimall.com/seckill/kill?killId=1-16&key=ce0de61e878d4fc5aabd74e657f4f0d1&num=1",
+							"protocol": "http",
+							"host": [
+								"seckill",
+								"gulimall",
+								"com"
+							],
+							"path": [
+								"seckill",
+								"kill"
+							],
+							"query": [
+								{
+									"key": "killId",
+									"value": "1-16"
+								},
+								{
+									"key": "key",
+									"value": "ce0de61e878d4fc5aabd74e657f4f0d1"
+								},
+								{
+									"key": "num",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "正在秒杀",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://seckill.gulimall.com/seckill/currentSkus",
+							"protocol": "http",
+							"host": [
+								"seckill",
+								"gulimall",
+								"com"
+							],
+							"path": [
+								"seckill",
+								"currentSkus"
 							]
 						}
 					},
